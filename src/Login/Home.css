@@ -1,0 +1,128 @@
+
+.Home-Img{
+  
+width: 700px;
+height: 700px;
+
+
+}
+
+.Home-Container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    background-color:#F2F2F2 ;
+  }
+ 
+  
+  .Right-Container {
+    width: 50vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+  }
+  
+  .Left-Container {
+    width: 50vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+  }
+  .form-container {
+    width: 450px;
+    height: 650px;
+  
+    top: 50%;
+
+    /* Add any additional styling as needed */
+  }
+  .sigin-img{
+    width: 400px;
+    height: 130px;
+  }
+  .sigin-title h3{
+    font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 23px;
+line-height: 98.02%;
+  }
+  .sign-group{
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+  }
+  .sign-group label{
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 530;
+    font-size: 20px;
+    line-height: 98.02%;
+    margin-top: 20px;
+    margin-bottom: 6px;
+
+  }
+  .sign-group input{
+    background: #FFFFFF;
+border-radius: 6px;
+width: 400px;
+height: 40px;
+border: none;
+  }
+.signIn-btn{
+    width: 140px;
+    height: 52px;
+    border-radius: 6px;
+    border: none;
+    background-color: #6093F6;
+     color: #ffff;   
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 98.02%;
+    cursor: pointer;
+}
+.signin-auth label{
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 98.02%;
+}
+.signin-auth  img{
+    width: 25px;
+    height: 25px;
+}
+.signin-auth button{
+    width: 50px;
+    height: 50px;
+    background-color:  #ffff; ;
+    border: none;
+    margin-left: 10px;
+    
+}
+.signin-auth{
+    margin-top: 30px;
+}
+.centered-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 404px;
+    margin-top: 20px;
+    
+  }
+  .forgot{
+    color: #6093F6;
+  }
+  .forgots{
+    color: #6093F6;
+    cursor:pointer;
+  }
