@@ -1,8 +1,14 @@
-import { NavLink } from "react-router-dom";
+import React from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faBox, faIndustry, faShoppingBag, faChartLine, faLifeRing, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'; // Import specific icons
+import { faHome, faBox, faIndustry, faShoppingBag, faChartLine, faLifeRing, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { signOut } from "firebase/auth"; // Import signOut from Firebase
+import { auth } from "../utils/Firebabse" // Import Firebase auth
 
 const LeftSidebar = () => {
+  const navigate = useNavigate(); // Used for navigation after logout
+
+  // Tabs for the sidebar
   const tabs = [
     { label: "Dashboard", route: "/dashboard", icon: faHome },
     { label: "Inventory", route: "/inventory", icon: faBox },
@@ -12,8 +18,22 @@ const LeftSidebar = () => {
     { label: "Help & Support", route: "/help", icon: faLifeRing },
   ];
 
+  // Handle logout
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful, navigate to login page
+        console.log("Logout successful");
+        navigate("/"); // Redirect to the login page
+      })
+      .catch((error) => {
+        // Handle errors here
+        console.error("Error logging out:", error.message);
+      });
+  };
+
   return (
-    <div className="left-sidebar bg-blue-800 w-full h-screen flex flex-col relative ">
+    <div className="left-sidebar bg-blue-800 w-full h-screen flex flex-col relative">
       <h1 className="text-[19px] font-bold text-center my-6 mx-[100px] bg-green-300">L</h1>
       {tabs.map((tab) => (
         <div key={tab.route}>
@@ -25,14 +45,18 @@ const LeftSidebar = () => {
               }`
             }
           >
-            <FontAwesomeIcon icon={tab.icon} className="mr-3" /> {/* Icon here */}
+            <FontAwesomeIcon icon={tab.icon} className="mr-3" />
             {tab.label}
           </NavLink>
         </div>
       ))}
-      <div className="absolute bottom-6 w-full ">
+      {/* Logout Button */}
+      <div className="absolute bottom-6 w-full">
         <div className="flex justify-center">
-          <button className="text-[white] text-lg font-semibold flex items-center">
+          <button
+            onClick={handleLogout}
+            className="text-[white] text-lg font-semibold flex items-center"
+          >
             <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
             Log Out
           </button>
