@@ -19,12 +19,17 @@ const RightSidebar = () => {
       )}
       {location.pathname === "/inventory" && (
         <div>
-          <RightDash />
+          {/* <RightDash /> */}
         </div>
       )}
       {location.pathname === "/production" && (
         <div>
-          <RightDash />
+          {/* <RightDash /> */}
+        </div>
+      )}
+       {location.pathname === "/production" && (
+        <div>
+          {/* <RightDash /> */}
         </div>
       )}
     </div>

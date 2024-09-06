@@ -100,7 +100,7 @@ const App = () => {
           path="/production"
           element={
             isAuthenticated ? (
-              <div className="flex w-full">
+              <div className="flex w-full h-[100vh]">
                 <div className="w-1/6">
                   <LeftSidebar />
                 </div>
