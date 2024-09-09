@@ -19,5 +19,5 @@ const app = firebase.initializeApp(firebaseConfig);
 
 // Export the initialized Firebase app and services
 export const auth = app.auth();
-export const database = app.database();
+export const dataRef = app.database().ref(); // Initialize and export the root reference
 export default firebase;

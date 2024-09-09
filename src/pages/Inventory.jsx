@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
+import { dataRef } from '../utils/Firebabse'; // Import the Firebase data reference
 
 function InventoryPage() {
   const [activeTab, setActiveTab] = useState(0);
@@ -21,6 +22,23 @@ function InventoryPage() {
 
   const tabs = ['Stock Computation', 'Sales Alert'];
 
+  // Define the path for the 'stocks' reference
+  const stocksRef = dataRef.child('stocks');
+
+  // Fetch orders from Firebase
+  useEffect(() => {
+    const fetchOrders = () => {
+      stocksRef.once('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          setOrders(Object.keys(data).map(key => ({ id: key, ...data[key] })));
+        }
+      });
+    };
+
+    fetchOrders();
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewOrder({
@@ -38,7 +56,7 @@ function InventoryPage() {
     setIsAdding(true);
     setIsEditing(false); // Ensure we are not in edit mode when adding a new order
     setNewOrder({
-      id: orders.length + 1,
+      id: '',
       itemName: '',
       category: '',
       stock: '',
@@ -59,18 +77,30 @@ function InventoryPage() {
 
     if (isEditing) {
       // Update the existing order
-      setOrders(
-        orders.map((order) =>
-          order.id === editingOrderId ? newOrder : order
-        )
-      );
-      setIsEditing(false);
+      stocksRef.child(editingOrderId).update(newOrder, (error) => {
+        if (error) {
+          setError('Error updating the order.');
+        } else {
+          setOrders(
+            orders.map((order) =>
+              order.id === editingOrderId ? newOrder : order
+            )
+          );
+          setIsEditing(false);
+        }
+      });
     } else {
       // Save the new order
-      setOrders([...orders, newOrder]);
+      const newOrderId = `${orders.length + 1}`;
+      stocksRef.child(newOrderId).set(newOrder, (error) => {
+        if (error) {
+          setError('Error saving the new order.');
+        } else {
+          setOrders([...orders, { ...newOrder, id: newOrderId }]);
+          setIsAdding(false);
+        }
+      });
     }
-
-    setIsAdding(false);
   };
 
   const handleEditOrder = (orderId) => {
@@ -79,6 +109,16 @@ function InventoryPage() {
     setEditingOrderId(orderId);
     setIsEditing(true);
     setIsAdding(true); // Open the form with current values
+  };
+
+  const handleDeleteOrder = (orderId) => {
+    stocksRef.child(orderId).remove((error) => {
+      if (error) {
+        setError('Error deleting the order.');
+      } else {
+        setOrders(orders.filter(order => order.id !== orderId));
+      }
+    });
   };
 
   const handleExportToExcel = () => {
@@ -240,29 +280,33 @@ function InventoryPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredOrders.map((order) => (
-                <tr className="border-b" key={order.id}>
-                  <td className="px-4 py-2">{order.id}</td>
-                  <td className="px-4 py-2">{order.itemName}</td>
-                  <td className="px-4 py-2">{order.category}</td>
-                  <td className="px-4 py-2">{order.stock}</td>
-                  <td className="px-4 py-2">{order.price}</td>
-                  <td className="px-4 py-2">{order.averagePrice}</td>
-                  <td className="px-4 py-2">{order.supplier}</td>
-                  <td className="px-4 py-2 flex space-x-2">
-                    <button
-                      className="text-blue-600 hover:text-blue-800"
-                      onClick={() => handleEditOrder(order.id)}
-                    >
-                      <i className="fas fa-edit"></i> {/* Edit icon */}
-                    </button>
-                    <button className="text-red-600 hover:text-red-800">
-                      <i className="fas fa-trash-alt"></i> {/* Delete icon */}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+  {filteredOrders.map((order, index) => (
+    <tr className="border-b" key={order.id}>
+      <td className="px-4 py-2">{index + 1}</td> {/* Display the reordered serial number */}
+      <td className="px-4 py-2">{order.itemName}</td>
+      <td className="px-4 py-2">{order.category}</td>
+      <td className="px-4 py-2">{order.stock}</td>
+      <td className="px-4 py-2">{order.price}</td>
+      <td className="px-4 py-2">{order.averagePrice}</td>
+      <td className="px-4 py-2">{order.supplier}</td>
+      <td className="px-4 py-2 flex space-x-2">
+        <button
+          className="text-blue-600 hover:text-blue-800"
+          onClick={() => handleEditOrder(order.id)}
+        >
+          <i className="fas fa-edit"></i>
+        </button>
+        <button
+          className="text-red-600 hover:text-red-800"
+          onClick={() => handleDeleteOrder(order.id)}
+        >
+          <i className="fas fa-trash-alt"></i>
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
           </table>
         </div>
       </div>
