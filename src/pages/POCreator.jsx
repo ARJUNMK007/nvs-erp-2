@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
+import { dataRef } from '../utils/Firebabse';
 
 function POCreator() {
+  // State for MO Name
+  const [moName, setMoName] = useState('');
+
   // State for Products
   const [products, setProducts] = useState([]);
   const [newProduct, setNewProduct] = useState({ itemName: '', quantity: '', price: '' });
   const [isEditing, setIsEditing] = useState(null);
 
+  const MoRef = dataRef.child('MO');
+
   // State for Costs
-  const [costs, setCosts] = useState([
-  ]);
+  const [costs, setCosts] = useState([]);
   const [newCost, setNewCost] = useState({ name: '', quantity: '', cost: '' });
+
+  // Handle input changes for MO Name
+  const handleMoNameChange = (e) => {
+    setMoName(e.target.value);
+  };
 
   // Handle input changes for adding/editing products
   const handleProductInputChange = (e) => {
@@ -76,30 +86,67 @@ function POCreator() {
     deleteCost(id); // Remove the old entry so that we can save the edited one.
   };
 
+  // Handle Save MO
+  const saveMO = () => {
+    if (!moName) {
+      alert('Please enter a Machine Order name.');
+      return;
+    }
+
+    // Prepare the data to be saved
+    const moData = {
+      products,
+      costs,
+      createdAt: new Date().toISOString(),
+    };
+
+    // Save under MO/moName
+    MoRef.child(moName).set(moData, (error) => {
+      if (error) {
+        alert('Failed to save Machine Order. Please try again.');
+      } else {
+        alert('Machine Order saved successfully!');
+        // Clear the form
+        setMoName('');
+        setProducts([]);
+        setCosts([]);
+      }
+    });
+  };
+
   return (
     <div className="relative max-w-full h-screen overflow-x-scroll scrollbar-hide p-4">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-lg font-semibold">Create Machine Order</h1>
         <div className="flex space-x-2">
-          <button className="flex items-center px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 focus:outline-none">
+          <button
+            onClick={addProduct}
+            className="flex items-center px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 focus:outline-none"
+          >
             <span className="mr-2 text-lg">+</span>
-            Add MO
+            Add Product
           </button>
-          <button className="flex items-center px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-green-600 focus:outline-none">
+          <button
+            onClick={saveMO}
+            className="flex items-center px-3 py-1 bg-green-600 text-white text-xs font-medium rounded-md hover:bg-green-700 focus:outline-none"
+          >
             Save MO
           </button>
         </div>
       </div>
+
       <div className="w-full max-w-5xl mx-auto p-6 rounded-lg shadow-md mb-8">
         <div className="bg-blue-600 text-white text-center py-4 rounded-t-lg">
-          <h1 className="text-lg font-semibold">Product Details</h1>
+          <h1 className="text-lg font-semibold">Machine Order Details</h1>
         </div>
         <form className="flex justify-between p-6 space-x-4">
           <div className="flex flex-col w-1/3">
-            <label className="text-blue-600 font-medium mb-2">Product Name *</label>
-            <input 
-              type="text" 
-              placeholder="Furnace" 
+            <label className="text-blue-600 font-medium mb-2">MO Name *</label>
+            <input
+              type="text"
+              placeholder="Furnace"
+              value={moName}
+              onChange={handleMoNameChange}
               className="border border-blue-200 rounded px-4 py-2"
             />
           </div>
