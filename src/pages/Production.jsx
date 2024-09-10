@@ -18,7 +18,7 @@ function Production() {
           } pb-2`}
           onClick={() => setActiveTab("MO Creator")}
         >
-          MO Creator
+          PO Creator
         </button>
         <button
           className={`text-xl font-medium ${
@@ -28,7 +28,7 @@ function Production() {
           } pb-2`}
           onClick={() => setActiveTab("PO Creator")}
         >
-          PO Creator
+          MO Creator
         </button>
         <button
           className={`text-xl font-medium ${
@@ -43,9 +43,9 @@ function Production() {
       </div>
 
       {/* Render the selected component */}
-      {activeTab === "PO Creator" && <POCreator />}
+      {activeTab === "MO Creator" && <POCreator />}
       {activeTab === "PO Tracker" && <POTracker />}
-      {activeTab === "MO Creator" && <MOCreator />}
+      {activeTab === "PO Creator" && <MOCreator />}
     </div>
   );
 }
