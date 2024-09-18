@@ -108,9 +108,9 @@ const App = () => {
                   <div className="w-3/4 p-6 bg-[#87cfeb1a]">
                     <ProductionPage />
                   </div>
-                  <div className="w-1/4">
+                  {/* <div className="w-1/4">
                     <RightSidebar />
-                  </div>
+                  </div> */}
                 </div>
               </div>
             ) : (
