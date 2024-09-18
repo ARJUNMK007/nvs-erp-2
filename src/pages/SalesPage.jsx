@@ -7,12 +7,11 @@ const SalesPage = () => {
 
   // State to store form values
   const [newDeal, setNewDeal] = useState({
-    poNumber: '', // Added PO Number in form state
     buyer: '',
     supplier: '',
     startDate: '',
     endDate: '',
-    dealStatus: '',
+    dealStatus: 'Pending', // Default value for the dropdown
     nextActionDate: '',
   });
 
@@ -26,7 +25,7 @@ const SalesPage = () => {
 
   // Add or Edit deal
   const handleAddOrEditDeal = () => {
-    if (newDeal.poNumber && newDeal.buyer && newDeal.supplier) {
+    if (newDeal.buyer && newDeal.supplier) {
       if (editId !== null) {
         // Edit existing deal
         setDeals(
@@ -41,12 +40,11 @@ const SalesPage = () => {
         setDeals([...deals, { ...newDeal, id: newId }]);
       }
       setNewDeal({
-        poNumber: '',
         buyer: '',
         supplier: '',
         startDate: '',
         endDate: '',
-        dealStatus: '',
+        dealStatus: 'Pending', // Reset to default
         nextActionDate: '',
       }); // Clear form
     } else {
@@ -81,14 +79,6 @@ const SalesPage = () => {
       <div className="mb-4">
         <input
           type="text"
-          name="poNumber"
-          placeholder="PO Number"
-          value={newDeal.poNumber}
-          onChange={handleChange}
-          className="border px-2 py-1 mr-2"
-        />
-        <input
-          type="text"
           name="buyer"
           placeholder="Buyer"
           value={newDeal.buyer}
@@ -119,14 +109,20 @@ const SalesPage = () => {
           onChange={handleChange}
           className="border px-2 py-1 mr-2"
         />
-        <input
-          type="text"
+
+        {/* Deal Status Dropdown */}
+        <select
           name="dealStatus"
-          placeholder="Deal Status"
           value={newDeal.dealStatus}
           onChange={handleChange}
           className="border px-2 py-1 mr-2"
-        />
+        >
+          <option value="Pending">Pending</option>
+          <option value="Confirmed">Confirmed</option>
+          <option value="Done">Done</option>
+          <option value="On Progress">On Progress</option>
+        </select>
+
         <input
           type="date"
           name="nextActionDate"
@@ -148,7 +144,7 @@ const SalesPage = () => {
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
             <tr className="bg-gray-100 border-b">
-              <th className="px-4 py-2 text-left">PO NUMBER</th>
+              <th className="px-4 py-2 text-left">S NO</th> {/* Serial Number */}
               <th className="px-4 py-2 text-left">BUYER</th>
               <th className="px-4 py-2 text-left">SUPPLIER</th>
               <th className="px-4 py-2 text-left">START DATE</th>
@@ -161,7 +157,7 @@ const SalesPage = () => {
           <tbody>
             {deals.map((deal, index) => (
               <tr key={deal.id} className="border-b">
-                <td className="px-4 py-2">{deal.poNumber}</td>
+                <td className="px-4 py-2">{index + 1}</td> {/* Auto-incremented S No */}
                 <td className="px-4 py-2">{deal.buyer}</td>
                 <td className="px-4 py-2">{deal.supplier}</td>
                 <td className="px-4 py-2">{deal.startDate}</td>
