@@ -144,7 +144,7 @@ const SalesPage = () => {
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
             <tr className="bg-gray-100 border-b">
-              <th className="px-4 py-2 text-left">S NO</th> {/* Serial Number */}
+              <th className="px-4 py-2 text-left">SL NO</th> {/* Serial Number */}
               <th className="px-4 py-2 text-left">BUYER</th>
               <th className="px-4 py-2 text-left">SUPPLIER</th>
               <th className="px-4 py-2 text-left">START DATE</th>
