@@ -1,22 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; 
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { dataRef } from '../utils/Firebabse'; 
 
 const SalesPage = () => {
-  // Initialize deals with an empty array
-  const [deals, setDeals] = useState([]);
-
-  // State to store form values
+  const [deals, setDeals] = useState([]); // Initialize deals array
+  const SalesRef = dataRef.child('Sales'); // Reference to Sales in Firebase
   const [newDeal, setNewDeal] = useState({
     buyer: '',
     supplier: '',
     startDate: '',
     endDate: '',
-    dealStatus: 'Pending', // Default value for the dropdown
+    dealStatus: 'Pending',
     nextActionDate: '',
   });
-
-  // State to manage edit mode
   const [editId, setEditId] = useState(null);
+
+  // Fetch deals from Firebase on component mount
+  useEffect(() => {
+    SalesRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const dealsArray = Object.keys(data).map((key) => ({
+          id: key,
+          ...data[key],
+        }));
+        setDeals(dealsArray);
+      }
+    });
+  }, []);
 
   // Handle input change
   const handleChange = (e) => {
@@ -27,34 +38,30 @@ const SalesPage = () => {
   const handleAddOrEditDeal = () => {
     if (newDeal.buyer && newDeal.supplier) {
       if (editId !== null) {
-        // Edit existing deal
-        setDeals(
-          deals.map((deal) =>
-            deal.id === editId ? { ...deal, ...newDeal, id: editId } : deal
-          )
-        );
-        setEditId(null); // Clear edit mode
+        // Update existing deal in Firebase
+        SalesRef.child(editId).update(newDeal);
+        setEditId(null);
       } else {
-        // Add new deal
-        const newId = deals.length ? deals[deals.length - 1].id + 1 : 1;
-        setDeals([...deals, { ...newDeal, id: newId }]);
+        // Add new deal to Firebase
+        const newDealRef = SalesRef.push();
+        newDealRef.set(newDeal);
       }
       setNewDeal({
         buyer: '',
         supplier: '',
         startDate: '',
         endDate: '',
-        dealStatus: 'Pending', // Reset to default
+        dealStatus: 'Pending',
         nextActionDate: '',
-      }); // Clear form
+      });
     } else {
       alert('Please complete the form before submitting.');
     }
   };
 
-  // Delete deal
+  // Delete deal from Firebase
   const handleDelete = (id) => {
-    setDeals(deals.filter((deal) => deal.id !== id));
+    SalesRef.child(id).remove();
   };
 
   // Set edit mode
@@ -144,7 +151,7 @@ const SalesPage = () => {
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
             <tr className="bg-gray-100 border-b">
-              <th className="px-4 py-2 text-left">SL NO</th> {/* Serial Number */}
+              <th className="px-4 py-2 text-left">SL NO</th>
               <th className="px-4 py-2 text-left">BUYER</th>
               <th className="px-4 py-2 text-left">SUPPLIER</th>
               <th className="px-4 py-2 text-left">START DATE</th>
@@ -157,7 +164,7 @@ const SalesPage = () => {
           <tbody>
             {deals.map((deal, index) => (
               <tr key={deal.id} className="border-b">
-                <td className="px-4 py-2">{index + 1}</td> {/* Auto-incremented S No */}
+                <td className="px-4 py-2">{index + 1}</td>
                 <td className="px-4 py-2">{deal.buyer}</td>
                 <td className="px-4 py-2">{deal.supplier}</td>
                 <td className="px-4 py-2">{deal.startDate}</td>
