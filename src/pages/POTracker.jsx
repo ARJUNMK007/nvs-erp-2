@@ -1,7 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { dataRef } from '../utils/Firebabse'; 
 
 const POTracker = () => {
+  const PoNoRef = dataRef.child('PO');
+  const [poData, setPoData] = useState([]);
+  const [status, setStatus] = useState({}); // To store status for each PO number
+
+  useEffect(() => {
+    const fetchData = async () => {
+      PoNoRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          const poArray = Object.keys(data).map((poNumber) => ({
+            poNumber,
+            ...data[poNumber],
+          }));
+          setPoData(poArray);
+        }
+      });
+
+      return () => {
+        PoNoRef.off();
+      };
+    };
+
+    fetchData();
+  }, [PoNoRef]);
+
+  const handleStatusChange = (poNumber, newStatus) => {
+    setStatus((prevState) => ({
+      ...prevState,
+      [poNumber]: newStatus,
+    }));
+  };
+
   return (
     <div className="w-full max-w-5xl mx-auto p-6 rounded-lg shadow-md">
       <h1 className="text-lg font-semibold mb-6">
@@ -28,12 +61,24 @@ const POTracker = () => {
             </tr>
           </thead>
           <tbody className="text-gray-700 text-sm">
-            <tr className="border-b border-gray-200 hover:bg-gray-100">
-              <td className="py-3 px-6">1124445555</td>
-              <td className="py-3 px-6">SASDDDDD</td>
-              <td className="py-3 px-6">23-08-2024</td>
-              <td className="py-3 px-6 text-red-500">Pending</td>
-            </tr>
+            {poData.map(({ poNumber, selectedMachine, createdAt }) => (
+              <tr key={poNumber} className="border-b border-gray-200 hover:bg-gray-100">
+                <td className="py-3 px-6">{poNumber}</td>
+                <td className="py-3 px-6">{selectedMachine.name}</td>
+                <td className="py-3 px-6">{new Date(createdAt).toLocaleDateString()}</td>
+                <td className="py-3 px-6">
+                  <select
+                    value={status[poNumber] || 'Pending'} // Default to 'Pending' if no status is set
+                    onChange={(e) => handleStatusChange(poNumber, e.target.value)}
+                    className="border rounded px-2 py-1"
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="Completed">Completed</option>
+                    <option value="On Progress">On Progress</option>
+                  </select>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -41,4 +86,4 @@ const POTracker = () => {
   );
 };
 
-export default POTracker;
+export default POTracker;
