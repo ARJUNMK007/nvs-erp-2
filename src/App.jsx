@@ -78,7 +78,7 @@ const App = () => {
           path="/sales"
           element={
             isAuthenticated ? (
-              <div className="flex w-full">
+              <div className="flex w-full fixed">
                 <div className="w-1/6">
                   <LeftSidebar />
                 </div>
@@ -100,7 +100,7 @@ const App = () => {
           path="/production"
           element={
             isAuthenticated ? (
-              <div className="flex w-full h-[100vh]">
+              <div className="flex w-full fixed">
                 <div className="w-1/6">
                   <LeftSidebar />
                 </div>
@@ -124,7 +124,7 @@ const App = () => {
           path="/reports"
           element={
             isAuthenticated ? (
-              <div className="flex w-full">
+              <div className="flex w-full fixed">
                 <div className="w-1/6">
                   <LeftSidebar />
                 </div>
@@ -147,7 +147,7 @@ const App = () => {
   path="/help"
   element={
     isAuthenticated ? (
-      <div className="flex w-full">
+      <div className="flex w-full fixed">
         <div className="w-1/6">
           <LeftSidebar />
         </div>

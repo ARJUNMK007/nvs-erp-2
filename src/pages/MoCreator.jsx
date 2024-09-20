@@ -114,7 +114,7 @@ function MOCreator() {
   };
 
   return (
-    <div className="relative max-w-full h-screen overflow-x-scroll scrollbar-hide p-4">
+    <div className="relative max-w-full h-[90vh] overflow-x-scroll scrollbar-hide p-4">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-lg font-semibold">Create Machine Order</h1>
         <div className="flex space-x-2">

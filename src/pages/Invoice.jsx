@@ -1,6 +1,6 @@
-
 import React, { useState, useRef } from "react";
 import { useReactToPrint } from "react-to-print";
+import logo from "../assets/logo.png"
 
 const Invoice = () => {
   const [billTo, setBillTo] = useState({
@@ -24,12 +24,34 @@ const Invoice = () => {
     { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
     { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
     { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
-    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 }, { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
-    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
     { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
-    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 }, { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
-    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
-    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 }, { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 }, { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 }, { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 }, { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 }, { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
+    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
+    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
+    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
+    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
+    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
+    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
+    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
+    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
+    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
+    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
+    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
+    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
+    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
+    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
+    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
+    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
+    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
+    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
+    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
+    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
+
+    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
+    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
+
+    // Add more items as needed
   ]);
 
   const taxPercentage = 9;
@@ -54,13 +76,11 @@ const Invoice = () => {
         margin: 10mm;
       }
       @media print {
-        /* Remove borders from textareas and inputs in print view */
         textarea,
         input {
           border: none !important;
           box-shadow: none !important;
         }
-        /* Remove borders for specific sections */
         .bill-to,
         .ship-to {
           border: none !important;
@@ -70,10 +90,10 @@ const Invoice = () => {
       .page-break {
         page-break-before: always;
       }
+      
     `,
   });
-  
-  
+
   const itemsPerPage = 10;
   const pages = [];
   for (let i = 0; i < items.length; i += itemsPerPage) {
@@ -81,7 +101,7 @@ const Invoice = () => {
   }
 
   return (
-    <div>
+    <div className=" w-full h-[80vh] overflow-x-scroll scrollbar-hide">
       <button
         onClick={handlePrint}
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
@@ -94,16 +114,22 @@ const Invoice = () => {
           <div key={pageIndex}>
             {/* First Page */}
             <div>
-              {/* Invoice Header */}
               <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h2 className="text-lg font-bold">THERMICRAFT INDUSTRIES</h2>
-                  <p>515/3, Bharathi Street, Chinnavedampatty,</p>
-                  <p>Coimbatore, Tamil Nadu, 641049</p>
-                  <p>GTSIN: 33AATFB4671D2Q</p>
-                  <p>PAN Number: AATFB467D</p>
-                  <p>Mobile: 9843094987</p>
-                  <p>Email: info@thermicraft.com</p>
+                <div className="flex items-center">
+                  <img
+                    src={logo}// Replace with your logo path
+                    alt="Logo"
+                    className="w-24 h-auto mr-4"
+                  />
+                  <div>
+                    <h2 className="text-lg font-bold">THERMICRAFT INDUSTRIES</h2>
+                    <p>515/3, Bharathi Street, Chinnavedampatty,</p>
+                    <p>Coimbatore, Tamil Nadu, 641049</p>
+                    <p>GTSIN: 33AATFB4671D2Q</p>
+                    <p>PAN Number: AATFB467D</p>
+                    <p>Mobile: 9843094987</p>
+                    <p>Email: info@thermicraft.com</p>
+                  </div>
                 </div>
 
                 <div className="text-right">
@@ -198,25 +224,37 @@ const Invoice = () => {
                 </tbody>
               </table>
 
-              {/* Footer */}
-              <div className="mt-4 text-left">
-                <p><strong>Thermicraft Industries | Bank Details</strong></p>
-                <p>Account No: 51900901017285 | IFSC Code: CIUB0000428</p>
-                <p>City Union Bank, GANAPATHY</p>
-              </div>
               {/* Page Break */}
               {pageIndex < pages.length - 1 && <div className="page-break"></div>}
             </div>
+
+            {/* Footer */}
+            {pageIndex < pages.length - 1 && (
+              <div className="no-footer flex justify-between flex-row ">
+                <div>
+                <hr className="border-t-2 border-black my-4" />
+                <div className="mt-4 text-left">
+                  <p><strong>Thermicraft Industries | Bank Details</strong></p>
+                  <p>Account No: 51900901017285 | IFSC Code: CIUB0000428</p>
+                  <p>City Union Bank, GANAPATHY</p>
+                  </div>
+                  <div className="mt-8">
+                    <p><strong>Signature:</strong></p>
+                    <div className="border-dashed border-2 border-gray-400 h-16 w-48 mt-4"></div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         ))}
 
         {/* Totals */}
         <div className="flex justify-between mt-4">
-        <div className="mt-4 text-left">
-                <p><strong>Thermicraft Industries | Bank Details</strong></p>
-                <p>Account No: 51900901017285 | IFSC Code: CIUB0000428</p>
-                <p>City Union Bank, GANAPATHY</p>
-              </div>
+          <div className="mt-4 text-left">
+            <p><strong>Thermicraft Industries | Bank Details</strong></p>
+            <p>Account No: 51900901017285 | IFSC Code: CIUB0000428</p>
+            <p>City Union Bank, GANAPATHY</p>
+          </div>
 
           <table className="w-1/3 border-collapse">
             <tbody>
@@ -225,11 +263,11 @@ const Invoice = () => {
                 <td className="border border-black p-2 text-right">{totalAmount}</td>
               </tr>
               <tr>
-                <td className="border border-black p-2">CGST ({taxPercentage}%)</td>
+                <td className="border border-black p-2">CGST ({taxPercentage}%) ({totalAmount})</td>
                 <td className="border border-black p-2 text-right">{taxAmount}</td>
               </tr>
               <tr>
-                <td className="border border-black p-2">SGST ({taxPercentage}%)</td>
+                <td className="border border-black p-2">SGST ({taxPercentage}%) ({totalAmount})</td>
                 <td className="border border-black p-2 text-right">{taxAmount}</td>
               </tr>
               <tr>
@@ -245,4 +283,3 @@ const Invoice = () => {
 };
 
 export default Invoice;
-

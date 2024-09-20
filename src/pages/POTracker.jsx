@@ -36,7 +36,7 @@ const POTracker = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-6 rounded-lg shadow-md">
+    <div className="relative max-w-full h-[85vh] overflow-x-scroll scrollbar-hide p-4">
       <h1 className="text-lg font-semibold mb-6">
         Here You Can See The Tracking Details
       </h1>

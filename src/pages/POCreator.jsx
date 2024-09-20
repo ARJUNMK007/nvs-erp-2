@@ -154,8 +154,8 @@ function PoCreator() {
   );
 
   return (
-    <div className="flex flex-col space-y-6">
-      <div className="flex justify-between items-center py-4">
+    <div className="flex flex-col space-y-4 h-[60vh]">
+      <div className="flex justify-between items-center py-2">
         <h1 className="text-xl font-semibold">Purchase Order</h1>
         <div className="flex space-x-4">
           <input
