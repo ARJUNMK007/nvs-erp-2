@@ -7,6 +7,7 @@ const POTracker = () => {
   const stocksRef = dataRef.child('stocks'); // Reference to the stocks path
   const [poData, setPoData] = useState([]);
   const [status, setStatus] = useState({}); // To store status for each PO number
+  const [expandedRows, setExpandedRows] = useState({}); // Track expanded rows
 
   useEffect(() => {
     const fetchData = async () => {
@@ -98,6 +99,25 @@ const POTracker = () => {
       });
   };
 
+  // Toggle the expanded row
+  const toggleExpandRow = (poNumber) => {
+    setExpandedRows((prevState) => ({
+      ...prevState,
+      [poNumber]: !prevState[poNumber],
+    }));
+  };
+
+  // Dummy data for product and cost
+  const dummyProducts = [
+    { itemName: "Product A", quantity: 10, price: 50 },
+    { itemName: "Product B", quantity: 5, price: 100 }
+  ];
+
+  const dummyCosts = [
+    { costType: "Material", quantity: 10, cost: 500 },
+    { costType: "Labor", quantity: 8, cost: 400 }
+  ];
+
   return (
     <div className="relative max-w-full h-[85vh] overflow-x-scroll scrollbar-hide p-4">
       <h1 className="text-lg font-semibold mb-6">
@@ -121,26 +141,85 @@ const POTracker = () => {
               <th className="py-3 px-6">Product Name</th>
               <th className="py-3 px-6">Date</th>
               <th className="py-3 px-6">Status</th>
+              <th className="py-3 px-6">Details</th>
             </tr>
           </thead>
           <tbody className="text-gray-700 text-sm">
-            {poData.map(({ poNumber, selectedMachine, createdAt }) => (
-              <tr key={poNumber} className="border-b border-gray-200 hover:bg-gray-100">
-                <td className="py-3 px-6">{poNumber}</td>
-                <td className="py-3 px-6">{selectedMachine.name}</td>
-                <td className="py-3 px-6">{new Date(createdAt).toLocaleDateString()}</td>
-                <td className="py-3 px-6">
-                  <select
-                    value={status[poNumber] || 'Pending'} // Default to 'Pending' if no status is set
-                    onChange={(e) => handleStatusChange(poNumber, e.target.value)}
-                    className="border rounded px-2 py-1"
-                  >
-                    <option value="Pending">Pending</option>
-                    <option value="Completed">Completed</option>
-                    <option value="On Progress">On Progress</option>
-                  </select>
-                </td>
-              </tr>
+            {poData.map(({ poNumber, selectedMachine, createdAt, products = dummyProducts, cost = dummyCosts }) => (
+              <React.Fragment key={poNumber}>
+                <tr className="border-b border-gray-200 hover:bg-gray-100">
+                  <td className="py-3 px-6">{poNumber}</td>
+                  <td className="py-3 px-6">{selectedMachine?.name || 'N/A'}</td>
+                  <td className="py-3 px-6">{new Date(createdAt).toLocaleDateString()}</td>
+                  <td className="py-3 px-6">
+                    <select
+                      value={status[poNumber] || 'Pending'}
+                      onChange={(e) => handleStatusChange(poNumber, e.target.value)}
+                      className="border rounded px-2 py-1"
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="Completed">Completed</option>
+                      <option value="On Progress">On Progress</option>
+                    </select>
+                  </td>
+                  <td className="py-3 px-6">
+                    <button onClick={() => toggleExpandRow(poNumber)}>
+                      <i className={`fas fa-chevron-${expandedRows[poNumber] ? 'up' : 'down'}`}></i>
+                    </button>
+                  </td>
+                </tr>
+
+                {/* Expandable section for cost and product table */}
+                {expandedRows[poNumber] && (
+                  <tr>
+                    <td colSpan={5}>
+                      <div className="p-4">
+                        {/* Product Table */}
+                        <h3 className="font-semibold mb-2">Product Table</h3>
+                        <table className="min-w-full bg-gray-100 rounded-lg">
+                          <thead>
+                            <tr>
+                              <th className="py-3 px-6">Item Name</th>
+                              <th className="py-3 px-6">Quantity</th>
+                              <th className="py-3 px-6">Price</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {products.map((product, index) => (
+                              <tr key={index}>
+                                <td className="py-3 px-6">{product.itemName}</td>
+                                <td className="py-3 px-6">{product.quantity}</td>
+                                <td className="py-3 px-6">{product.price}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+
+                        {/* Cost Table */}
+                        <h3 className="font-semibold mt-4 mb-2">Cost Table</h3>
+                        <table className="min-w-full bg-gray-100 ">
+                          <thead>
+                            <tr>
+                              <th className="py-3 px-6">Cost Type</th>
+                              <th className="py-3 px-6">Quantity</th>
+                              <th className="py-3 px-6">Cost</th>
+                            </tr>
+                          </thead>
+                          <tbody  className="text-gray-700 text-sm">
+                            {cost.map((item, index) => (
+                              <tr key={index}>
+                                <td className="py-3 px-6">{item.costType}</td>
+                                <td className="py-3 px-6">{item.quantity}</td>
+                                <td className="py-3 px-6">{item.cost}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
             ))}
           </tbody>
         </table>

@@ -164,8 +164,8 @@ function PoCreator() {
               <thead>
                 <tr className="bg-gray-100 text-left text-gray-600 uppercase text-sm">
                   <th className="py-3 px-6">Item Name</th>
-                  <th className="py-3 px-6">Quantity</th>
                   <th className="py-3 px-6">Price</th>
+                  <th className="py-3 px-6">Quantity</th>
                 </tr>
               </thead>
               <tbody>
@@ -187,8 +187,8 @@ function PoCreator() {
             <table className="min-w-full bg-white border rounded-lg">
               <thead>
                 <tr className="bg-gray-100 text-left text-gray-600 uppercase text-sm">
-                  <th className="py-3 px-6">Cost Type</th>
                   <th className="py-3 px-6">Quantity</th>
+                  <th className="py-3 px-6">Cost Type</th>
                   <th className="py-3 px-6">Cost</th>
                 </tr>
               </thead>
