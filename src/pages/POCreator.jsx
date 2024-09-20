@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect } from 'react';
 import { dataRef } from '../utils/Firebabse';
+import EditableRow from './EditableRow'; // Import the updated EditableRow component
 
 function PoCreator() {
   const [moList, setMoList] = useState([]);
@@ -8,19 +9,16 @@ function PoCreator() {
   const [costs, setCosts] = useState([]);
   const [billedTo, setBilledTo] = useState('');
   const [shipTo, setShipTo] = useState('');
-  const [poNumber, setPoNumber] = useState(''); // State for PO number
-  const [isEditing, setIsEditing] = useState({ product: null, cost: null });
+  const [poNumber, setPoNumber] = useState('');
 
-  const MoRef = dataRef.child('MO'); // Firebase Reference to MO path
-  const PoNoRef = dataRef.child('PO'); // Reference to PO path
+  const MoRef = dataRef.child('MO');
+  const PoNoRef = dataRef.child('PO');
 
-  // Generate a unique 7-digit PO number
   const generateUniquePoNumber = () => {
     const randomNumber = Math.floor(1000000 + Math.random() * 9000000);
-    return randomNumber.toString(); // Ensure it's a string
+    return randomNumber.toString();
   };
 
-  // Fetch MO names (machines) from Firebase
   useEffect(() => {
     MoRef.on('value', (snapshot) => {
       const moData = snapshot.val();
@@ -34,7 +32,6 @@ function PoCreator() {
       }
     });
 
-    // Generate a PO number on mount
     setPoNumber(generateUniquePoNumber());
 
     return () => {
@@ -58,30 +55,23 @@ function PoCreator() {
     });
   };
 
-  const handleFieldChange = (type, index, key, value) => {
+  // Handle input change and update the relevant row data
+  const handleInputChange = (type, index, key, value) => {
     if (type === 'product') {
-      const updatedItems = [...products];
-      updatedItems[index][key] = value;
-      setProducts(updatedItems);
+      const updatedProducts = [...products];
+      updatedProducts[index][key] = value; // Update the specific product's field
+      setProducts(updatedProducts);
     } else if (type === 'cost') {
-      const updatedItems = [...costs];
-      updatedItems[index][key] = value;
-      setCosts(updatedItems);
+      const updatedCosts = [...costs];
+      updatedCosts[index][key] = value; // Update the specific cost's field
+      setCosts(updatedCosts);
     }
   };
 
-  const toggleEdit = (type, index) => {
-    setIsEditing((prevState) => ({
-      ...prevState,
-      [type]: prevState[type] === index ? null : index,
-    }));
-  };
-
-  // Save all data under the unique PO number
   const saveAllDataToFirebase = () => {
     if (selectedMachine) {
       const selectedMachineName = moList.find(machine => machine.id === selectedMachine)?.name || 'Unknown Machine';
-      const createdAt = new Date().toISOString(); // Get the current date and time in ISO format
+      const createdAt = new Date().toISOString();
       const poData = {
         products,
         costs,
@@ -91,20 +81,16 @@ function PoCreator() {
           id: selectedMachine,
           name: selectedMachineName,
         },
-        createdAt, // Save created date and time
+        createdAt,
       };
       PoNoRef.child(poNumber).set(poData)
         .then(() => {
-          alert(`Data saved successfully under PO No: ${poNumber}`);  // Alert on success
-          
-          // Clear text boxes except for PO number
+          alert(`Data saved successfully under PO No: ${poNumber}`);
           setBilledTo('');
           setShipTo('');
           setSelectedMachine(null);
           setProducts([]);
           setCosts([]);
-          
-          // Optionally reset the PO number or generate a new one
           setPoNumber(generateUniquePoNumber());
         })
         .catch((error) => {
@@ -114,44 +100,6 @@ function PoCreator() {
       console.error('Please select a machine.');
     }
   };
-  
-  
-
-  const EditableRow = ({ data, index, type }) => (
-    <tr key={index} className="border-b border-gray-200">
-      {Object.keys(data).map((key, i) => (
-        <td key={i} className="py-3 px-6">
-          {isEditing[type] === index ? (
-            <input
-              type={key === 'quantity' || key === 'price' || key === 'cost' ? 'number' : 'text'}
-              value={data[key]}
-              onChange={(e) => handleFieldChange(type, index, key, e.target.value)}
-              className="border rounded-md p-2"
-            />
-          ) : (
-            data[key]
-          )}
-        </td>
-      ))}
-      <td className="py-3 px-6">
-        {isEditing[type] === index ? (
-          <button
-            onClick={() => saveDataToFirebase(type)}
-            className="bg-green-500 text-white px-4 py-2 rounded-md"
-          >
-            Save
-          </button>
-        ) : (
-          <button
-            onClick={() => toggleEdit(type, index)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md"
-          >
-            Edit
-          </button>
-        )}
-      </td>
-    </tr>
-  );
 
   return (
     <div className="flex flex-col space-y-4 h-[60vh]">
@@ -161,7 +109,7 @@ function PoCreator() {
           <input
             type="text"
             value={poNumber}
-            readOnly // Make PO number read-only
+            readOnly
             className="border rounded-md p-2"
           />
           <button
@@ -218,7 +166,6 @@ function PoCreator() {
                   <th className="py-3 px-6">Item Name</th>
                   <th className="py-3 px-6">Quantity</th>
                   <th className="py-3 px-6">Price</th>
-                  <th className="py-3 px-6">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -228,6 +175,7 @@ function PoCreator() {
                     data={product}
                     index={index}
                     type="product"
+                    handleInputChange={handleInputChange} // Pass the input change handler
                   />
                 ))}
               </tbody>
@@ -242,12 +190,11 @@ function PoCreator() {
                   <th className="py-3 px-6">Cost Type</th>
                   <th className="py-3 px-6">Quantity</th>
                   <th className="py-3 px-6">Cost</th>
-                  <th className="py-3 px-6">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {costs.map((cost, index) => (
-                  <EditableRow key={index} data={cost} index={index} type="cost" />
+                  <EditableRow key={index} data={cost} index={index} type="cost" handleInputChange={handleInputChange} />
                 ))}
               </tbody>
             </table>
@@ -258,4 +205,4 @@ function PoCreator() {
   );
 }
 
-export default PoCreator;
+export default PoCreator;
