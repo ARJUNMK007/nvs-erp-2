@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';  
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { dataRef } from '../utils/Firebabse'; 
 
 const POTracker = () => {
   const PoNoRef = dataRef.child('PO');
+  const stocksRef = dataRef.child('stocks'); // Reference to the stocks path
   const [poData, setPoData] = useState([]);
   const [status, setStatus] = useState({}); // To store status for each PO number
 
@@ -16,7 +17,15 @@ const POTracker = () => {
             poNumber,
             ...data[poNumber],
           }));
+
           setPoData(poArray);
+
+          // Initialize status state from fetched data
+          const initialStatus = {};
+          poArray.forEach(({ poNumber, status }) => {
+            initialStatus[poNumber] = status || 'Pending'; // Default to 'Pending' if no status
+          });
+          setStatus(initialStatus);
         }
       });
 
@@ -29,10 +38,64 @@ const POTracker = () => {
   }, [PoNoRef]);
 
   const handleStatusChange = (poNumber, newStatus) => {
+    // Update local state
     setStatus((prevState) => ({
       ...prevState,
       [poNumber]: newStatus,
     }));
+
+    // Update status in Firebase
+    PoNoRef.child(poNumber).update({ status: newStatus })
+      .then(() => {
+        console.log(`Status for ${poNumber} updated to ${newStatus}`);
+
+        // Check if the new status is "On Progress" or "Completed"
+        if (newStatus === 'On Progress' || newStatus === 'Completed') {
+          // Fetch the PO data
+          PoNoRef.child(poNumber).once('value', (snapshot) => {
+            const poData = snapshot.val();
+            console.log(`Data for PO NO: ${poNumber}`, poData);
+
+            // Compare itemName in products with stocks
+            poData.products.forEach((product) => {
+              const { itemName, quantity } = product;
+
+              // Fetch stock data from stocksRef
+              stocksRef.once('value', (stockSnapshot) => {
+                const stocks = stockSnapshot.val();
+                
+                // Find the matching stock item by itemName
+                const stockItemKey = Object.keys(stocks).find(key => stocks[key].itemName === itemName);
+
+                if (stockItemKey) {
+                  const currentStock = parseInt(stocks[stockItemKey].stock, 10);
+                  const quantityToSubtract = parseInt(quantity, 10);
+
+                  if (currentStock >= quantityToSubtract) {
+                    const updatedStock = currentStock - quantityToSubtract;
+
+                    // Update stock in Firebase
+                    stocksRef.child(stockItemKey).update({ stock: updatedStock.toString() })
+                      .then(() => {
+                        console.log(`Stock for ${itemName} updated to ${updatedStock}`);
+                      })
+                      .catch((error) => {
+                        console.error("Error updating stock:", error);
+                      });
+                  } else {
+                    console.warn(`Not enough stock for ${itemName} to fulfill quantity ${quantity}`);
+                  }
+                } else {
+                  console.warn(`Item ${itemName} not found in stocks`);
+                }
+              });
+            });
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error updating status:", error);
+      });
   };
 
   return (
@@ -86,4 +149,4 @@ const POTracker = () => {
   );
 };
 
-export default POTracker;
+export default POTracker;
