@@ -1,317 +1,210 @@
-import React, { useState, useEffect } from 'react';
-import * as XLSX from 'xlsx';
-import { dataRef } from '../utils/Firebabse'; // Import the Firebase data reference
+import React, { useState, useEffect } from "react";
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import { dataRef } from '../utils/Firebabse';
 
-function InventoryPage() {
-  const [activeTab, setActiveTab] = useState(0);
-  const [isAdding, setIsAdding] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingOrderId, setEditingOrderId] = useState(null);
-  const [newOrder, setNewOrder] = useState({
-    id: '',
+const SalesPage = () => {
+  const [deals, setDeals] = useState([]); // Initialize deals array
+  const SalesRef = dataRef.child('Stock'); // Reference to Sales in Firebase
+  const [newDeal, setNewDeal] = useState({
     itemName: '',
-    category: '',
-    stock: '',
-    price: '',
+    itemCategory: '',
+    currentStock: '',
+    itemPrice: '',
     averagePrice: '',
     supplier: '',
   });
-  const [orders, setOrders] = useState([]);
-  const [error, setError] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [editId, setEditId] = useState(null);
 
-  const tabs = ['Stock Computation', 'Sales Alert'];
-
-  // Define the path for the 'stocks' reference
-  const stocksRef = dataRef.child('stocks');
-
-  // Fetch orders from Firebase
+  // Fetch deals from Firebase on component mount
   useEffect(() => {
-    const fetchOrders = () => {
-      stocksRef.once('value', (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setOrders(Object.keys(data).map(key => ({ id: key, ...data[key] })));
-        }
-      });
-    };
-
-    fetchOrders();
-  }, []);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewOrder({
-      ...newOrder,
-      [name]: value,
-    });
-    setError(''); // Clear the error message when the user starts typing
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value.toLowerCase());
-  };
-
-  const handleAddOrder = () => {
-    setIsAdding(true);
-    setIsEditing(false); // Ensure we are not in edit mode when adding a new order
-    setNewOrder({
-      id: '',
-      itemName: '',
-      category: '',
-      stock: '',
-      price: '',
-      averagePrice: '',
-      supplier: '',
-    });
-  };
-
-  const handleSaveOrder = () => {
-    const { itemName, category, stock, price, averagePrice, supplier } = newOrder;
-
-    // Check if any of the fields are empty
-    if (!itemName || !category || !stock || !price || !averagePrice || !supplier) {
-      setError('Please fill in all fields before saving.');
-      return; // Prevent saving the order
-    }
-
-    if (isEditing) {
-      // Update the existing order
-      stocksRef.child(editingOrderId).update(newOrder, (error) => {
-        if (error) {
-          setError('Error updating the order.');
-        } else {
-          setOrders(
-            orders.map((order) =>
-              order.id === editingOrderId ? newOrder : order
-            )
-          );
-          setIsEditing(false);
-        }
-      });
-    } else {
-      // Save the new order
-      const newOrderId = `${orders.length + 1}`;
-      stocksRef.child(newOrderId).set(newOrder, (error) => {
-        if (error) {
-          setError('Error saving the new order.');
-        } else {
-          setOrders([...orders, { ...newOrder, id: newOrderId }]);
-          setIsAdding(false);
-        }
-      });
-    }
-  };
-
-  const handleEditOrder = (orderId) => {
-    const orderToEdit = orders.find((order) => order.id === orderId);
-    setNewOrder(orderToEdit);
-    setEditingOrderId(orderId);
-    setIsEditing(true);
-    setIsAdding(true); // Open the form with current values
-  };
-
-  const handleDeleteOrder = (orderId) => {
-    stocksRef.child(orderId).remove((error) => {
-      if (error) {
-        setError('Error deleting the order.');
-      } else {
-        setOrders(orders.filter(order => order.id !== orderId));
+    SalesRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const dealsArray = Object.keys(data).map((key) => ({
+          id: key,
+          ...data[key],
+        }));
+        setDeals(dealsArray);
       }
     });
+  }, []);
+
+  // Handle input change
+  const handleChange = (e) => {
+    setNewDeal({ ...newDeal, [e.target.name]: e.target.value });
   };
 
-  const handleExportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(orders);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Orders");
+// Add or Edit deal
+const handleAddOrEditDeal = () => {
+  // Ensure all required fields are filled out
+  if (newDeal.itemName && newDeal.supplier) {
+    if (editId !== null) {
+      // Update existing deal in Firebase
+      SalesRef.child(editId).update(newDeal)
+        .then(() => {
+          setEditId(null); // Reset edit ID after updating
+          setNewDeal({
+            itemName: '',
+            itemCategory: '',
+            currentStock: '',
+            itemPrice: '',
+            averagePrice: '',
+            supplier: '',
+          });
+        })
+        .catch(error => {
+          console.error("Error updating deal:", error);
+        });
+    } else {
+      // Add new deal to Firebase
+      const newDealRef = SalesRef.push();
+      newDealRef.set(newDeal)
+        .then(() => {
+          setNewDeal({
+            itemName: '',
+            itemCategory: '',
+            currentStock: '',
+            itemPrice: '',
+            averagePrice: '',
+            supplier: '',
+          });
+        })
+        .catch(error => {
+          console.error("Error adding deal:", error);
+        });
+    }
+  } else {
+    alert('Please complete the form before submitting.');
+  }
+};
 
-    // Generate Excel file and trigger download
-    XLSX.writeFile(workbook, "InventoryOrders.xlsx");
+  // Delete deal from Firebase
+  const handleDelete = (id) => {
+    SalesRef.child(id).remove();
   };
 
-  const filteredOrders = orders.filter((order) =>
-    order.itemName.toLowerCase().includes(searchQuery) ||
-    order.category.toLowerCase().includes(searchQuery) ||
-    order.supplier.toLowerCase().includes(searchQuery)
-  );
+  // Set edit mode
+  const handleEdit = (deal) => {
+    setEditId(deal.id);
+    setNewDeal(deal); // Populate form with deal data for editing
+  };
 
   return (
-    <div className='mt-30'>
-      <div className="relative w-full max-w-md mx-auto">
-        <div className="flex">
-          {tabs.map((tab, index) => (
-            <button
-              key={index}
-              className={`flex-1 text-center py-2 font-semibold ${activeTab === index ? 'text-black' : 'text-gray-500'}`}
-              onClick={() => setActiveTab(index)}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-        <div
-          className="absolute bottom-0 h-1 bg-black transition-all duration-300"
-          style={{ left: `${(activeTab / tabs.length) * 100}%`, width: `${100 / tabs.length}%` }}
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <button className="text-xl font-medium border-b-4 border-black pb-2">
+          Inventory
+        </button>
+        <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none flex items-center">
+          <i className="fas fa-download mr-2"></i>
+          Export to Excel
+        </button>
+      </div>
+
+      {/* Input Form */}
+      <div className="mb-4">
+        <input
+          type="text"
+          name="itemName"
+          placeholder="Item Name"
+          value={newDeal.itemName}
+          onChange={handleChange}
+          className="border px-2 py-1 mr-2"
         />
+        <input
+          type="text"
+          name="itemCategory"
+          placeholder="Item Category"
+          value={newDeal.itemCategory}
+          onChange={handleChange}
+          className="border px-2 py-1 mr-2"
+        />
+        <input
+          type="number"
+          name="currentStock"
+          placeholder="Current Stock"
+          value={newDeal.currentStock}
+          onChange={handleChange}
+          className="border px-2 py-1 mr-2"
+        />
+        <input
+          type="number"
+          name="itemPrice"
+          placeholder="Item Price"
+          value={newDeal.itemPrice}
+          onChange={handleChange}
+          className="border px-2 py-1 mr-2"
+        />
+        <input
+          type="number"
+          name="averagePrice"
+          placeholder="Average Price"
+          value={newDeal.averagePrice}
+          onChange={handleChange}
+          className="border px-2 py-1 mr-2"
+        />
+        <input
+          type="text"
+          name="supplier"
+          placeholder="Supplier"
+          value={newDeal.supplier}
+          onChange={handleChange}
+          className="border px-2 py-1 mr-2"
+        />
+
+        {/* Deal Status Dropdown */}
+       
+      
+        <button
+          onClick={handleAddOrEditDeal}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none"
+        >
+          {editId !== null ? 'Update Stock' : 'Add Stock'}
+        </button>
       </div>
 
-      <div className="p-6">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-          <h2 className="text-lg font-medium mb-2 md:mb-0">Manage Your Inventory Details</h2>
-          <div className="flex items-center">
-            <input
-              type="text"
-              placeholder="Search here..."
-              className="border border-gray-300 rounded-l-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={handleSearchChange}
-            />
-            <button className="border-t border-b border-r border-gray-300 bg-gray-100 text-gray-700 py-2 px-4 rounded-r-md">
-              Filter
-            </button>
-          </div>
-        </div>
-        <div className="flex space-x-2">
-          <button
-            className="bg-blue-600 text-white py-2 px-4 rounded-md"
-            onClick={handleAddOrder}
-          >
-            + Add New Orders
-          </button>
-          <button
-            className="bg-blue-600 text-white py-2 px-4 rounded-md"
-            onClick={handleExportToExcel}
-          >
-            Export Report to Excel
-          </button>
-        </div>
-      </div>
-
-      <div className="p-6">
-        {(isAdding || isEditing) && (
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-4">
-              {isEditing ? 'Edit Order' : 'Add New Order'}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <input
-                type="text"
-                name="itemName"
-                placeholder="Item Name"
-                value={newOrder.itemName}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-md py-2 px-4"
-              />
-              <input
-                type="text"
-                name="category"
-                placeholder="Item Category"
-                value={newOrder.category}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-md py-2 px-4"
-              />
-              <input
-                type="number"
-                name="stock"
-                placeholder="Current Stock"
-                value={newOrder.stock}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-md py-2 px-4"
-              />
-              <input
-                type="number"
-                name="price"
-                placeholder="Item Price"
-                value={newOrder.price}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-md py-2 px-4"
-              />
-              <input
-                type="number"
-                name="averagePrice"
-                placeholder="Average Price"
-                value={newOrder.averagePrice}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-md py-2 px-4"
-              />
-              <input
-                type="text"
-                name="supplier"
-                placeholder="Supplier"
-                value={newOrder.supplier}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-md py-2 px-4"
-              />
-            </div>
-            {error && <p className="text-red-500 mt-2">{error}</p>}
-            <div className="flex justify-end mt-4 space-x-2">
-              <button
-                className="bg-gray-200 text-gray-700 py-2 px-4 rounded-md"
-                onClick={() => {
-                  setIsAdding(false);
-                  setIsEditing(false);
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-blue-600 text-white py-2 px-4 rounded-md"
-                onClick={handleSaveOrder}
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        )}
-
-        <h2 className="text-xl font-semibold mb-4">STOCK STATUS</h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200">
-            <thead>
-              <tr className="bg-gray-100 border-b">
-                <th className="px-4 py-2 text-left">S NO</th>
-                <th className="px-4 py-2 text-left">ITEM NAME</th>
-                <th className="px-4 py-2 text-left">ITEM CATEGORY</th>
-                <th className="px-4 py-2 text-left">CURRENT STOCK</th>
-                <th className="px-4 py-2 text-left">ITEM PRICE</th>
-                <th className="px-4 py-2 text-left">AVERAGE PRICE</th>
-                <th className="px-4 py-2 text-left">SUPPLIER</th>
-                <th className="px-4 py-2 text-left"></th> {/* For icons */}
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border border-gray-200">
+          <thead>
+            <tr className="bg-gray-100 border-b">
+              <th className="px-4 py-2 text-left">SL NO</th>
+              <th className="px-4 py-2 text-left">ITEM NAME</th>
+              <th className="px-4 py-2 text-left">ITEM CATEGORY</th>
+              <th className="px-4 py-2 text-left">CURRENT STOCK</th>
+              <th className="px-4 py-2 text-left">ITEM PRICE</th>
+              <th className="px-4 py-2 text-left">AVERAGE PRICE</th>
+              <th className="px-4 py-2 text-left">SUPPLIER</th>
+              <th className="px-4 py-2 text-left">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            {deals.map((deal, index) => (
+              <tr key={deal.id} className="border-b">
+                <td className="px-4 py-2">{index + 1}</td>
+                <td className="px-4 py-2">{deal.itemName}</td>
+                <td className="px-4 py-2">{deal.itemCategory}</td>
+                <td className="px-4 py-2">{deal.currentStock}</td>
+                <td className="px-4 py-2">{deal.itemPrice}</td>
+                <td className="px-4 py-2">{deal.averagePrice}</td>
+                <td className="px-4 py-2">{deal.supplier}</td>
+                <td className="px-4 py-2 flex space-x-4">
+                  <i
+                    className="fas fa-edit text-blue-500 cursor-pointer"
+                    onClick={() => handleEdit(deal)}
+                  ></i>
+                  <i
+                    className="fas fa-trash-alt text-red-500 cursor-pointer"
+                    onClick={() => handleDelete(deal.id)}
+                  ></i>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-  {filteredOrders.map((order, index) => (
-    <tr className="border-b" key={order.id}>
-      <td className="px-4 py-2">{index + 1}</td> {/* Display the reordered serial number */}
-      <td className="px-4 py-2">{order.itemName}</td>
-      <td className="px-4 py-2">{order.category}</td>
-      <td className="px-4 py-2">{order.stock}</td>
-      <td className="px-4 py-2">{order.price}</td>
-      <td className="px-4 py-2">{order.averagePrice}</td>
-      <td className="px-4 py-2">{order.supplier}</td>
-      <td className="px-4 py-2 flex space-x-2">
-        <button
-          className="text-blue-600 hover:text-blue-800"
-          onClick={() => handleEditOrder(order.id)}
-        >
-          <i className="fas fa-edit"></i>
-        </button>
-        <button
-          className="text-red-600 hover:text-red-800"
-          onClick={() => handleDeleteOrder(order.id)}
-        >
-          <i className="fas fa-trash-alt"></i>
-        </button>
-      </td>
-    </tr>
-  ))}
-</tbody>
-
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
-}
+};
 
-export default InventoryPage;
+export default SalesPage;
