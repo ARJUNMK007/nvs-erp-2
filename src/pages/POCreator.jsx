@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { dataRef } from '../utils/Firebabse';
-import EditableRow from './EditableRow'; // Import the updated EditableRow component
+import EditableRow from './EditableRow';
 
 function PoCreator() {
   const [moList, setMoList] = useState([]);
-  const [selectedMachine, setSelectedMachine] = useState(null);
+  const [selectedMachine, setSelectedMachine] = useState('');
   const [products, setProducts] = useState([]);
   const [costs, setCosts] = useState([]);
   const [billedTo, setBilledTo] = useState('');
@@ -20,7 +20,8 @@ function PoCreator() {
   };
 
   useEffect(() => {
-    MoRef.on('value', (snapshot) => {
+    const fetchMachines = async () => {
+      const snapshot = await MoRef.once('value');
       const moData = snapshot.val();
       if (moData) {
         const moArray = Object.keys(moData).map((key) => ({
@@ -30,40 +31,41 @@ function PoCreator() {
         }));
         setMoList(moArray);
       }
-    });
+    };
 
-    setPoNumber(generateUniquePoNumber());
+    fetchMachines();
+    setPoNumber(generateUniquePoNumber()); // Set PO number only once
 
     return () => {
-      MoRef.off();
+      // Clean-up if needed
     };
-  }, []);
+  }, []); // Empty dependency array ensures this runs only once
 
-  const handleMachineChange = (e) => {
+  const handleMachineChange = async (e) => {
     const machineId = e.target.value;
     setSelectedMachine(machineId);
 
-    MoRef.child(machineId).on('value', (snapshot) => {
-      const machineData = snapshot.val();
-      if (machineData) {
-        setProducts(machineData.products || []);
-        setCosts(machineData.costs || []);
-      } else {
-        setProducts([]);
-        setCosts([]);
-      }
-    });
+    // Clear previous data
+    setProducts([]);
+    setCosts([]);
+
+    // Fetch new machine data
+    const snapshot = await MoRef.child(machineId).once('value');
+    const machineData = snapshot.val();
+    if (machineData) {
+      setProducts(machineData.products || []);
+      setCosts(machineData.costs || []);
+    }
   };
 
-  // Handle input change and update the relevant row data
   const handleInputChange = (type, index, key, value) => {
     if (type === 'product') {
       const updatedProducts = [...products];
-      updatedProducts[index][key] = value; // Update the specific product's field
+      updatedProducts[index][key] = value;
       setProducts(updatedProducts);
     } else if (type === 'cost') {
       const updatedCosts = [...costs];
-      updatedCosts[index][key] = value; // Update the specific cost's field
+      updatedCosts[index][key] = value;
       setCosts(updatedCosts);
     }
   };
@@ -83,12 +85,13 @@ function PoCreator() {
         },
         createdAt,
       };
+
       PoNoRef.child(poNumber).set(poData)
         .then(() => {
           alert(`Data saved successfully under PO No: ${poNumber}`);
           setBilledTo('');
           setShipTo('');
-          setSelectedMachine(null);
+          setSelectedMachine('');
           setProducts([]);
           setCosts([]);
           setPoNumber(generateUniquePoNumber());
@@ -143,7 +146,7 @@ function PoCreator() {
         <select
           onChange={handleMachineChange}
           className="border rounded-md p-2"
-          defaultValue=""
+          value={selectedMachine}
         >
           <option value="" disabled>
             Select a machine
@@ -175,7 +178,7 @@ function PoCreator() {
                     data={product}
                     index={index}
                     type="product"
-                    handleInputChange={handleInputChange} // Pass the input change handler
+                    handleInputChange={handleInputChange}
                   />
                 ))}
               </tbody>
@@ -194,7 +197,13 @@ function PoCreator() {
               </thead>
               <tbody>
                 {costs.map((cost, index) => (
-                  <EditableRow key={index} data={cost} index={index} type="cost" handleInputChange={handleInputChange} />
+                  <EditableRow
+                    key={index}
+                    data={cost}
+                    index={index}
+                    type="cost"
+                    handleInputChange={handleInputChange}
+                  />
                 ))}
               </tbody>
             </table>

@@ -177,7 +177,7 @@ const POTracker = () => {
                         {/* Product Table */}
                         <h3 className="font-semibold mb-2">Product Table</h3>
                         <table className="min-w-full bg-gray-100 rounded-lg">
-                          <thead>
+                          <thead className='text-left'>
                             <tr>
                               <th className="py-3 px-6">Item Name</th>
                               <th className="py-3 px-6">Quantity</th>
@@ -198,7 +198,7 @@ const POTracker = () => {
                         {/* Cost Table */}
                         <h3 className="font-semibold mt-4 mb-2">Cost Table</h3>
                         <table className="min-w-full bg-gray-100 ">
-                          <thead>
+                          <thead className='text-left'>
                             <tr>
                               <th className="py-3 px-6">Cost Type</th>
                               <th className="py-3 px-6">Quantity</th>
