@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';  
+import React, { useState, useEffect } from 'react';   
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { dataRef } from '../utils/Firebabse'; 
 
@@ -107,17 +107,6 @@ const POTracker = () => {
     }));
   };
 
-  // Dummy data for product and cost
-  const dummyProducts = [
-    { itemName: "Product A", quantity: 10, price: 50 },
-    { itemName: "Product B", quantity: 5, price: 100 }
-  ];
-
-  const dummyCosts = [
-    { costType: "Material", quantity: 10, cost: 500 },
-    { costType: "Labor", quantity: 8, cost: 400 }
-  ];
-
   return (
     <div className="relative max-w-full h-[85vh] overflow-x-scroll scrollbar-hide p-4">
       <h1 className="text-lg font-semibold mb-6">
@@ -145,7 +134,7 @@ const POTracker = () => {
             </tr>
           </thead>
           <tbody className="text-gray-700 text-sm">
-            {poData.map(({ poNumber, selectedMachine, createdAt, products = dummyProducts, cost = dummyCosts }) => (
+            {poData.map(({ poNumber, selectedMachine, createdAt, products = [], costs = [] }) => (
               <React.Fragment key={poNumber}>
                 <tr className="border-b border-gray-200 hover:bg-gray-100">
                   <td className="py-3 px-6">{poNumber}</td>
@@ -205,10 +194,10 @@ const POTracker = () => {
                               <th className="py-3 px-6">Cost</th>
                             </tr>
                           </thead>
-                          <tbody  className="text-gray-700 text-sm">
-                            {cost.map((item, index) => (
+                          <tbody className="text-gray-700 text-sm">
+                            {costs.map((item, index) => (
                               <tr key={index}>
-                                <td className="py-3 px-6">{item.costType}</td>
+                                <td className="py-3 px-6">{item.name}</td>
                                 <td className="py-3 px-6">{item.quantity}</td>
                                 <td className="py-3 px-6">{item.cost}</td>
                               </tr>
