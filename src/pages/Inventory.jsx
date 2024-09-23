@@ -9,6 +9,8 @@ const SalesPage = () => {
     itemName: '',
     itemCategory: '',
     currentStock: '',
+    unit: '',             // Unit (Dropdown selection)
+    movingStock: '',
     itemPrice: '',
     averagePrice: '',
     supplier: '',
@@ -34,49 +36,53 @@ const SalesPage = () => {
     setNewDeal({ ...newDeal, [e.target.name]: e.target.value });
   };
 
-// Add or Edit deal
-const handleAddOrEditDeal = () => {
-  // Ensure all required fields are filled out
-  if (newDeal.itemName && newDeal.supplier) {
-    if (editId !== null) {
-      // Update existing deal in Firebase
-      SalesRef.child(editId).update(newDeal)
-        .then(() => {
-          setEditId(null); // Reset edit ID after updating
-          setNewDeal({
-            itemName: '',
-            itemCategory: '',
-            currentStock: '',
-            itemPrice: '',
-            averagePrice: '',
-            supplier: '',
+  // Add or Edit deal
+  const handleAddOrEditDeal = () => {
+    // Ensure all required fields are filled out
+    if (newDeal.itemName && newDeal.supplier) {
+      if (editId !== null) {
+        // Update existing deal in Firebase
+        SalesRef.child(editId).update(newDeal)
+          .then(() => {
+            setEditId(null); // Reset edit ID after updating
+            setNewDeal({
+              itemName: '',
+              itemCategory: '',
+              currentStock: '',
+              unit: '',
+              movingStock: '',
+              itemPrice: '',
+              averagePrice: '',
+              supplier: '',
+            });
+          })
+          .catch(error => {
+            console.error("Error updating deal:", error);
           });
-        })
-        .catch(error => {
-          console.error("Error updating deal:", error);
-        });
+      } else {
+        // Add new deal to Firebase
+        const newDealRef = SalesRef.push();
+        newDealRef.set(newDeal)
+          .then(() => {
+            setNewDeal({
+              itemName: '',
+              itemCategory: '',
+              currentStock: '',
+              unit: '',
+              movingStock: '',
+              itemPrice: '',
+              averagePrice: '',
+              supplier: '',
+            });
+          })
+          .catch(error => {
+            console.error("Error adding deal:", error);
+          });
+      }
     } else {
-      // Add new deal to Firebase
-      const newDealRef = SalesRef.push();
-      newDealRef.set(newDeal)
-        .then(() => {
-          setNewDeal({
-            itemName: '',
-            itemCategory: '',
-            currentStock: '',
-            itemPrice: '',
-            averagePrice: '',
-            supplier: '',
-          });
-        })
-        .catch(error => {
-          console.error("Error adding deal:", error);
-        });
+      alert('Please complete the form before submitting.');
     }
-  } else {
-    alert('Please complete the form before submitting.');
-  }
-};
+  };
 
   // Delete deal from Firebase
   const handleDelete = (id) => {
@@ -127,6 +133,28 @@ const handleAddOrEditDeal = () => {
           onChange={handleChange}
           className="border px-2 py-1 mr-2"
         />
+        <select
+          name="unit"
+          value={newDeal.unit}
+          onChange={handleChange}
+          className="border px-2 py-1 mr-2"
+        >
+          <option value="">Select Unit</option>
+          <option value="kg">Kg</option>
+          <option value="g">Grams</option>
+          <option value="cm">Centimeter</option>
+          <option value="m">Meter</option>
+          <option value="pcs">Pieces</option>
+          {/* Add more units as needed */}
+        </select>
+        <input
+          type="number"
+          name="movingStock"
+          placeholder="Moving Stock"
+          value={newDeal.movingStock}
+          onChange={handleChange}
+          className="border px-2 py-1 mr-2"
+        />
         <input
           type="number"
           name="itemPrice"
@@ -152,9 +180,6 @@ const handleAddOrEditDeal = () => {
           className="border px-2 py-1 mr-2"
         />
 
-        {/* Deal Status Dropdown */}
-       
-      
         <button
           onClick={handleAddOrEditDeal}
           className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none"
@@ -172,6 +197,8 @@ const handleAddOrEditDeal = () => {
               <th className="px-4 py-2 text-left">ITEM NAME</th>
               <th className="px-4 py-2 text-left">ITEM CATEGORY</th>
               <th className="px-4 py-2 text-left">CURRENT STOCK</th>
+              <th className="px-4 py-2 text-left">UNIT</th>  {/* New Column */}
+              <th className="px-4 py-2 text-left">MOVING STOCK</th> {/* New Column */}
               <th className="px-4 py-2 text-left">ITEM PRICE</th>
               <th className="px-4 py-2 text-left">AVERAGE PRICE</th>
               <th className="px-4 py-2 text-left">SUPPLIER</th>
@@ -185,6 +212,8 @@ const handleAddOrEditDeal = () => {
                 <td className="px-4 py-2">{deal.itemName}</td>
                 <td className="px-4 py-2">{deal.itemCategory}</td>
                 <td className="px-4 py-2">{deal.currentStock}</td>
+                <td className="px-4 py-2">{deal.unit}</td>  {/* Display Unit */}
+                <td className="px-4 py-2">{deal.movingStock}</td> {/* Display Moving Stock */}
                 <td className="px-4 py-2">{deal.itemPrice}</td>
                 <td className="px-4 py-2">{deal.averagePrice}</td>
                 <td className="px-4 py-2">{deal.supplier}</td>

@@ -52,28 +52,27 @@ const App = () => {
             )
           }
         />
-        <Route
-          path="/inventory"
-          element={
-            isAuthenticated ? (
-              <div className="flex w-full">
-                <div className="w-1/6">
-                  <LeftSidebar />
-                </div>
-                <div className="flex w-5/6">
-                  <div className="w-3/4 p-6 bg-[#87cfeb1a]">
-                    <InventoryPage />
-                  </div>
-                  <div className="w-1/4">
-                    <RightSidebar />
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
+       <Route
+  path="/inventory"
+  element={
+    isAuthenticated ? (
+      <div className="flex w-full">
+        {/* Left Sidebar */}
+        <div className="w-1/6">
+          <LeftSidebar />
+        </div>
+
+        {/* Inventory Section */}
+        <div className="flex-1 p-6 bg-[#87cfeb1a]">
+          <InventoryPage />
+        </div>
+      </div>
+    ) : (
+      <Navigate to="/login" />
+    )
+  }
+/>
+
         <Route
           path="/sales"
           element={
@@ -96,28 +95,27 @@ const App = () => {
             )
           }
         />
-        <Route
-          path="/production"
-          element={
-            isAuthenticated ? (
-              <div className="flex w-full fixed">
-                <div className="w-1/6">
-                  <LeftSidebar />
-                </div>
-                <div className="flex w-5/6">
-                  <div className="w-3/4 p-6 bg-[#87cfeb1a]">
-                    <ProductionPage />
-                  </div>
-                  {/* <div className="w-1/4">
-                    <RightSidebar />
-                  </div> */}
-                </div>
-              </div>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
+       <Route
+  path="/production"
+  element={
+    isAuthenticated ? (
+      <div className="flex w-full fixed">
+        {/* Left Sidebar */}
+        <div className="w-1/6">
+          <LeftSidebar />
+        </div>
+
+        {/* Production Section */}
+        <div className="flex-1 p-6 bg-[#87cfeb1a]">
+          <ProductionPage />
+        </div>
+      </div>
+    ) : (
+      <Navigate to="/login" />
+    )
+  }
+/>
+
 
         {/* Route for the Report Page */}
         <Route
