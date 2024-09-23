@@ -26,6 +26,9 @@ const Invoice = () => {
     // Add more items as needed
     { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
     { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed
+    { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
     // Add more items as neededv { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
     { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
     // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
@@ -58,7 +61,41 @@ const Invoice = () => {
     { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
     // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
     { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
-    // Add more items as needed
+    // Add more items as needed // Add more items as needed
+    { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as neededv { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
   ]);
 
   const taxPercentage = 9;
@@ -105,11 +142,16 @@ const Invoice = () => {
   for (let i = 0; i < items.length; i += itemsPerPage) {
     pages.push(items.slice(i, i + itemsPerPage));
   }
+  
+  const lastPageItems = pages[pages.length - 1];
+const lastItem = lastPageItems[lastPageItems.length - 1]; // Get the last item of the last page
+console.log(lastItem); // This will log the last item details
+
 
   return (
     <div className="w-full h-[80vh] overflow-x-scroll scrollbar-hide">
       <div className="flex justify-between mb-4">
-        <select className="mr-4">
+        <select className="mr-4 w-[200px] bg-gray-100 rounded-lg  " >
           <option value="1">Page 1</option>
         </select>
         <button
@@ -134,16 +176,20 @@ const Invoice = () => {
                   />
                   <div>
                     <h2 className="text-lg font-bold">THERMICRAFT INDUSTRIES</h2>
-                    <p>515/3, Bharathi Street, Chinnavedampatty, Coimbatore, Tamil Nadu, 641049</p>
-                    <p>GTSIN: 33AATFB4671D2Q | PAN Number: AATFB467D | Mobile: 9843094987 | Email: info@thermicraft.com</p>
+                    <p>515/3, Bharathi Street, Chinnavedampatty</p>
+                    <p> Coimbatore, Tamil Nadu, 641049</p>
+                    <p>GTSIN: 33AATFB4671D2Q </p>
+                    <p>PAN Number: AATFB467D </p>
+                    <p> Mobile: 9843094987</p>
+                    <p> Email: info@thermicraft.com</p>
                   </div>
                 </div>
 
                 <div className="text-right">
                   <div className="mb-2">
-                    <label className="font-bold">Invoice No: </label>
+                    <label className="font-bold">Invoice No: &nbsp;&nbsp;&nbsp;</label>
                     <input
-                      className="border p-1"
+                      className="border p-1 w-[150px]"
                       type="text"
                       value={invoiceInfo.invoiceNo}
                       onChange={(e) =>
@@ -154,7 +200,7 @@ const Invoice = () => {
                   <div className="mb-2">
                     <label className="font-bold">Invoice Date: </label>
                     <input
-                      className="border p-1"
+                      className="border p-1 w-[150px]"
                       type="date"
                       value={invoiceInfo.invoiceDate}
                       onChange={(e) =>
@@ -217,41 +263,42 @@ const Invoice = () => {
                   ))}
                 </tbody>
               </table>
-
-              {/* Page Break */}
-              {pageIndex < pages.length - 1 && <div className="page-break"></div>}
-            </div>
-
-            {/* Footer */}
-            {/* Footer */}
-{pageIndex < pages.length - 1 && (
-  <div className="flex justify-between flex-row">
-    <div className="w-1/2">
-      <hr className="border-t-2 border-black my-4" />
-      <div className="mt-4 text-left">
-        <p><strong>Thermicraft Industries | Bank Details</strong></p>
-        <p>Account No: 51900901017285 | IFSC Code: CIUB0000428</p>
-        <p>City Union Bank, GANAPATHY</p>
-      </div>
-    </div>
-    <div className="w-1/2 text-right">
-      <div>
-        <p><strong>Signature:</strong></p>
-        <div className="border-dashed border-2 border-gray-400 h-16 w-[100px] mt-4 items-left"></div>
-      </div>
-    </div>
-  </div>
-)}
-
-          </div>
-        ))}
-
-        {/* Totals */}
-        <div className="flex justify-between mt-4">
+              <hr className="border-t-2 border-black my-4" />
+              {pageIndex < pages.length - 1 ? (
+      <div className="flex justify-between flex-row footer-one l">
+        <div className="w-1/2">
           <div className="mt-4 text-left">
             <p><strong>Thermicraft Industries | Bank Details</strong></p>
             <p>Account No: 51900901017285 | IFSC Code: CIUB0000428</p>
             <p>City Union Bank, GANAPATHY</p>
+          </div>
+        </div>
+        <div className="w-1/2 flex flex-col items-end text-right">
+          <p><strong>Signature:</strong></p>
+          <div className="border-dashed border-2 border-gray-400 h-16 w-[250px] mt-4"></div>
+          <hr className="border-t-2 border-black my-4" />
+        </div>
+      </div>
+    ) : null}
+
+
+              
+              {pageIndex < pages.length - 1 && <div className="page-break">
+                </div>}
+            </div>
+          </div>
+          
+        ))}
+
+      
+<div className="flex justify-between mt-4">
+ <div className="mt-4 text-left footer-two">
+            <p><strong>Thermicraft Industries | Bank Details</strong></p>
+            <p>Account No: 51900901017285 | IFSC Code: CIUB0000428</p>
+            <p>City Union Bank, GANAPATHY</p>
+            <br/>
+            <p><strong>Signature:</strong></p>
+            <div className="border-dashed border-2 border-gray-400 h-16 w-[250px] mt-4"></div>
           </div>
 
           <table className="w-1/3 border-collapse">
