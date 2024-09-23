@@ -4,10 +4,14 @@ import { dataRef } from '../utils/Firebabse';
 
 const POTracker = () => {
   const PoNoRef = dataRef.child('PO');
-  const stocksRef = dataRef.child('stocks'); // Reference to the stocks path
+  const stocksRef = dataRef.child('stocks'); 
   const [poData, setPoData] = useState([]);
-  const [status, setStatus] = useState({}); // To store status for each PO number
-  const [expandedRows, setExpandedRows] = useState({}); // Track expanded rows
+  const [status, setStatus] = useState({});
+  const [expandedRows, setExpandedRows] = useState({});
+  const [newProduct, setNewProduct] = useState({ itemName: '', quantity: '', price: '' });
+  const [newCost, setNewCost] = useState({ name: '', quantity: '', cost: '' });
+  const [editingProduct, setEditingProduct] = useState({}); // Track editing state for products
+  const [editingCost, setEditingCost] = useState({}); // Track editing state for costs
 
   useEffect(() => {
     const fetchData = async () => {
@@ -18,13 +22,11 @@ const POTracker = () => {
             poNumber,
             ...data[poNumber],
           }));
-
           setPoData(poArray);
-
-          // Initialize status state from fetched data
+          
           const initialStatus = {};
           poArray.forEach(({ poNumber, status }) => {
-            initialStatus[poNumber] = status || 'Pending'; // Default to 'Pending' if no status
+            initialStatus[poNumber] = status || 'Pending';
           });
           setStatus(initialStatus);
         }
@@ -39,67 +41,20 @@ const POTracker = () => {
   }, [PoNoRef]);
 
   const handleStatusChange = (poNumber, newStatus) => {
-    // Update local state
     setStatus((prevState) => ({
       ...prevState,
       [poNumber]: newStatus,
     }));
 
-    // Update status in Firebase
     PoNoRef.child(poNumber).update({ status: newStatus })
       .then(() => {
         console.log(`Status for ${poNumber} updated to ${newStatus}`);
-
-        // Check if the new status is "On Progress" or "Completed"
-        if (newStatus === 'On Progress' || newStatus === 'Completed') {
-          // Fetch the PO data
-          PoNoRef.child(poNumber).once('value', (snapshot) => {
-            const poData = snapshot.val();
-            console.log(`Data for PO NO: ${poNumber}`, poData);
-
-            // Compare itemName in products with stocks
-            poData.products.forEach((product) => {
-              const { itemName, quantity } = product;
-
-              // Fetch stock data from stocksRef
-              stocksRef.once('value', (stockSnapshot) => {
-                const stocks = stockSnapshot.val();
-                
-                // Find the matching stock item by itemName
-                const stockItemKey = Object.keys(stocks).find(key => stocks[key].itemName === itemName);
-
-                if (stockItemKey) {
-                  const currentStock = parseInt(stocks[stockItemKey].stock, 10);
-                  const quantityToSubtract = parseInt(quantity, 10);
-
-                  if (currentStock >= quantityToSubtract) {
-                    const updatedStock = currentStock - quantityToSubtract;
-
-                    // Update stock in Firebase
-                    stocksRef.child(stockItemKey).update({ stock: updatedStock.toString() })
-                      .then(() => {
-                        console.log(`Stock for ${itemName} updated to ${updatedStock}`);
-                      })
-                      .catch((error) => {
-                        console.error("Error updating stock:", error);
-                      });
-                  } else {
-                    console.warn(`Not enough stock for ${itemName} to fulfill quantity ${quantity}`);
-                  }
-                } else {
-                  console.warn(`Item ${itemName} not found in stocks`);
-                }
-              });
-            });
-          });
-        }
       })
       .catch((error) => {
         console.error("Error updating status:", error);
       });
   };
 
-  // Toggle the expanded row
   const toggleExpandRow = (poNumber) => {
     setExpandedRows((prevState) => ({
       ...prevState,
@@ -107,21 +62,99 @@ const POTracker = () => {
     }));
   };
 
+  const handleDeleteProduct = (poNumber, productIndex) => {
+    const updatedProducts = [...poData.find(po => po.poNumber === poNumber).products];
+    updatedProducts.splice(productIndex, 1);
+    PoNoRef.child(poNumber).update({ products: updatedProducts })
+      .then(() => {
+        console.log('Product deleted');
+      })
+      .catch((error) => {
+        console.error("Error deleting product:", error);
+      });
+  };
+
+  const handleDeleteCost = (poNumber, costIndex) => {
+    const updatedCosts = [...poData.find(po => po.poNumber === poNumber).costs];
+    updatedCosts.splice(costIndex, 1);
+    PoNoRef.child(poNumber).update({ costs: updatedCosts })
+      .then(() => {
+        console.log('Cost deleted');
+      })
+      .catch((error) => {
+        console.error("Error deleting cost:", error);
+      });
+  };
+
+  const handleAddProduct = (poNumber) => {
+    const po = poData.find(po => po.poNumber === poNumber);
+    const updatedProducts = [...po.products, newProduct];
+    PoNoRef.child(poNumber).update({ products: updatedProducts })
+      .then(() => {
+        console.log('Product added');
+        setNewProduct({ itemName: '', quantity: '', price: '' });
+      })
+      .catch((error) => {
+        console.error("Error adding product:", error);
+      });
+  };
+
+  const handleAddCost = (poNumber) => {
+    const po = poData.find(po => po.poNumber === poNumber);
+    const updatedCosts = [...po.costs, newCost];
+    PoNoRef.child(poNumber).update({ costs: updatedCosts })
+      .then(() => {
+        console.log('Cost added');
+        setNewCost({ name: '', quantity: '', cost: '' });
+      })
+      .catch((error) => {
+        console.error("Error adding cost:", error);
+      });
+  };
+
+  const handleEditProduct = (poNumber, index) => {
+    setEditingProduct((prev) => ({ ...prev, [poNumber]: index }));
+  };
+
+  const handleSaveProduct = (poNumber, index) => {
+    const po = poData.find(po => po.poNumber === poNumber);
+    const updatedProducts = [...po.products];
+    const product = updatedProducts[index];
+    updatedProducts[index] = { ...product }; // Keep the existing product
+    PoNoRef.child(poNumber).update({ products: updatedProducts })
+      .then(() => {
+        setEditingProduct((prev) => ({ ...prev, [poNumber]: null }));
+        console.log('Product updated');
+      })
+      .catch((error) => {
+        console.error("Error updating product:", error);
+      });
+  };
+
+  const handleEditCost = (poNumber, index) => {
+    setEditingCost((prev) => ({ ...prev, [poNumber]: index }));
+  };
+
+  const handleSaveCost = (poNumber, index) => {
+    const po = poData.find(po => po.poNumber === poNumber);
+    const updatedCosts = [...po.costs];
+    const cost = updatedCosts[index];
+    updatedCosts[index] = { ...cost }; // Keep the existing cost
+    PoNoRef.child(poNumber).update({ costs: updatedCosts })
+      .then(() => {
+        setEditingCost((prev) => ({ ...prev, [poNumber]: null }));
+        console.log('Cost updated');
+      })
+      .catch((error) => {
+        console.error("Error updating cost:", error);
+      });
+  };
+
   return (
     <div className="relative max-w-full h-[85vh] overflow-x-scroll scrollbar-hide p-4">
       <h1 className="text-lg font-semibold mb-6">
         Here You Can See The Tracking Details
       </h1>
-      <div className="flex justify-between mb-4">
-        <input
-          type="text"
-          placeholder="Search Current Stock here..."
-          className="border rounded px-4 py-2 w-full max-w-sm"
-        />
-        <button className="flex items-center px-3 py-1 bg-gray-200 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-300 focus:outline-none">
-          <i className="fas fa-filter mr-2"></i> Filter
-        </button>
-      </div>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white rounded-lg">
           <thead>
@@ -158,12 +191,10 @@ const POTracker = () => {
                   </td>
                 </tr>
 
-                {/* Expandable section for cost and product table */}
                 {expandedRows[poNumber] && (
                   <tr>
                     <td colSpan={5}>
                       <div className="p-4">
-                        {/* Product Table */}
                         <h3 className="font-semibold mb-2">Product Table</h3>
                         <table className="min-w-full bg-gray-100 rounded-lg">
                           <thead className='text-left'>
@@ -171,37 +202,223 @@ const POTracker = () => {
                               <th className="py-3 px-6">Item Name</th>
                               <th className="py-3 px-6">Quantity</th>
                               <th className="py-3 px-6">Price</th>
+                              <th className="py-3 px-6">Actions</th>
                             </tr>
                           </thead>
                           <tbody>
                             {products.map((product, index) => (
                               <tr key={index}>
-                                <td className="py-3 px-6">{product.itemName}</td>
-                                <td className="py-3 px-6">{product.quantity}</td>
-                                <td className="py-3 px-6">{product.price}</td>
+                                <td className="py-3 px-6">
+                                  {editingProduct[poNumber] === index ? (
+                                    <input
+                                      type="text"
+                                      defaultValue={product.itemName}
+                                      onChange={(e) => {
+                                        const updatedProducts = [...products];
+                                        updatedProducts[index].itemName = e.target.value;
+                                        setPoData(poData.map(po => po.poNumber === poNumber ? { ...po, products: updatedProducts
+                                        } : po));
+                                      }}
+                                      className="border rounded px-2 py-1"
+                                    />
+                                  ) : (
+                                    product.itemName
+                                  )}
+                                </td>
+                                <td className="py-3 px-6">
+                                  {editingProduct[poNumber] === index ? (
+                                    <input
+                                      type="number"
+                                      defaultValue={product.quantity}
+                                      onChange={(e) => {
+                                        const updatedProducts = [...products];
+                                        updatedProducts[index].quantity = e.target.value;
+                                        setPoData(poData.map(po => po.poNumber === poNumber ? { ...po, products: updatedProducts } : po));
+                                      }}
+                                      className="border rounded px-2 py-1"
+                                    />
+                                  ) : (
+                                    product.quantity
+                                  )}
+                                </td>
+                                <td className="py-3 px-6">
+                                  {editingProduct[poNumber] === index ? (
+                                    <input
+                                      type="number"
+                                      defaultValue={product.price}
+                                      onChange={(e) => {
+                                        const updatedProducts = [...products];
+                                        updatedProducts[index].price = e.target.value;
+                                        setPoData(poData.map(po => po.poNumber === poNumber ? { ...po, products: updatedProducts } : po));
+                                      }}
+                                      className="border rounded px-2 py-1"
+                                    />
+                                  ) : (
+                                    product.price
+                                  )}
+                                </td>
+                                <td className="py-3 px-6">
+                                  {editingProduct[poNumber] === index ? (
+                                    <button onClick={() => handleSaveProduct(poNumber, index)} className="text-green-500">
+                                      Save
+                                    </button>
+                                  ) : (
+                                    <>
+                                      <button onClick={() => handleEditProduct(poNumber, index)} className="text-blue-500">
+                                        Edit
+                                      </button>
+                                      <button onClick={() => handleDeleteProduct(poNumber, index)} className="text-red-500 ml-2">
+                                        Delete
+                                      </button>
+                                    </>
+                                  )}
+                                </td>
                               </tr>
                             ))}
+                            <tr>
+                              <td className="py-3 px-6">
+                                <input 
+                                  value={newProduct.itemName} 
+                                  onChange={(e) => setNewProduct({ ...newProduct, itemName: e.target.value })} 
+                                  placeholder="Item Name"
+                                  className="border rounded px-2 py-1"
+                                />
+                              </td>
+                              <td className="py-3 px-6">
+                                <input 
+                                  value={newProduct.quantity} 
+                                  onChange={(e) => setNewProduct({ ...newProduct, quantity: e.target.value })} 
+                                  placeholder="Quantity"
+                                  className="border rounded px-2 py-1"
+                                />
+                              </td>
+                              <td className="py-3 px-6">
+                                <input 
+                                  value={newProduct.price} 
+                                  onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })} 
+                                  placeholder="Price"
+                                  className="border rounded px-2 py-1"
+                                />
+                              </td>
+                              <td className="py-3 px-6">
+                                <button onClick={() => handleAddProduct(poNumber)} className="text-green-500">
+                                  Add
+                                </button>
+                              </td>
+                            </tr>
                           </tbody>
                         </table>
 
-                        {/* Cost Table */}
-                        <h3 className="font-semibold mt-4 mb-2">Cost Table</h3>
-                        <table className="min-w-full bg-gray-100 ">
+                        <h3 className="font-semibold mb-2 mt-4">Cost Table</h3>
+                        <table className="min-w-full bg-gray-100 rounded-lg">
                           <thead className='text-left'>
                             <tr>
-                              <th className="py-3 px-6">Cost Type</th>
+                              <th className="py-3 px-6">Cost Name</th>
                               <th className="py-3 px-6">Quantity</th>
                               <th className="py-3 px-6">Cost</th>
+                              <th className="py-3 px-6">Actions</th>
                             </tr>
                           </thead>
-                          <tbody className="text-gray-700 text-sm">
-                            {costs.map((item, index) => (
+                          <tbody>
+                            {costs.map((cost, index) => (
                               <tr key={index}>
-                                <td className="py-3 px-6">{item.name}</td>
-                                <td className="py-3 px-6">{item.quantity}</td>
-                                <td className="py-3 px-6">{item.cost}</td>
+                                <td className="py-3 px-6">
+                                  {editingCost[poNumber] === index ? (
+                                    <input
+                                      type="text"
+                                      defaultValue={cost.name}
+                                      onChange={(e) => {
+                                        const updatedCosts = [...costs];
+                                        updatedCosts[index].name = e.target.value;
+                                        setPoData(poData.map(po => po.poNumber === poNumber ? { ...po, costs: updatedCosts } : po));
+                                      }}
+                                      className="border rounded px-2 py-1"
+                                    />
+                                  ) : (
+                                    cost.name
+                                  )}
+                                </td>
+                                <td className="py-3 px-6">
+                                  {editingCost[poNumber] === index ? (
+                                    <input
+                                      type="number"
+                                      defaultValue={cost.quantity}
+                                      onChange={(e) => {
+                                        const updatedCosts = [...costs];
+                                        updatedCosts[index].quantity = e.target.value;
+                                        setPoData(poData.map(po => po.poNumber === poNumber ? { ...po, costs: updatedCosts } : po));
+                                      }}
+                                      className="border rounded px-2 py-1"
+                                    />
+                                  ) : (
+                                    cost.quantity
+                                  )}
+                                </td>
+                                <td className="py-3 px-6">
+                                  {editingCost[poNumber] === index ? (
+                                    <input
+                                      type="number"
+                                      defaultValue={cost.cost}
+                                      onChange={(e) => {
+                                        const updatedCosts = [...costs];
+                                        updatedCosts[index].cost = e.target.value;
+                                        setPoData(poData.map(po => po.poNumber === poNumber ? { ...po, costs: updatedCosts } : po));
+                                      }}
+                                      className="border rounded px-2 py-1"
+                                    />
+                                  ) : (
+                                    cost.cost
+                                  )}
+                                </td>
+                                <td className="py-3 px-6">
+                                  {editingCost[poNumber] === index ? (
+                                    <button onClick={() => handleSaveCost(poNumber, index)} className="text-green-500">
+                                      Save
+                                    </button>
+                                  ) : (
+                                    <>
+                                      <button onClick={() => handleEditCost(poNumber, index)} className="text-blue-500">
+                                        Edit
+                                      </button>
+                                      <button onClick={() => handleDeleteCost(poNumber, index)} className="text-red-500 ml-2">
+                                        Delete
+                                      </button>
+                                    </>
+                                  )}
+                                </td>
                               </tr>
                             ))}
+                            <tr>
+                              <td className="py-3 px-6">
+                                <input 
+                                  value={newCost.name} 
+                                  onChange={(e) => setNewCost({ ...newCost, name: e.target.value })} 
+                                  placeholder="Cost Name"
+                                  className="border rounded px-2 py-1"
+                                />
+                              </td>
+                              <td className="py-3 px-6">
+                                <input 
+                                  value={newCost.quantity} 
+                                  onChange={(e) => setNewCost({ ...newCost, quantity: e.target.value })} 
+                                  placeholder="Quantity"
+                                  className="border rounded px-2 py-1"
+                                />
+                              </td>
+                              <td className="py-3 px-6">
+                                <input 
+                                  value={newCost.cost} 
+                                  onChange={(e) => setNewCost({ ...newCost, cost: e.target.value })} 
+                                  placeholder="Cost"
+                                  className="border rounded px-2 py-1"
+                                />
+                              </td>
+                              <td className="py-3 px-6">
+                                <button onClick={() => handleAddCost(poNumber)} className="text-green-500">
+                                  Add
+                                </button>
+                              </td>
+                            </tr>
                           </tbody>
                         </table>
                       </div>
