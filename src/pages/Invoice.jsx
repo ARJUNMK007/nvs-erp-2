@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useReactToPrint } from "react-to-print";
-import logo from "../assets/logo.png"
+import logo from "../assets/logo.png";
 
 const Invoice = () => {
   const [billTo, setBillTo] = useState({
@@ -23,34 +23,41 @@ const Invoice = () => {
   const [items, setItems] = useState([
     { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
     { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
-    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
-    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
-    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
-    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
-    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
-    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
-    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
-    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
-    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
-    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
-    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
-    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
-    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
-    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
-    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
-    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
-    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
-    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
-    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
-    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
-    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
-    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
-    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
-    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
-
-    { id: 11, name: "Item 11", hsn: "69032099", qty: 1, rate: 3500, amount: 3500 },
-    { id: 12, name: "Item 12", hsn: "69032100", qty: 2, rate: 500, amount: 1000 },
-
+    // Add more items as needed
+    { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as neededv { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    // Add more items as needed { id: 1, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
+    { id: 2, name: "Muffle 5x5x10", hsn: "69032090", qty: 1, rate: 2500, amount: 2500 },
     // Add more items as needed
   ]);
 
@@ -90,7 +97,6 @@ const Invoice = () => {
       .page-break {
         page-break-before: always;
       }
-      
     `,
   });
 
@@ -101,13 +107,18 @@ const Invoice = () => {
   }
 
   return (
-    <div className=" w-full h-[80vh] overflow-x-scroll scrollbar-hide">
-      <button
-        onClick={handlePrint}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
-      >
-        Print Invoice
-      </button>
+    <div className="w-full h-[80vh] overflow-x-scroll scrollbar-hide">
+      <div className="flex justify-between mb-4">
+        <select className="mr-4">
+          <option value="1">Page 1</option>
+        </select>
+        <button
+          onClick={handlePrint}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Print Invoice
+        </button>
+      </div>
 
       <div ref={componentRef}>
         {pages.map((pageItems, pageIndex) => (
@@ -117,18 +128,14 @@ const Invoice = () => {
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center">
                   <img
-                    src={logo}// Replace with your logo path
+                    src={logo} // Replace with your logo path
                     alt="Logo"
                     className="w-24 h-auto mr-4"
                   />
                   <div>
                     <h2 className="text-lg font-bold">THERMICRAFT INDUSTRIES</h2>
-                    <p>515/3, Bharathi Street, Chinnavedampatty,</p>
-                    <p>Coimbatore, Tamil Nadu, 641049</p>
-                    <p>GTSIN: 33AATFB4671D2Q</p>
-                    <p>PAN Number: AATFB467D</p>
-                    <p>Mobile: 9843094987</p>
-                    <p>Email: info@thermicraft.com</p>
+                    <p>515/3, Bharathi Street, Chinnavedampatty, Coimbatore, Tamil Nadu, 641049</p>
+                    <p>GTSIN: 33AATFB4671D2Q | PAN Number: AATFB467D | Mobile: 9843094987 | Email: info@thermicraft.com</p>
                   </div>
                 </div>
 
@@ -155,20 +162,7 @@ const Invoice = () => {
                       }
                     />
                   </div>
-                  <div>
-                    <label className="font-bold">Alternative No: </label>
-                    <input
-                      className="border p-1"
-                      type="text"
-                      value={invoiceInfo.alternativeNumber}
-                      onChange={(e) =>
-                        setInvoiceInfo({
-                          ...invoiceInfo,
-                          alternativeNumber: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
+                
                 </div>
               </div>
 
@@ -229,22 +223,26 @@ const Invoice = () => {
             </div>
 
             {/* Footer */}
-            {pageIndex < pages.length - 1 && (
-              <div className="no-footer flex justify-between flex-row ">
-                <div>
-                <hr className="border-t-2 border-black my-4" />
-                <div className="mt-4 text-left">
-                  <p><strong>Thermicraft Industries | Bank Details</strong></p>
-                  <p>Account No: 51900901017285 | IFSC Code: CIUB0000428</p>
-                  <p>City Union Bank, GANAPATHY</p>
-                  </div>
-                  <div className="mt-8">
-                    <p><strong>Signature:</strong></p>
-                    <div className="border-dashed border-2 border-gray-400 h-16 w-48 mt-4"></div>
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* Footer */}
+{pageIndex < pages.length - 1 && (
+  <div className="flex justify-between flex-row">
+    <div className="w-1/2">
+      <hr className="border-t-2 border-black my-4" />
+      <div className="mt-4 text-left">
+        <p><strong>Thermicraft Industries | Bank Details</strong></p>
+        <p>Account No: 51900901017285 | IFSC Code: CIUB0000428</p>
+        <p>City Union Bank, GANAPATHY</p>
+      </div>
+    </div>
+    <div className="w-1/2 text-right">
+      <div>
+        <p><strong>Signature:</strong></p>
+        <div className="border-dashed border-2 border-gray-400 h-16 w-[100px] mt-4 items-left"></div>
+      </div>
+    </div>
+  </div>
+)}
+
           </div>
         ))}
 
