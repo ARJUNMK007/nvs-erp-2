@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';   
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { dataRef } from '../utils/Firebabse'; 
-
+import Loading from "../assets/loding.gif";
 const POTracker = () => {
   const PoNoRef = dataRef.child('PO');
   const [poData, setPoData] = useState([]);
@@ -13,7 +13,7 @@ const POTracker = () => {
   const [editingCost, setEditingCost] = useState({});
   const [productEditValues, setProductEditValues] = useState({});
   const [costEditValues, setCostEditValues] = useState({});
-
+  const stocksRef = dataRef.child('Stock'); 
   useEffect(() => {
     const fetchData = async () => {
       PoNoRef.on('value', (snapshot) => {
@@ -41,19 +41,92 @@ const POTracker = () => {
     fetchData();
   }, [PoNoRef]);
 
-  const handleStatusChange = (poNumber, newStatus) => {
+  const handleStatusChange = async (poNumber, newStatus) => {
     setStatus((prevState) => ({
       ...prevState,
       [poNumber]: newStatus,
     }));
-
-    PoNoRef.child(poNumber).update({ status: newStatus })
-      .then(() => {
-        console.log(`Status for ${poNumber} updated to ${newStatus}`);
-      })
-      .catch((error) => {
-        console.error("Error updating status:", error);
-      });
+  
+    try {
+      // Update the PO status
+      await PoNoRef.child(poNumber).update({ status: newStatus });
+      console.log(`Status for ${poNumber} updated to ${newStatus}`);
+  
+      if ( newStatus === 'On Progress') {
+        // Fetch the products for the PO
+        const poSnapshot = await PoNoRef.child(poNumber).once('value');
+        const poData = poSnapshot.val();
+  
+        if (poData && poData.products) {
+          // Iterate through each product in the PO and update the stock
+          const updateStockPromises = poData.products.map(async (product) => {
+            const { itemName, quantity } = product;
+  
+            // Fetch the stock details for the product
+            const stockSnapshot = await stocksRef.orderByChild('itemName').equalTo(itemName).once('value');
+            const stockData = stockSnapshot.val();
+  
+            if (stockData) {
+              const stockKey = Object.keys(stockData)[0];
+              const stockItem = stockData[stockKey];
+              const currentStock = parseInt(stockItem.currentStock, 10);
+              const moveQuantity = parseInt(quantity, 10);
+              const newStock = currentStock - moveQuantity;
+  
+              // Update the stock and movingStock
+              await stocksRef.child(stockKey).update({
+                currentStock: newStock,
+                movingStock: (parseInt(stockItem.movingStock || '0', 10) + moveQuantity).toString(),
+              });
+  
+              console.log(`Stock for ${itemName} updated: ${currentStock} -> ${newStock}`);
+            }
+          });
+  
+          // Wait for all stock updates to complete
+          await Promise.all(updateStockPromises);
+          console.log('Stock updated for all products.');
+        }
+      }
+      if (newStatus === 'Completed') {
+        // Fetch the products for the PO
+        const poSnapshot = await PoNoRef.child(poNumber).once('value');
+        const poData = poSnapshot.val();
+  
+        if (poData && poData.products) {
+          // Iterate through each product in the PO and update the stock
+          const updateStockPromises = poData.products.map(async (product) => {
+            const { itemName, quantity } = product;
+  
+            // Fetch the stock details for the product
+            const stockSnapshot = await stocksRef.orderByChild('itemName').equalTo(itemName).once('value');
+            const stockData = stockSnapshot.val();
+  
+            if (stockData) {
+              const stockKey = Object.keys(stockData)[0];
+              const stockItem = stockData[stockKey];
+              const currentStock = parseInt(stockItem.currentStock, 10);
+              const moveQuantity = parseInt(quantity, 10);
+              const newStock = moveQuantity - moveQuantity;
+  
+              // Update the stock and movingStock
+              await stocksRef.child(stockKey).update({
+           
+                movingStock: (parseInt(stockItem.movingStock || '0', 10) - moveQuantity).toString(),
+              });
+  
+              console.log(`Stock for ${itemName} updated: ${currentStock} `);
+            }
+          });
+  
+          // Wait for all stock updates to complete
+          await Promise.all(updateStockPromises);
+          console.log('Stock updated for all products.');
+        }
+      }
+    } catch (error) {
+      console.error("Error updating status or stock:", error);
+    }
   };
 
   const toggleExpandRow = (poNumber) => {
