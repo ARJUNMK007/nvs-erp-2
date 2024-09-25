@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { useReactToPrint } from "react-to-print";
 import logo from "../assets/logo.png";
 import { dataRef } from '../utils/Firebabse';
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 const Invoice = () => {
   const PoNoRef = dataRef.child('PO');
@@ -103,6 +105,10 @@ const Invoice = () => {
   for (let i = 0; i < items.length; i += itemsPerPage) {
     pages.push(items.slice(i, i + itemsPerPage));
   }
+   const handleDownload = () => {
+   
+  };
+
 
   return (
     <div className="w-full h-[80vh] overflow-x-scroll scrollbar-hide">
@@ -119,12 +125,15 @@ const Invoice = () => {
             </option>
           ))}
         </select>
-        <button
+        <div>
+        
+         <button
           onClick={handlePrint}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-1"
         >
           Print Invoice
         </button>
+        </div>
       </div>
 
       <div ref={componentRef}>

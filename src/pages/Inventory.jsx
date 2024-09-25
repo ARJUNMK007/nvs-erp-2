@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { dataRef } from '../utils/Firebabse';
+import * as XLSX from "xlsx"; // Import XLSX library
 
 const SalesPage = () => {
   const [deals, setDeals] = useState([]); // Initialize deals array
@@ -94,14 +95,38 @@ const SalesPage = () => {
     setEditId(deal.id);
     setNewDeal(deal); // Populate form with deal data for editing
   };
-
+  const handleExportToExcel = () => {
+    // Manually map the data to match the order of the columns in your table
+    const orderedDeals = deals.map(deal => ({
+      SL_NO: deals.indexOf(deal) + 1,  // Serial Number
+      ITEM_NAME: deal.itemName,
+      ITEM_CATEGORY: deal.itemCategory,
+      CURRENT_STOCK: deal.currentStock,
+      UNIT: deal.unit,
+      MOVING_STOCK: deal.movingStock,
+      ITEM_PRICE: deal.itemPrice,
+      AVERAGE_PRICE: deal.averagePrice,
+      SUPPLIER: deal.supplier
+    }));
+  
+    // Convert the orderedDeals array to a worksheet
+    const ws = XLSX.utils.json_to_sheet(orderedDeals);
+    
+    // Create a new workbook and append the worksheet
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Stock Data");
+  
+    // Write the workbook to an Excel file
+    XLSX.writeFile(wb, "StockData.xlsx");
+  };
+  
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
         <button className="text-xl font-medium border-b-4 border-black pb-2">
           Inventory
         </button>
-        <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none flex items-center">
+        <button onClick={handleExportToExcel} className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none flex items-center">
           <i className="fas fa-download mr-2"></i>
           Export to Excel
         </button>
@@ -202,7 +227,7 @@ const SalesPage = () => {
               <th className="px-4 py-2 text-left">ITEM PRICE</th>
               <th className="px-4 py-2 text-left">AVERAGE PRICE</th>
               <th className="px-4 py-2 text-left">SUPPLIER</th>
-              <th className="px-4 py-2 text-left">ACTIONS</th>
+              <th className="px-4 py-2 text-left"></th>
             </tr>
           </thead>
           <tbody>

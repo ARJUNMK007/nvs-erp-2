@@ -353,12 +353,12 @@ const POTracker = () => {
                                 <td className="py-3 px-6">
                                   {editingProduct[poNumber] === index ? (
                                     <>
-                                      <button onClick={() => handleSaveProduct(poNumber, index)} className="text-green-500">Save</button>
-                                      <button onClick={() => setEditingProduct((prev) => ({ ...prev, [poNumber]: null }))} className="text-red-500">Cancel</button>
+                                      <button onClick={() => handleSaveProduct(poNumber, index)} className="text-green-500">Save</button> &nbsp;
+                                      <button onClick={() => setEditingProduct((prev) => ({ ...prev, [poNumber]: null }))} className="text-red-500 ">Cancel</button>
                                     </>
                                   ) : (
                                     <>
-                                      <button onClick={() => handleEditProduct(poNumber, index)} className="text-blue-500">Edit</button>
+                                      <button onClick={() => handleEditProduct(poNumber, index)} className="text-blue-500">Edit</button>&nbsp;
                                       <button onClick={() => handleDeleteProduct(poNumber, index)} className="text-red-500">Delete</button>
                                     </>
                                   )}
@@ -443,12 +443,12 @@ const POTracker = () => {
                                 <td className="py-3 px-6">
                                   {editingCost[poNumber] === index ? (
                                     <>
-                                      <button onClick={() => handleSaveCost(poNumber, index)} className="text-green-500">Save</button>
+                                      <button onClick={() => handleSaveCost(poNumber, index)} className="text-green-500">Save</button>&nbsp;
                                       <button onClick={() => setEditingCost((prev) => ({ ...prev, [poNumber]: null }))} className="text-red-500">Cancel</button>
                                     </>
                                   ) : (
                                     <>
-                                      <button onClick={() => handleEditCost(poNumber, index)} className="text-blue-500">Edit</button>
+                                      <button onClick={() => handleEditCost(poNumber, index)} className="text-blue-500">Edit</button>&nbsp;
                                       <button onClick={() => handleDeleteCost(poNumber, index)} className="text-red-500">Delete</button>
                                     </>
                                   )}

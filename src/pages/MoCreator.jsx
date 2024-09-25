@@ -165,7 +165,7 @@ function MOCreator() {
                 <th className="py-3 px-6">Item Name</th>
                 <th className="py-3 px-6">Quantity</th>
                 <th className="py-3 px-6">Price</th>
-                <th className="py-3 px-6">Actions</th>
+                <th className="py-3 px-6"></th>
               </tr>
             </thead>
             <tbody className="text-gray-700 text-sm">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"; 
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { dataRef } from '../utils/Firebabse'; 
+import * as XLSX from "xlsx";  // Import XLSX library
 
 const SalesPage = () => {
   const [deals, setDeals] = useState([]); // Initialize deals array
@@ -69,6 +70,25 @@ const SalesPage = () => {
     setEditId(deal.id);
     setNewDeal(deal); // Populate form with deal data for editing
   };
+  //excel export
+  const exportToExcel = () => {
+    const formattedData = deals.map((deal, index) => ({
+      "SL NO": index + 1,
+      "BUYER": deal.buyer,
+      "SUPPLIER": deal.supplier,
+      "START DATE": deal.startDate,
+      "END DATE": deal.endDate,
+      "DEAL STATUS": deal.dealStatus,
+      "NEXT ACTION DATE": deal.nextActionDate
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData); // Convert ordered data to sheet
+    const workbook = XLSX.utils.book_new(); // Create a new workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Deals"); // Append the sheet to the workbook
+
+    // Generate Excel file and trigger download
+    XLSX.writeFile(workbook, "deals.xlsx");
+  };
 
   return (
     <div>
@@ -76,7 +96,7 @@ const SalesPage = () => {
         <button className="text-xl font-medium border-b-4 border-black pb-2">
           Enquiry Management
         </button>
-        <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none flex items-center">
+        <button onClick={exportToExcel} className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none flex items-center">
           <i className="fas fa-download mr-2"></i>
           Export to Excel
         </button>
@@ -158,7 +178,7 @@ const SalesPage = () => {
               <th className="px-4 py-2 text-left">END DATE</th>
               <th className="px-4 py-2 text-left">DEAL STATUS</th>
               <th className="px-4 py-2 text-left">NEXT ACTION DATE</th>
-              <th className="px-4 py-2 text-left">ACTIONS</th>
+              <th className="px-4 py-2 text-left"></th>
             </tr>
           </thead>
           <tbody>
