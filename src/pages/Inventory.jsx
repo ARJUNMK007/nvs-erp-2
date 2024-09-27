@@ -179,6 +179,7 @@ const SalesPage = () => {
           value={newDeal.movingStock}
           onChange={handleChange}
           className="border px-2 py-1 mr-2"
+          hidden
         />
         <input
           type="number"

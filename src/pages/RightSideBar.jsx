@@ -29,7 +29,7 @@ const Sidebar = () => {
       <div className="mb-8">
         <h3 className="text-md font-semibold mb-2">Sticky Notes</h3>
         <textarea
-          className="w-full h-32 p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+          className="w-full h-32 p-2 bg-[#87cfeb1a] border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
           placeholder="Write your notes here..."
           value={notes}
           onChange={handleNotesChange}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar, faChartLine, faShoppingCart, faBagShopping } from '@fortawesome/free-solid-svg-icons';
+import { PerformanceChart } from './PerformanceChart';
 
 const DashboardPage = () => {
   return (
@@ -46,6 +47,10 @@ const DashboardPage = () => {
           <div className="text-sm text-gray-500">Upcoming Order</div>
         </div>
       </div>
+      {/* <div class="flex">
+  <div class="w-1/2"><PerformanceChart performance='performance'/></div>
+  <div class="w-1/2"><PerformanceChart performance='finance'/></div>
+</div> */}
     </div>
   );
 };

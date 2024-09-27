@@ -11,7 +11,7 @@ function MOCreator() {
   const [isEditing, setIsEditing] = useState(null);
 
   const MoRef = dataRef.child('MO');
-  const stocksRef = dataRef.child('stocks');
+  const stocksRef = dataRef.child('Stock');
 
   const [costs, setCosts] = useState([]);
   const [newCost, setNewCost] = useState({ name: '', quantity: '', cost: '' });
@@ -216,7 +216,7 @@ function MOCreator() {
                 <option value="">Select Item</option>
                 {filteredStocks.map((stock, index) => (
                   <option key={index} value={stock.itemName}>
-                    {stock.itemName} (Qty: {stock.stock})
+                    {stock.itemName} (Qty: {stock.currentStock})
                   </option>
                 ))}
               </select>

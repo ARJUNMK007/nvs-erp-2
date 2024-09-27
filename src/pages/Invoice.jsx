@@ -108,7 +108,13 @@ const Invoice = () => {
    const handleDownload = () => {
    
   };
+  const handleBillToChange = (e) => {
+    setBillTo({ ...billTo, name: e.target.value });
+  };
 
+  const handleShipToChange = (e) => {
+    setShipTo({ ...shipTo, name: e.target.value });
+  };
 
   return (
     <div className="w-full h-[80vh] overflow-x-scroll scrollbar-hide">
@@ -190,15 +196,25 @@ const Invoice = () => {
               <div className="flex justify-between mb-4">
                 <div className="w-1/2 bill-to">
                   <h3 className="font-bold mb-2">Bill To</h3>
-                  <div className="p-2 border">
-                    <p>{billTo.name}</p>
+                  <div className="p-2 ">
+                  <input
+            type="text"
+            value={billTo.name}
+            onChange={handleBillToChange}
+            className="w-full border p-2"
+          />
                   </div>
                 </div>
 
                 <div className="w-1/2 ship-to">
                   <h3 className="font-bold mb-2">Ship To</h3>
-                  <div className="p-2 border">
-                    <p>{shipTo.name}</p>
+                  <div className="p-2 ">
+                  <input
+            type="text"
+            value={shipTo.name}
+            onChange={handleShipToChange}
+            className="w-full border p-2"
+          />
                   </div>
                 </div>
               </div>

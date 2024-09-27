@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../utils/Firebabse"
+import { auth } from "../utils/Firebabse";
+import land from "../assets/land.jpg"
+import home from "../assets/home.jpg"
 
 function Homes() {
   const [email, setEmail] = useState("");
@@ -37,7 +39,7 @@ function Homes() {
       <div className="w-full md:w-1/2 flex justify-center items-center p-6 bg-white">
         <div className="max-w-md w-full bg-white p-8 shadow-lg rounded-lg">
           <form onSubmit={handleSignIn}>
-            <img src="" alt="logo" className="mb-6 mx-auto w-32" />
+            <img src={land} alt="logo" className="mb-6 mx-auto w-32" />
             <h3 className="text-xl font-bold mb-6 text-center">
               Real-time tracking of inventory levels
             </h3>
@@ -85,7 +87,7 @@ function Homes() {
       {/* Right Side - Image */}
       <div className="hidden md:flex md:w-1/2 justify-center items-center">
         <img
-          src="https://source.unsplash.com/600x800/?nature"
+          src={home}
           alt="Dummy"
           className="w-full h-full object-cover"
         />

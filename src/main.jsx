@@ -7,6 +7,8 @@ import '@fontsource/poppins/300.css'; // Light weight
 import '@fontsource/poppins/400.css'; // Regular weight
 import '@fontsource/poppins/500.css'; // Medium weight
 import '@fontsource/poppins/700.css'; // Bold weight
+import '@fontsource/poppins'; // Defaults to weight 400.
+
 
 
 
