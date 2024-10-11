@@ -210,7 +210,7 @@ const handleDeleteRak = (value) => {
   setRakOptions(rakOptions.filter(option => option.value !== value));
 };
   return (
-    <div>
+    <div >
       <div className="flex justify-between items-center mb-4">
         <button className="text-xl font-medium border-b-4 border-black pb-2">
           Inventory
@@ -258,14 +258,15 @@ const handleDeleteRak = (value) => {
       <option value="">Select Unit</option>
       {options.map((option) => (
         <option key={option.value} value={option.value}>
-          {option.label}
+          {option.label} 
         </option>
       ))}
       <option value="add-new">Add New Unit</option>
     </select>
 
     {/* List of units with delete option */}
-    <ul>
+    <div className="w-[255px] h-[100px] overflow-auto bg-white m-[5px]">
+    <ul >
       {options.map((option) => (
         <li key={option.value} className="flex items-center">
           <span>{option.label}</span>
@@ -278,6 +279,7 @@ const handleDeleteRak = (value) => {
         </li>
       ))}
     </ul>
+    </div>
   </div>
 
   {/* Conditional input to add a new unit */}
@@ -314,6 +316,7 @@ const handleDeleteRak = (value) => {
     </select>
 
     {/* List of rack numbers with delete option */}
+    <div className="w-[255px] h-[100px] overflow-auto bg-white m-[5px]">
     <ul>
       {rakOptions.map((option) => (
         <li key={option.value} className="flex items-center">
@@ -327,6 +330,7 @@ const handleDeleteRak = (value) => {
         </li>
       ))}
     </ul>
+    </div>
   </div>
 
   {/* Conditional input to add a new rack */}

@@ -58,7 +58,7 @@ const App = () => {
     isAuthenticated ? (
       <div className="flex w-full ">
         {/* Left Sidebar */}
-        <div className="w-1/6">
+        <div className="w-1/6 ">
           <LeftSidebar />
         </div>
 
