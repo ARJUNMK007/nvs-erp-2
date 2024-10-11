@@ -263,6 +263,7 @@ const POTracker = () => {
           <thead>
             <tr className="w-full bg-gray-100 text-left text-gray-600 uppercase text-sm leading-normal">
               <th className="py-3 px-6">PO NO</th>
+              <th className="py-3 px-6">Bill To</th>
               <th className="py-3 px-6">Product Name</th>
               <th className="py-3 px-6">Date</th>
               <th className="py-3 px-6">Status</th>
@@ -275,6 +276,7 @@ const POTracker = () => {
               <React.Fragment key={poNumber}>
                 <tr className="border-b border-gray-200 hover:bg-gray-100">
                   <td className="py-3 px-6">{poNumber}</td>
+                  <td className="py-3 px-6">Bill To</td>
                   <td className="py-3 px-6">{selectedMachine?.name || 'N/A'}</td>
                   <td className="py-3 px-6">{new Date(createdAt).toLocaleDateString()}</td>
                   <td className="py-3 px-6">

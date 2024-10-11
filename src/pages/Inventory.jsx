@@ -4,13 +4,94 @@ import { dataRef } from '../utils/Firebabse';
 import * as XLSX from "xlsx"; // Import XLSX library
 
 const SalesPage = () => {
+  const [options, setOptions] = useState([
+    { value: "kg", label: "Kilograms (Kg)" },
+    { value: "g", label: "Grams" },
+    { value: "cm", label: "Centimeters (Cm)" },
+    { value: "m", label: "Meters (M)" },
+    { value: "pcs", label: "Pieces" },
+  ]);
+
+  const [newOption, setNewOption] = useState("");
+  const [showInput, setShowInput] = useState(false);
+  const [selectedValue, setSelectedValue] = useState("");
+  const [selectedDeal, setSelectedDeal] = useState(null); // For popup
+
+  const handleAddOption = (e) => {
+    e.preventDefault();
+    if (newOption && !options.some((option) => option.value === newOption.toLowerCase())) {
+      setOptions([...options, { value: newOption.toLowerCase(), label: newOption }]);
+      setNewOption("");
+      setShowInput(false);
+      setSelectedValue(newOption.toLowerCase());
+    }
+  };
+
+ 
+
+  const [rakOptions, setRakOptions] = useState([
+    { value: "rak-1", label: "RAK No 1" },
+    { value: "rak-2", label: "RAK No 2" },
+    { value: "rak-3", label: "RAK No 3" },
+  ]);
+  const [newRakOption, setNewRakOption] = useState("");
+  const [showRakInput, setShowRakInput] = useState(false);
+  const [selectedRak, setSelectedRak] = useState("");
+
+  const handleAddRakOption = (e) => {
+    e.preventDefault();
+    if (newRakOption && !rakOptions.some((option) => option.value === newRakOption.toLowerCase())) {
+      setRakOptions([...rakOptions, { value: newRakOption.toLowerCase(), label: newRakOption }]);
+      setNewRakOption("");
+      setShowRakInput(false);
+      setSelectedRak(newRakOption.toLowerCase());
+    }
+  };
+  const handleSEdit = (deal) => {
+    setEditId(deal.id);
+    setNewDeal(deal); // Populate form with deal data for editing
+    setSelectedValue(deal.unit); // Preselect the unit in the dropdown
+    setSelectedRak(deal.RackNo); // Preselect the RackNo in the dropdown
+  };
+  
+  const handleSelectChange = (e) => {
+    const value = e.target.value;
+    if (value === "add-new") {
+      setShowInput(true);
+    } else {
+      setSelectedValue(value);
+      setNewDeal((prevDeal) => ({
+        ...prevDeal,
+        unit: value, // Update the unit in the newDeal object
+      }));
+      setShowInput(false);
+    }
+  };
+  
+  const handleRakSelectChange = (e) => {
+    const value = e.target.value;
+    if (value === "add-new-rak") {
+      setShowRakInput(true);
+    } else {
+      setSelectedRak(value);
+      setNewDeal((prevDeal) => ({
+        ...prevDeal,
+        RackNo: value, // Update the RackNo in the newDeal object
+      }));
+      setShowRakInput(false);
+    }
+  };
+  
+  
+
   const [deals, setDeals] = useState([]); // Initialize deals array
   const SalesRef = dataRef.child('Stock'); // Reference to Sales in Firebase
   const [newDeal, setNewDeal] = useState({
     itemName: '',
     itemCategory: '',
     currentStock: '',
-    unit: '',             // Unit (Dropdown selection)
+    unit: '', // Unit (Dropdown selection)
+    RackNo: '',
     movingStock: '',
     itemPrice: '',
     averagePrice: '',
@@ -39,10 +120,8 @@ const SalesPage = () => {
 
   // Add or Edit deal
   const handleAddOrEditDeal = () => {
-    // Ensure all required fields are filled out
     if (newDeal.itemName && newDeal.supplier) {
       if (editId !== null) {
-        // Update existing deal in Firebase
         SalesRef.child(editId).update(newDeal)
           .then(() => {
             setEditId(null); // Reset edit ID after updating
@@ -51,6 +130,7 @@ const SalesPage = () => {
               itemCategory: '',
               currentStock: '',
               unit: '',
+              RackNo: '',
               movingStock: '',
               itemPrice: '',
               averagePrice: '',
@@ -61,7 +141,6 @@ const SalesPage = () => {
             console.error("Error updating deal:", error);
           });
       } else {
-        // Add new deal to Firebase
         const newDealRef = SalesRef.push();
         newDealRef.set(newDeal)
           .then(() => {
@@ -70,6 +149,7 @@ const SalesPage = () => {
               itemCategory: '',
               currentStock: '',
               unit: '',
+              RackNo: '',
               movingStock: '',
               itemPrice: '',
               averagePrice: '',
@@ -95,31 +175,40 @@ const SalesPage = () => {
     setEditId(deal.id);
     setNewDeal(deal); // Populate form with deal data for editing
   };
+
+  // Open Popup with deal details
+  const handleRowClick = (deal) => {
+    setSelectedDeal(deal);
+  };
+
   const handleExportToExcel = () => {
-    // Manually map the data to match the order of the columns in your table
     const orderedDeals = deals.map(deal => ({
-      SL_NO: deals.indexOf(deal) + 1,  // Serial Number
+      SL_NO: deals.indexOf(deal) + 1,
       ITEM_NAME: deal.itemName,
       ITEM_CATEGORY: deal.itemCategory,
       CURRENT_STOCK: deal.currentStock,
       UNIT: deal.unit,
+      RACK_NO: deal.RackNo,
       MOVING_STOCK: deal.movingStock,
       ITEM_PRICE: deal.itemPrice,
       AVERAGE_PRICE: deal.averagePrice,
       SUPPLIER: deal.supplier
     }));
-  
-    // Convert the orderedDeals array to a worksheet
+   
     const ws = XLSX.utils.json_to_sheet(orderedDeals);
-    
-    // Create a new workbook and append the worksheet
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Stock Data");
-  
-    // Write the workbook to an Excel file
     XLSX.writeFile(wb, "StockData.xlsx");
   };
-  
+// Handle delete unit option
+const handleDeleteUnit = (value) => {
+  setOptions(options.filter(option => option.value !== value));
+};
+
+// Handle delete rack option
+const handleDeleteRak = (value) => {
+  setRakOptions(rakOptions.filter(option => option.value !== value));
+};
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -133,7 +222,8 @@ const SalesPage = () => {
       </div>
 
       {/* Input Form */}
-      <div className="mb-4">
+         {/* Input Form */}
+         <div className="mb-4">
         <input
           type="text"
           name="itemName"
@@ -158,20 +248,103 @@ const SalesPage = () => {
           onChange={handleChange}
           className="border px-2 py-1 mr-2"
         />
-        <select
-          name="unit"
-          value={newDeal.unit}
-          onChange={handleChange}
-          className="border px-2 py-1 mr-2"
-        >
-          <option value="">Select Unit</option>
-          <option value="kg">Kg</option>
-          <option value="g">Grams</option>
-          <option value="cm">Centimeter</option>
-          <option value="m">Meter</option>
-          <option value="pcs">Pieces</option>
-          {/* Add more units as needed */}
-        </select>
+     <div className="relative">
+    <select
+      name="unit"
+      value={newDeal.unit}
+      onChange={handleSelectChange}
+      className="border px-2 py-1 mr-2"
+    >
+      <option value="">Select Unit</option>
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+      <option value="add-new">Add New Unit</option>
+    </select>
+
+    {/* List of units with delete option */}
+    <ul>
+      {options.map((option) => (
+        <li key={option.value} className="flex items-center">
+          <span>{option.label}</span>
+          <button
+            onClick={() => handleDeleteUnit(option.value)}
+            className="ml-2 text-red-500"
+          >
+            Delete
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  {/* Conditional input to add a new unit */}
+  {showInput && (
+    <div>
+      <input
+        type="text"
+        value={newOption}
+        onChange={(e) => setNewOption(e.target.value)}
+        placeholder="Enter new unit"
+        className="border px-2 py-1 mr-2"
+      />
+      <button onClick={handleAddOption} className="px-2 py-1 bg-blue-500 text-white">
+        Add
+      </button>
+    </div>
+  )}
+
+  {/* Rack Number Selection Dropdown */}
+  <div className="relative">
+    <select
+      name="rakNo"
+      value={newDeal.RackNo}
+      onChange={handleRakSelectChange}
+      className="border px-2 py-1 mr-2"
+    >
+      <option value="">Select RAK No</option>
+      {rakOptions.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+      <option value="add-new-rak">Add New RAK No</option>
+    </select>
+
+    {/* List of rack numbers with delete option */}
+    <ul>
+      {rakOptions.map((option) => (
+        <li key={option.value} className="flex items-center">
+          <span>{option.label}</span>
+          <button
+            onClick={() => handleDeleteRak(option.value)}
+            className="ml-2 text-red-500"
+          >
+            Delete
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  {/* Conditional input to add a new rack */}
+  {showRakInput && (
+    <div>
+      <input
+        type="text"
+        value={newRakOption}
+        onChange={(e) => setNewRakOption(e.target.value)}
+        placeholder="Enter new RAK No"
+        className="border px-2 py-1 mr-2"
+      />
+      <button onClick={handleAddRakOption} className="px-2 py-1 bg-blue-500 text-white">
+        Add
+      </button>
+    </div>
+  )}
+   
         <input
           type="number"
           name="movingStock"
@@ -189,14 +362,14 @@ const SalesPage = () => {
           onChange={handleChange}
           className="border px-2 py-1 mr-2"
         />
-        <input
+        {/* <input
           type="number"
           name="averagePrice"
           placeholder="Average Price"
           value={newDeal.averagePrice}
           onChange={handleChange}
           className="border px-2 py-1 mr-2"
-        />
+        /> */}
         <input
           type="text"
           name="supplier"
@@ -213,36 +386,29 @@ const SalesPage = () => {
           {editId !== null ? 'Update Stock' : 'Add Stock'}
         </button>
       </div>
-
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
             <tr className="bg-gray-100 border-b">
+          
               <th className="px-4 py-2 text-left">SL NO</th>
               <th className="px-4 py-2 text-left">ITEM NAME</th>
               <th className="px-4 py-2 text-left">ITEM CATEGORY</th>
               <th className="px-4 py-2 text-left">CURRENT STOCK</th>
-              <th className="px-4 py-2 text-left">UNIT</th>  {/* New Column */}
-              <th className="px-4 py-2 text-left">MOVING STOCK</th> {/* New Column */}
-              <th className="px-4 py-2 text-left">ITEM PRICE</th>
-              <th className="px-4 py-2 text-left">AVERAGE PRICE</th>
-              <th className="px-4 py-2 text-left">SUPPLIER</th>
+              <th className="px-4 py-2 text-left">UNIT</th>
               <th className="px-4 py-2 text-left"></th>
             </tr>
           </thead>
           <tbody>
             {deals.map((deal, index) => (
-              <tr key={deal.id} className="border-b">
-                <td className="px-4 py-2">{index + 1}</td>
+              <tr key={deal.id} className="border-b cursor-pointer" >
+                {/* <td  className="px-4 py-2">{index + 1}</td> */}
+                <td onClick={() => handleRowClick(deal)} className="px-4 py-2">{index + 1}</td>
                 <td className="px-4 py-2">{deal.itemName}</td>
                 <td className="px-4 py-2">{deal.itemCategory}</td>
                 <td className="px-4 py-2">{deal.currentStock}</td>
-                <td className="px-4 py-2">{deal.unit}</td>  {/* Display Unit */}
-                <td className="px-4 py-2">{deal.movingStock}</td> {/* Display Moving Stock */}
-                <td className="px-4 py-2">{deal.itemPrice}</td>
-                <td className="px-4 py-2">{deal.averagePrice}</td>
-                <td className="px-4 py-2">{deal.supplier}</td>
+                <td className="px-4 py-2">{deal.unit}</td>
                 <td className="px-4 py-2 flex space-x-4">
                   <i
                     className="fas fa-edit text-blue-500 cursor-pointer"
@@ -258,6 +424,46 @@ const SalesPage = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Popup/Modal */}
+      {selectedDeal && (
+  <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+    <div className="bg-white p-6 rounded shadow-lg w-96">
+      <h2 className="text-xl font-semibold mb-4">Deal Details</h2>
+      <table className="min-w-full bg-white border">
+        <tbody>
+          <tr>
+            <td className="px-4 py-2 font-semibold border">Rack No:</td>
+            <td className="px-4 py-2 border">{selectedDeal.RackNo}</td>
+          </tr>
+          <tr>
+            <td className="px-4 py-2 font-semibold border">Moving Stock:</td>
+            <td className="px-4 py-2 border">{selectedDeal.movingStock}</td>
+          </tr>
+          <tr>
+            <td className="px-4 py-2 font-semibold border">Item Price:</td>
+            <td className="px-4 py-2 border">{selectedDeal.itemPrice}</td>
+          </tr>
+          <tr>
+            <td className="px-4 py-2 font-semibold border">Average Price:</td>
+            <td className="px-4 py-2 border">{selectedDeal.averagePrice}</td>
+          </tr>
+          <tr>
+            <td className="px-4 py-2 font-semibold border">Supplier:</td>
+            <td className="px-4 py-2 border">{selectedDeal.supplier}</td>
+          </tr>
+        </tbody>
+      </table>
+      <button
+        className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+        onClick={() => setSelectedDeal(null)}
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

@@ -56,7 +56,7 @@ const App = () => {
   path="/inventory"
   element={
     isAuthenticated ? (
-      <div className="flex w-full">
+      <div className="flex w-full ">
         {/* Left Sidebar */}
         <div className="w-1/6">
           <LeftSidebar />
@@ -85,7 +85,7 @@ const App = () => {
                   <div className="w-3/4 p-6 bg-[#87cfeb1a]">
                     <SalesPage />
                   </div>
-                  <div className="w-1/4">
+                  <div className="w-1/4 sm:">
                     <RightSidebar />
                   </div>
                 </div>
