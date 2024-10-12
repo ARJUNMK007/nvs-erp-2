@@ -4,56 +4,72 @@ import { dataRef } from '../utils/Firebabse';
 import * as XLSX from "xlsx"; // Import XLSX library
 
 const SalesPage = () => {
-  const [options, setOptions] = useState([
-    { value: "kg", label: "Kilograms (Kg)" },
-    { value: "g", label: "Grams" },
-    { value: "cm", label: "Centimeters (Cm)" },
-    { value: "m", label: "Meters (M)" },
-    { value: "pcs", label: "Pieces" },
-  ]);
+  const [options, setOptions] = useState([]);
 
   const [newOption, setNewOption] = useState("");
   const [showInput, setShowInput] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
   const [selectedDeal, setSelectedDeal] = useState(null); // For popup
-
-  const handleAddOption = (e) => {
-    e.preventDefault();
-    if (newOption && !options.some((option) => option.value === newOption.toLowerCase())) {
-      setOptions([...options, { value: newOption.toLowerCase(), label: newOption }]);
-      setNewOption("");
-      setShowInput(false);
-      setSelectedValue(newOption.toLowerCase());
-    }
-  };
-
- 
-
-  const [rakOptions, setRakOptions] = useState([
-    { value: "rak-1", label: "RAK No 1" },
-    { value: "rak-2", label: "RAK No 2" },
-    { value: "rak-3", label: "RAK No 3" },
-  ]);
+  const [rakOptions, setRakOptions] = useState([]);
   const [newRakOption, setNewRakOption] = useState("");
   const [showRakInput, setShowRakInput] = useState(false);
   const [selectedRak, setSelectedRak] = useState("");
 
+  // Fetch existing unit options
+  useEffect(() => {
+    UnitRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const unitArray = Object.keys(data).map((key) => ({
+          value: data[key].toLowerCase(),
+          label: data[key],
+        }));
+        setOptions(unitArray);
+      }
+    });
+  }, []);
+  
+  // Fetch existing rack options
+  useEffect(() => {
+    RackRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const rackArray = Object.keys(data).map((key) => ({
+          value: data[key].toLowerCase(),
+          label: data[key],
+        }));
+        setRakOptions(rackArray);
+      }
+    });
+  }, []);
+  
+  // Add new unit option to Firebase
+  const handleAddOption = (e) => {
+    e.preventDefault();
+    if (newOption && !options.some((option) => option.value === newOption.toLowerCase())) {
+      const newUnit = newOption.toLowerCase();
+      UnitRef.push(newUnit); // Save to Firebase
+      setOptions([...options, { value: newUnit, label: newOption }]);
+      setNewOption("");
+      setShowInput(false);
+      setSelectedValue(newUnit);
+    }
+  };
+
+  // Add new rack option to Firebase
   const handleAddRakOption = (e) => {
     e.preventDefault();
     if (newRakOption && !rakOptions.some((option) => option.value === newRakOption.toLowerCase())) {
-      setRakOptions([...rakOptions, { value: newRakOption.toLowerCase(), label: newRakOption }]);
+      const newRack = newRakOption.toLowerCase();
+      RackRef.push(newRack); // Save to Firebase
+      setRakOptions([...rakOptions, { value: newRack, label: newRakOption }]);
       setNewRakOption("");
       setShowRakInput(false);
-      setSelectedRak(newRakOption.toLowerCase());
+      setSelectedRak(newRack);
     }
   };
-  const handleSEdit = (deal) => {
-    setEditId(deal.id);
-    setNewDeal(deal); // Populate form with deal data for editing
-    setSelectedValue(deal.unit); // Preselect the unit in the dropdown
-    setSelectedRak(deal.RackNo); // Preselect the RackNo in the dropdown
-  };
-  
+
+  // Handle unit dropdown change
   const handleSelectChange = (e) => {
     const value = e.target.value;
     if (value === "add-new") {
@@ -62,12 +78,13 @@ const SalesPage = () => {
       setSelectedValue(value);
       setNewDeal((prevDeal) => ({
         ...prevDeal,
-        unit: value, // Update the unit in the newDeal object
+        unit: value,
       }));
       setShowInput(false);
     }
   };
-  
+
+  // Handle rack dropdown change
   const handleRakSelectChange = (e) => {
     const value = e.target.value;
     if (value === "add-new-rak") {
@@ -76,16 +93,16 @@ const SalesPage = () => {
       setSelectedRak(value);
       setNewDeal((prevDeal) => ({
         ...prevDeal,
-        RackNo: value, // Update the RackNo in the newDeal object
+        RackNo: value,
       }));
       setShowRakInput(false);
     }
   };
   
-  
-
   const [deals, setDeals] = useState([]); // Initialize deals array
   const SalesRef = dataRef.child('Stock'); // Reference to Sales in Firebase
+  const RackRef = dataRef.child('Stock/Rack'); 
+  const UnitRef = dataRef.child('Stock/Unit'); 
   const [newDeal, setNewDeal] = useState({
     itemName: '',
     itemCategory: '',
@@ -209,6 +226,8 @@ const handleDeleteUnit = (value) => {
 const handleDeleteRak = (value) => {
   setRakOptions(rakOptions.filter(option => option.value !== value));
 };
+
+
   return (
     <div >
       <div className="flex justify-between items-center mb-4">
