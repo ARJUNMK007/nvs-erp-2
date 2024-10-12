@@ -226,14 +226,58 @@ const handleDeleteUnit = (value) => {
 const handleDeleteRak = (value) => {
   setRakOptions(rakOptions.filter(option => option.value !== value));
 };
+const [openUnit, setopenUnit] = useState(false);
+
+const handleOpenUnit =()=>{
+  setopenUnit(!openUnit);
+}
+
+const [openRack, setopenRack] = useState(false)
+
+const handleOpenRack =()=>{
+  setopenRack(!openRack)
+}
+const [categoryOptions, setCategoryOptions] = useState([
+  { label: 'Electronics', value: 'electronics' },
+  { label: 'Furniture', value: 'furniture' },
+  { label: 'Clothing', value: 'clothing' },
+]);
+const [openCategory, setOpenCategory] = useState(false);
+const [newCategory, setNewCategory] = useState('');
+const [showCategoryInput, setShowCategoryInput] = useState(false);
+const handleSelectChanges = (e) => {
+  const { value } = e.target;
+  setNewDeal({ ...newDeal, itemCategory: value });
+
+  if (value === 'add-new') {
+    setShowCategoryInput(true); // Show input field to add new category
+  } else {
+    setShowCategoryInput(false); // Hide input if "add-new" is not selected
+  }
+};
+
+const handleAddCategory = () => {
+  if (newCategory) {
+    setCategoryOptions([...categoryOptions, { label: newCategory, value: newCategory }]);
+    setNewDeal({ ...newDeal, itemCategory: newCategory }); // Set new category in the select
+    setNewCategory(''); // Clear the input
+    setShowCategoryInput(false); // Hide input after adding
+  }
+};
+
+const handleDeleteCategory = (value) => {
+  setCategoryOptions(categoryOptions.filter((category) => category.value !== value));
+};
+
+const handleOpenCategory =()=>{
+  setOpenCategory(!openCategory)
+}
 
 
   return (
-    <div >
-      <div className="flex justify-between items-center mb-4">
-        <button className="text-xl font-medium border-b-4 border-black pb-2">
-          Inventory
-        </button>
+    <div className="w-[100%] h-[80vh] overflow-x-scroll scrollbar-hide p-1">
+      <div className="flex justify-end items-center mb-4">
+       
         <button onClick={handleExportToExcel} className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none flex items-center">
           <i className="fas fa-download mr-2"></i>
           Export to Excel
@@ -251,14 +295,8 @@ const handleDeleteRak = (value) => {
           onChange={handleChange}
           className="border px-2 py-1 mr-2"
         />
-        <input
-          type="text"
-          name="itemCategory"
-          placeholder="Item Category"
-          value={newDeal.itemCategory}
-          onChange={handleChange}
-          className="border px-2 py-1 mr-2"
-        />
+    
+
         <input
           type="number"
           name="currentStock"
@@ -267,12 +305,94 @@ const handleDeleteRak = (value) => {
           onChange={handleChange}
           className="border px-2 py-1 mr-2"
         />
+         <input
+          type="number"
+          name="movingStock"
+          placeholder="Moving Stock"
+          value={newDeal.movingStock}
+          onChange={handleChange}
+          className="border px-2 py-1 mr-2"
+          hidden
+        />
+        <input
+          type="number"
+          name="itemPrice"
+          placeholder="Item Price"
+          value={newDeal.itemPrice}
+          onChange={handleChange}
+          className="border px-2 py-1 mr-2"
+        />
+        <input
+          type="text"
+          name="supplier"
+          placeholder="Supplier"
+          value={newDeal.supplier}
+          onChange={handleChange}
+          className="border px-2 py-1 mr-2 mt-[4px]"
+        />
+        <div className="flex flex-row">
+           <div className="relative">
+  <select
+    name="itemCategory"
+    value={newDeal.itemCategory}
+    onChange={handleSelectChanges}
+    className="border px-2 py-1 mr-2 mt-[4px]"
+  >
+    <option value="">Select Category</option>
+    {categoryOptions.map((category) => (
+      <option key={category.value} value={category.value}>
+        {category.label}
+      </option>
+    ))}
+    <option value="add-new">Add New Category</option> {/* Option to add new category */}
+  </select>
+
+  <i
+    className="fas fa-edit text-blue-500 cursor-pointer"
+    onClick={() => handleOpenCategory(!openCategory)}
+  ></i>
+
+  {/* List of categories with delete option */}
+  {openCategory && (
+    <div className="w-[255px] h-[100px] overflow-auto bg-white m-[5px]">
+      <ul>
+        {categoryOptions.map((category) => (
+          <li key={category.value} className="flex items-center">
+            <span>{category.label}</span>
+            <button
+              onClick={() => handleDeleteCategory(category.value)}
+              className="ml-2 text-red-500"
+            >
+              Delete
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  {/* Conditional input to add a new category */}
+  {newDeal.itemCategory === "add-new" && (
+    <div>
+      <input
+        type="text"
+        value={newCategory}
+        onChange={(e) => setNewCategory(e.target.value)}
+        placeholder="Enter new category"
+        className="border px-2 py-1 mr-2 mt-2"
+      />
+      <button onClick={handleAddCategory} className="px-2 py-1 bg-blue-500 text-white">
+        Add
+      </button>
+    </div>
+  )}
+</div>
      <div className="relative">
     <select
       name="unit"
       value={newDeal.unit}
       onChange={handleSelectChange}
-      className="border px-2 py-1 mr-2"
+      className="border px-2 py-1 mr-2 mt-[4px] ml-[4px]"
     >
       <option value="">Select Unit</option>
       {options.map((option) => (
@@ -281,10 +401,13 @@ const handleDeleteRak = (value) => {
         </option>
       ))}
       <option value="add-new">Add New Unit</option>
-    </select>
+    </select><i
+    className="fas fa-edit text-blue-500 cursor-pointer"
+    onClick={() => handleOpenUnit(!openUnit)}
+  ></i>
 
     {/* List of units with delete option */}
-    <div className="w-[255px] h-[100px] overflow-auto bg-white m-[5px]">
+   {openUnit && <div className="w-[255px] h-[100px] overflow-auto bg-white m-[5px]">
     <ul >
       {options.map((option) => (
         <li key={option.value} className="flex items-center">
@@ -298,7 +421,7 @@ const handleDeleteRak = (value) => {
         </li>
       ))}
     </ul>
-    </div>
+    </div>}
   </div>
 
   {/* Conditional input to add a new unit */}
@@ -323,8 +446,8 @@ const handleDeleteRak = (value) => {
       name="rakNo"
       value={newDeal.RackNo}
       onChange={handleRakSelectChange}
-      className="border px-2 py-1 mr-2"
-    >
+      className="border px-2 py-1 mr-2 mt-[4px] ml-[4px]"
+    > 
       <option value="">Select RAK No</option>
       {rakOptions.map((option) => (
         <option key={option.value} value={option.value}>
@@ -332,10 +455,13 @@ const handleDeleteRak = (value) => {
         </option>
       ))}
       <option value="add-new-rak">Add New RAK No</option>
-    </select>
+    </select><i
+    className="fas fa-edit text-blue-500 cursor-pointer"
+    onClick={() => handleOpenRack(!openRack)}
+  ></i>
 
     {/* List of rack numbers with delete option */}
-    <div className="w-[255px] h-[100px] overflow-auto bg-white m-[5px]">
+    {openRack&&<div className="w-[255px] h-[100px] overflow-auto bg-white m-[5px]">
     <ul>
       {rakOptions.map((option) => (
         <li key={option.value} className="flex items-center">
@@ -349,7 +475,7 @@ const handleDeleteRak = (value) => {
         </li>
       ))}
     </ul>
-    </div>
+    </div>}
   </div>
 
   {/* Conditional input to add a new rack */}
@@ -368,46 +494,15 @@ const handleDeleteRak = (value) => {
     </div>
   )}
    
-        <input
-          type="number"
-          name="movingStock"
-          placeholder="Moving Stock"
-          value={newDeal.movingStock}
-          onChange={handleChange}
-          className="border px-2 py-1 mr-2"
-          hidden
-        />
-        <input
-          type="number"
-          name="itemPrice"
-          placeholder="Item Price"
-          value={newDeal.itemPrice}
-          onChange={handleChange}
-          className="border px-2 py-1 mr-2"
-        />
-        {/* <input
-          type="number"
-          name="averagePrice"
-          placeholder="Average Price"
-          value={newDeal.averagePrice}
-          onChange={handleChange}
-          className="border px-2 py-1 mr-2"
-        /> */}
-        <input
-          type="text"
-          name="supplier"
-          placeholder="Supplier"
-          value={newDeal.supplier}
-          onChange={handleChange}
-          className="border px-2 py-1 mr-2"
-        />
+       
 
         <button
           onClick={handleAddOrEditDeal}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none"
+          className= "bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none mt-[4px] ml-[4px] w-[150px] h-[35px]"
         >
           {editId !== null ? 'Update Stock' : 'Add Stock'}
         </button>
+      </div>
       </div>
       {/* Table */}
       <div className="overflow-x-auto">
@@ -467,10 +562,10 @@ const handleDeleteRak = (value) => {
             <td className="px-4 py-2 font-semibold border">Item Price:</td>
             <td className="px-4 py-2 border">{selectedDeal.itemPrice}</td>
           </tr>
-          <tr>
+          {/* <tr>
             <td className="px-4 py-2 font-semibold border">Average Price:</td>
             <td className="px-4 py-2 border">{selectedDeal.averagePrice}</td>
-          </tr>
+          </tr> */}
           <tr>
             <td className="px-4 py-2 font-semibold border">Supplier:</td>
             <td className="px-4 py-2 border">{selectedDeal.supplier}</td>

@@ -11,6 +11,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import SalesPage from "./pages/SalesPage";
 import ReportPage from "./pages/ReportPage"; // Import the new ReportPage component
 import HelpPage from "./pages/HelpPage";
+import Stock from "./pages/Stock";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -56,7 +57,7 @@ const App = () => {
   path="/inventory"
   element={
     isAuthenticated ? (
-      <div className="flex w-full ">
+      <div className="flex w-full fixed ">
         {/* Left Sidebar */}
         <div className="w-1/6 ">
           <LeftSidebar />
@@ -64,7 +65,7 @@ const App = () => {
 
         {/* Inventory Section */}
         <div className="flex-1 p-6 bg-[#87cfeb1a]">
-          <InventoryPage />
+          <Stock/>
         </div>
       </div>
     ) : (
