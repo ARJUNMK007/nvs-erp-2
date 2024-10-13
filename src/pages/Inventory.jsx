@@ -103,6 +103,7 @@ const SalesPage = () => {
   const SalesRef = dataRef.child('Stock'); // Reference to Sales in Firebase
   const RackRef = dataRef.child('Stock/Rack'); 
   const UnitRef = dataRef.child('Stock/Unit'); 
+  const CategoryRef = dataRef.child('Stock/Category'); 
   const [newDeal, setNewDeal] = useState({
     itemName: '',
     itemCategory: '',
@@ -237,41 +238,76 @@ const [openRack, setopenRack] = useState(false)
 const handleOpenRack =()=>{
   setopenRack(!openRack)
 }
-const [categoryOptions, setCategoryOptions] = useState([
-  { label: 'Electronics', value: 'electronics' },
-  { label: 'Furniture', value: 'furniture' },
-  { label: 'Clothing', value: 'clothing' },
-]);
+const [categoryOptions, setCategoryOptions] = useState([]);
 const [openCategory, setOpenCategory] = useState(false);
 const [newCategory, setNewCategory] = useState('');
 const [showCategoryInput, setShowCategoryInput] = useState(false);
+const handleOpenCategory = () => setOpenCategory(!openCategory);
+
+// Fetch categories from Firebase when the component mounts
+useEffect(() => {
+  CategoryRef.on('value', (snapshot) => {
+    const categoriesData = snapshot.val();
+    if (categoriesData) {
+      const categoriesArray = Object.keys(categoriesData).map((key) => ({
+        label: categoriesData[key],
+        value: key
+      }));
+      setCategoryOptions(categoriesArray);
+    }
+  });
+
+  // Clean up the Firebase listener on component unmount
+  return () => {
+    CategoryRef.off();
+  };
+}, []);
+
+// Handle select changes
 const handleSelectChanges = (e) => {
   const { value } = e.target;
   setNewDeal({ ...newDeal, itemCategory: value });
 
   if (value === 'add-new') {
-    setShowCategoryInput(true); // Show input field to add new category
+    setShowCategoryInput(true); // Show input field to add a new category
   } else {
     setShowCategoryInput(false); // Hide input if "add-new" is not selected
   }
 };
 
+// Add a new category to both Firebase and local state
 const handleAddCategory = () => {
   if (newCategory) {
-    setCategoryOptions([...categoryOptions, { label: newCategory, value: newCategory }]);
-    setNewDeal({ ...newDeal, itemCategory: newCategory }); // Set new category in the select
-    setNewCategory(''); // Clear the input
-    setShowCategoryInput(false); // Hide input after adding
+    // Generate a unique key for the new category
+    const newCategoryKey = CategoryRef.push().key;
+    
+    // Update Firebase
+    CategoryRef.child(newCategoryKey).set(newCategory, (error) => {
+      if (!error) {
+        // Update the local state
+        setCategoryOptions([...categoryOptions, { label: newCategory, value: newCategoryKey }]);
+        setNewDeal({ ...newDeal, itemCategory: newCategory }); // Set new category in the select
+        setNewCategory(''); // Clear the input
+        setShowCategoryInput(false); // Hide input after adding
+      } else {
+        console.error('Error adding category: ', error);
+      }
+    });
   }
 };
 
+// Delete a category from both Firebase and local state
 const handleDeleteCategory = (value) => {
-  setCategoryOptions(categoryOptions.filter((category) => category.value !== value));
+  // Remove the category from Firebase
+  CategoryRef.child(value).remove((error) => {
+    if (!error) {
+      // Update the local state
+      setCategoryOptions(categoryOptions.filter((category) => category.value !== value));
+    } else {
+      console.error('Error deleting category: ', error);
+    }
+  });
 };
-
-const handleOpenCategory =()=>{
-  setOpenCategory(!openCategory)
-}
 
 
   return (
