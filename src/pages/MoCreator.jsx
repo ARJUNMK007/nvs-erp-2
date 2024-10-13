@@ -111,8 +111,9 @@ function MOCreator() {
 
   // Filter stocks based on search term
   const filteredStocks = stocks.filter((stock) =>
-    stock.itemName.toLowerCase().includes(searchTerm.toLowerCase())
+    stock.itemName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
 
   return (
     <div className="relative max-w-full h-[90vh] overflow-x-scroll scrollbar-hide p-4">
