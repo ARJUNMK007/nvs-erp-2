@@ -312,8 +312,10 @@ const handleDeleteCategory = (value) => {
 
   return (
     <div className="w-[100%] h-[80vh] overflow-x-scroll scrollbar-hide p-1">
-      <div className="flex justify-end items-center mb-4">
-       
+      
+      <div className="flex justify-between items-center mb-4">
+       <h1 className="text-2xl font-bold mb-4">Stock Management</h1>
+
         <button onClick={handleExportToExcel} className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none flex items-center">
           <i className="fas fa-download mr-2"></i>
           Export to Excel

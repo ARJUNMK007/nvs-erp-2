@@ -103,6 +103,8 @@ const DailyStock= () => {
 
   return (
     <div className="w-full h-[80vh] overflow-x-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Daily Stock Management</h1>
+
       {/* Input Form */}
       <div className="mb-4">
         <input
