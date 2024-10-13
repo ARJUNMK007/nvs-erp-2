@@ -14,7 +14,9 @@ const SalesPage = () => {
   const [newRakOption, setNewRakOption] = useState("");
   const [showRakInput, setShowRakInput] = useState(false);
   const [selectedRak, setSelectedRak] = useState("");
-
+  const RackRef = dataRef.child('StkRack'); 
+  const UnitRef = dataRef.child('StkUnit'); 
+  const CategoryRef = dataRef.child('StkCategory'); 
   // Fetch existing unit options
   useEffect(() => {
     UnitRef.on('value', (snapshot) => {
@@ -101,9 +103,7 @@ const SalesPage = () => {
   
   const [deals, setDeals] = useState([]); // Initialize deals array
   const SalesRef = dataRef.child('Stock'); // Reference to Sales in Firebase
-  const RackRef = dataRef.child('Stock/Rack'); 
-  const UnitRef = dataRef.child('Stock/Unit'); 
-  const CategoryRef = dataRef.child('Stock/Category'); 
+
   const [newDeal, setNewDeal] = useState({
     itemName: '',
     itemCategory: '',
