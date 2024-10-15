@@ -337,17 +337,26 @@ const [dailyStockData, setDailyStockData] = useState({});
     const balanceQty = dailyStockData[itemName] || 0; // Get balanceQty
     return Number(currentStock) + Number(balanceQty); // Calculate total stock
   };
+  const [searchTerm, setSearchTerm] = useState(null)
 
   return (
     <div className="w-[100%] h-[80vh] overflow-x-scroll scrollbar-hide p-1">
       
       <div className="flex justify-between items-center mb-4">
        <h1 className="text-2xl font-bold mb-4">Stock Management</h1>
-
-        <button onClick={handleExportToExcel} className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none flex items-center">
+       <div className="flex flex-row">
+       <input
+          type="text"
+          placeholder="Search Item"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="border px-2 py-1 mb-2"
+        />
+        <button onClick={handleExportToExcel} className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none flex items-center ml-[4px]">
           <i className="fas fa-download mr-2"></i>
           Export to Excel
         </button>
+        </div>
       </div>
 
       {/* Input Form */}
@@ -587,7 +596,11 @@ const [dailyStockData, setDailyStockData] = useState({});
             </tr>
           </thead>
           <tbody>
-            {deals.map((deal, index) => (
+          {deals
+            .filter((deal) => {
+              if (!searchTerm) return true;
+              return deal.itemName.toLowerCase().includes(searchTerm.toLowerCase());
+            }).map((deal, index) => (
               <tr key={deal.id} className="border-b cursor-pointer" >
                 {/* <td  className="px-4 py-2">{index + 1}</td> */}
                 <td onClick={() => handleRowClick(deal)} className="px-4 py-2">{index + 1}</td>

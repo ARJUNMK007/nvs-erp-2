@@ -85,10 +85,30 @@ const Inventools = () => {
     const updatedTools = toolData.filter((_, i) => i !== index);
     setToolData(updatedTools);
   };
+  const [searchTerm, setSearchTerm] = useState('');
+    // Filtering tools based on the search term
+    const filteredTools = toolData.filter((tool) => {
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        tool.toolName.toLowerCase().includes(searchLower) ||
+        tool.employeeName.toLowerCase().includes(searchLower)
+      );
+    });
 
   return (
     <div className="p-4">
+      <div className='flex justify-between'>
       <h1 className="text-2xl font-bold mb-4">Tools Management</h1>
+      <input
+          type="text"
+          placeholder="Search Tools"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="border px-2 py-1 mb-2"
+        />
+
+      </div>
+      
 
       {/* Add New Tool or Edit Tool */}
       <div className="mb-4">
@@ -172,7 +192,7 @@ const Inventools = () => {
           </tr>
         </thead>
         <tbody>
-          {toolData.map((tool, index) => (
+        {filteredTools.map((tool, index) => (
             <tr key={index}>
               <td className="border px-4 py-2">{tool.toolName}</td>
               <td className="border px-4 py-2">{tool.toolQty}</td>

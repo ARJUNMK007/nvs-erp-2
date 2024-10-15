@@ -268,7 +268,7 @@ const POTracker = () => {
               <th className="py-3 px-6">Date</th>
               <th className="py-3 px-6">Status</th>
               <th className="py-3 px-6">Details</th>
-              <th className="py-3 px-6">Actions</th>
+              <th className="py-3 px-6"></th>
             </tr>
           </thead>
           <tbody className="text-gray-700 text-sm">
@@ -296,7 +296,8 @@ const POTracker = () => {
                     </button>
                   </td>
                   <td className="py-3 px-6">
-                    <button onClick={() => handleDeletePO(poNumber)} className="text-red-500">Delete</button>
+                    <i
+                    className="fas fa-trash-alt text-red-500 cursor-pointer" onClick={() => handleDeletePO(poNumber)} ></i>
                   </td>
                 </tr>
                 {expandedRows[poNumber] && (
@@ -310,7 +311,7 @@ const POTracker = () => {
                               <th className="py-3 px-6">Product Name</th>
                               <th className="py-3 px-6">Quantity</th>
                               <th className="py-3 px-6">Price</th>
-                              <th className="py-3 px-6">Actions</th>
+                              <th className="py-3 px-6"></th>
                             </tr>
                           </thead>
                           <tbody>
@@ -360,8 +361,8 @@ const POTracker = () => {
                                     </>
                                   ) : (
                                     <>
-                                      <button onClick={() => handleEditProduct(poNumber, index)} className="text-blue-500">Edit</button>&nbsp;
-                                      <button onClick={() => handleDeleteProduct(poNumber, index)} className="text-red-500">Delete</button>
+                                      <i className="fas fa-edit text-blue-500 cursor-pointer"onClick={() => handleEditProduct(poNumber, index)}></i>&nbsp;
+                                      <i className="fas fa-trash-alt text-red-500 cursor-pointer" onClick={() => handleDeleteProduct(poNumber, index)} ></i>
                                     </>
                                   )}
                                 </td>
@@ -400,7 +401,7 @@ const POTracker = () => {
                               <th className="py-3 px-6">Cost Name</th>
                               <th className="py-3 px-6">Quantity</th>
                               <th className="py-3 px-6">Cost</th>
-                              <th className="py-3 px-6">Actions</th>
+                              <th className="py-3 px-6"></th>
                             </tr>
                           </thead>
                           <tbody>
@@ -450,8 +451,8 @@ const POTracker = () => {
                                     </>
                                   ) : (
                                     <>
-                                      <button onClick={() => handleEditCost(poNumber, index)} className="text-blue-500">Edit</button>&nbsp;
-                                      <button onClick={() => handleDeleteCost(poNumber, index)} className="text-red-500">Delete</button>
+                                      <i className="fas fa-edit text-blue-500 cursor-pointer" onClick={() => handleEditCost(poNumber, index)} ></i>&nbsp;
+                                      <i className="fas fa-trash-alt text-red-500 cursor-pointer"onClick={() => handleDeleteCost(poNumber, index)} ></i>
                                     </>
                                   )}
                                 </td>

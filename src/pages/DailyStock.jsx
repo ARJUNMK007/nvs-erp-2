@@ -276,7 +276,11 @@ const DailyStock = () => {
             </tr>
           </thead>
           <tbody>
-            {deals.map((deal, index) => {
+          {deals
+            .filter((deal) => {
+              if (!searchTerm) return true;
+              return deal.itemName.toLowerCase().includes(searchTerm.toLowerCase());
+            }).map((deal, index) => {
               const moveInQty = parseInt(deal.moveInQty) || 0; // Ensure we have a number
               const moveOutQty = parseInt(deal.moveOutQty) || 0; // Ensure we have a number
               const balanceQty = moveInQty - moveOutQty; // Calculate Balance Qty
