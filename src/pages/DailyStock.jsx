@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";  
 import '@fortawesome/fontawesome-free/css/all.min.css'; // FontAwesome for icons
 import { dataRef } from '../utils/Firebabse';
 
@@ -12,14 +12,20 @@ const DailyStock = () => {
     moveInDate: '',
     moveOutQty: '',
     moveOutDate: '',
-    employee: ''
+    employee: '',
+    balanceQty: '' // Add balanceQty field to newDeal
   });
   const [editId, setEditId] = useState(null);
   const DailyStkRef = dataRef.child('Daily Stock');
   const DailyCatRef = dataRef.child('Daily Stock-Cat'); // New reference for categories
+  const SalesRef = dataRef.child('Stock'); // SalesRef path to fetch itemName
   const [categoryOptions, setCategoryOptions] = useState([]); 
   const [newCategory, setNewCategory] = useState('');
   const [openCategory, setOpenCategory] = useState(false);
+  
+  // State for items from SalesRef and search functionality
+  const [items, setItems] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Fetching all data from Firebase on load
   useEffect(() => {
@@ -41,10 +47,20 @@ const DailyStock = () => {
       setCategoryOptions(categories);
     });
 
+    // Fetch items (itemName) from SalesRef
+    SalesRef.on('value', (snapshot) => {
+      const itemList = [];
+      snapshot.forEach((childSnapshot) => {
+        itemList.push(childSnapshot.val().itemName); // Assuming each child has an itemName field
+      });
+      setItems(itemList);
+    });
+
     // Cleanup subscription on unmount
     return () => {
       DailyStkRef.off();
       DailyCatRef.off();
+      SalesRef.off();
     };
   }, []);
 
@@ -56,15 +72,24 @@ const DailyStock = () => {
   // Adding or editing deal (stock) in Firebase
   const handleAddOrEditDeal = () => {
     if (newDeal.itemName && newDeal.supplier) {
+      const moveInQty = parseInt(newDeal.moveInQty) || 0;
+      const moveOutQty = parseInt(newDeal.moveOutQty) || 0;
+      const balanceQty = moveInQty - moveOutQty; // Calculate Balance Qty
+  
+      const dealToSave = {
+        ...newDeal,
+        balanceQty, // Include balance quantity in the saved data
+      };
+  
       if (editId !== null) {
         // Editing an existing stock entry
-        DailyStkRef.child(editId).update(newDeal);
+        DailyStkRef.child(editId).update(dealToSave);
         setEditId(null); // Reset edit mode
       } else {
         // Adding a new stock entry
-        DailyStkRef.push(newDeal);
+        DailyStkRef.push(dealToSave);
       }
-
+  
       // Reset form
       setNewDeal({
         itemName: '',
@@ -80,6 +105,7 @@ const DailyStock = () => {
       alert('Please fill in all required fields.');
     }
   };
+  
 
   // Deleting a stock entry from Firebase
   const handleDelete = (id) => {
@@ -92,14 +118,10 @@ const DailyStock = () => {
     setNewDeal(deal);
   };
 
-  // Handle category selection changes
-  const handleSelectChanges = (e) => {
-    const { name, value } = e.target;
-    setNewDeal((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
+  // Filtered items based on search term
+  const filteredItems = items.filter(item =>
+    item.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // Handle adding a new category
   const handleAddCategory = () => {
@@ -120,25 +142,35 @@ const DailyStock = () => {
 
       {/* Input Form */}
       <div className="mb-4">
-      <select
-  name="itemName"
-  value={newDeal.itemName}
-  onChange={handleChange}
-  className="border px-2 py-1 mr-2"
->
-  <option value="" disabled>Select Item</option> {/* Placeholder */}
-  <option value="Item1">Item 1</option>
-  <option value="Item2">Item 2</option>
-  <option value="Item3">Item 3</option>
-  {/* Add more options as needed */}
-</select>
+        {/* Searchable Item Dropdown */}
+        <input
+          type="text"
+          placeholder="Search Item"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="border px-2 py-1 mb-2"
+        />
+
+        <select
+          name="itemName"
+          value={newDeal.itemName}
+          onChange={handleChange}
+          className="border px-2 py-1 mr-2"
+        >
+          <option value="" disabled>Select Item</option> {/* Placeholder */}
+          {filteredItems.map((item, index) => (
+            <option key={index} value={item}>
+              {item}
+            </option>
+          ))}
+        </select>
 
         {/* Category select dropdown with adding new category functionality */}
         <div className="relative">
           <select
             name="subCategory"
             value={newDeal.subCategory}
-            onChange={handleSelectChanges}
+            onChange={handleChange}
             className="border px-2 py-1 mr-2 mt-[4px]"
           >
             <option value="">Sub Category</option>
@@ -169,6 +201,8 @@ const DailyStock = () => {
             </div>
           )}
         </div>
+
+        {/* Other form fields */}
         <input
           type="text"
           name="supplier"
@@ -223,8 +257,8 @@ const DailyStock = () => {
         </button>
       </div>
 
-      {/* Table Display */}
-      <div className="overflow-x-auto">
+          {/* Table Display */}
+          <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
             <tr className="bg-gray-100 border-b">
@@ -237,37 +271,45 @@ const DailyStock = () => {
               <th className="px-4 py-2">Move Out Qty</th>
               <th className="px-4 py-2">Move Out Date</th>
               <th className="px-4 py-2">Employee</th>
+              <th className="px-4 py-2">Balance Qty</th> {/* New column for Balance Qty */}
               <th className="px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {deals.map((deal, index) => (
-              <tr key={deal.id} className="border-b hover:bg-gray-100">
-                <td className="px-4 py-2">{index + 1}</td>
-                <td className="px-4 py-2">{deal.itemName}</td>
-                <td className="px-4 py-2">{deal.subCategory}</td>
-                <td className="px-4 py-2">{deal.supplier}</td>
-                <td className="px-4 py-2">{deal.moveInQty}</td>
-                <td className="px-4 py-2">{deal.moveInDate}</td>
-                <td className="px-4 py-2">{deal.moveOutQty}</td>
-                <td className="px-4 py-2">{deal.moveOutDate}</td>
-                <td className="px-4 py-2">{deal.employee}</td>
-                <td className="px-4 py-2">
-                  <button
-                    onClick={() => handleEdit(deal)}
-                    className="text-blue-500 mr-2"
-                  >
-                    <i className="fas fa-edit"></i>
-                  </button>
-                  <button
-                    onClick={() => handleDelete(deal.id)}
-                    className="text-red-500"
-                  >
-                    <i className="fas fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {deals.map((deal, index) => {
+              const moveInQty = parseInt(deal.moveInQty) || 0; // Ensure we have a number
+              const moveOutQty = parseInt(deal.moveOutQty) || 0; // Ensure we have a number
+              const balanceQty = moveInQty - moveOutQty; // Calculate Balance Qty
+
+              return (
+                <tr key={deal.id} className="border-b">
+                  <td className="px-4 py-2">{index + 1}</td>
+                  <td className="px-4 py-2">{deal.itemName}</td>
+                  <td className="px-4 py-2">{deal.subCategory}</td>
+                  <td className="px-4 py-2">{deal.supplier}</td>
+                  <td className="px-4 py-2">{moveInQty}</td>
+                  <td className="px-4 py-2">{deal.moveInDate}</td>
+                  <td className="px-4 py-2">{moveOutQty}</td>
+                  <td className="px-4 py-2">{deal.moveOutDate}</td>
+                  <td className="px-4 py-2">{deal.employee}</td>
+                  <td className="px-4 py-2">{balanceQty}</td> {/* Displaying Balance Qty */}
+                  <td className="px-4 py-2">
+                    <button
+                      onClick={() => handleEdit(deal)}
+                      className="text-blue-500 mr-2"
+                    >
+                      <i className="fas fa-edit"></i>
+                    </button>
+                    <button
+                      onClick={() => handleDelete(deal.id)}
+                      className="text-red-500"
+                    >
+                      <i className="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -276,3 +318,5 @@ const DailyStock = () => {
 };
 
 export default DailyStock;
+
+ 

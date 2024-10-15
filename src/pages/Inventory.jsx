@@ -17,6 +17,7 @@ const SalesPage = () => {
   const RackRef = dataRef.child('StkRack'); 
   const UnitRef = dataRef.child('StkUnit'); 
   const CategoryRef = dataRef.child('StkCategory'); 
+  const DailyStkRef = dataRef.child('Daily Stock');
   // Fetch existing unit options
   useEffect(() => {
     UnitRef.on('value', (snapshot) => {
@@ -263,6 +264,7 @@ useEffect(() => {
   };
 }, []);
 
+
 // Handle select changes
 const handleSelectChanges = (e) => {
   const { value } = e.target;
@@ -309,6 +311,32 @@ const handleDeleteCategory = (value) => {
   });
 };
 
+const [dailyStockData, setDailyStockData] = useState({});
+  // Fetch daily stock data
+  useEffect(() => {
+    DailyStkRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const dailyStockArray = Object.keys(data).reduce((acc, key) => {
+          const { itemName, moveInQty, moveOutQty } = data[key];
+          const balanceQty = (moveInQty || 0) - (moveOutQty || 0); // Calculate balanceQty
+          acc[itemName] = balanceQty; // Store balanceQty by itemName
+          return acc;
+        }, {});
+        setDailyStockData(dailyStockArray); // Set the daily stock data
+      }
+    });
+    
+    // Clean up the Firebase listener on component unmount
+    return () => {
+      DailyStkRef.off();
+    };
+  }, []);
+  // Calculate total stock and add daily stock to the display
+  const getTotalStock = (currentStock, itemName) => {
+    const balanceQty = dailyStockData[itemName] || 0; // Get balanceQty
+    return Number(currentStock) + Number(balanceQty); // Calculate total stock
+  };
 
   return (
     <div className="w-[100%] h-[80vh] overflow-x-scroll scrollbar-hide p-1">
@@ -564,11 +592,13 @@ const handleDeleteCategory = (value) => {
                 {/* <td  className="px-4 py-2">{index + 1}</td> */}
                 <td onClick={() => handleRowClick(deal)} className="px-4 py-2">{index + 1}</td>
                 <td className="px-4 py-2">{deal.itemName}</td>
-                <td className="px-4 py-2">{deal.itemCategory}</td>
+                <td className="px-4 py-2">
+          {categoryOptions.find(cat => cat.value === deal.itemCategory)?.label || deal.itemCategory}
+        </td>
                 <td className="px-4 py-2">{deal.unit}</td>
                 <td className="px-4 py-2">{deal.currentStock}</td>
-                <td className="px-4 py-2"></td>
-                <td className="px-4 py-2"></td>
+                <td className="px-4 py-2">{dailyStockData[deal.itemName] || 0}</td>
+                <td className="px-4 py-2">{getTotalStock(deal.currentStock, deal.itemName)}</td>
                 <td className="px-4 py-2 flex space-x-4">
                   <i
                     className="fas fa-edit text-blue-500 cursor-pointer"
