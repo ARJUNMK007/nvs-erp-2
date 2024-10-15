@@ -120,14 +120,19 @@ const DailyStock = () => {
 
       {/* Input Form */}
       <div className="mb-4">
-        <input
-          type="text"
-          name="itemName"
-          placeholder="Item Name"
-          value={newDeal.itemName}
-          onChange={handleChange}
-          className="border px-2 py-1 mr-2"
-        />
+      <select
+  name="itemName"
+  value={newDeal.itemName}
+  onChange={handleChange}
+  className="border px-2 py-1 mr-2"
+>
+  <option value="" disabled>Select Item</option> {/* Placeholder */}
+  <option value="Item1">Item 1</option>
+  <option value="Item2">Item 2</option>
+  <option value="Item3">Item 3</option>
+  {/* Add more options as needed */}
+</select>
+
         {/* Category select dropdown with adding new category functionality */}
         <div className="relative">
           <select
