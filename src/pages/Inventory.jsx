@@ -551,8 +551,10 @@ const handleDeleteCategory = (value) => {
               <th className="px-4 py-2 text-left">SL NO</th>
               <th className="px-4 py-2 text-left">ITEM NAME</th>
               <th className="px-4 py-2 text-left">ITEM CATEGORY</th>
-              <th className="px-4 py-2 text-left">CURRENT STOCK</th>
               <th className="px-4 py-2 text-left">UNIT</th>
+              <th className="px-4 py-2 text-left">CURRENT STOCK</th>
+              <th className="px-4 py-2 text-left">DAILY STOCK</th>
+              <th className="px-4 py-2 text-left">TOTAL STOCK</th>
               <th className="px-4 py-2 text-left"></th>
             </tr>
           </thead>
@@ -563,8 +565,10 @@ const handleDeleteCategory = (value) => {
                 <td onClick={() => handleRowClick(deal)} className="px-4 py-2">{index + 1}</td>
                 <td className="px-4 py-2">{deal.itemName}</td>
                 <td className="px-4 py-2">{deal.itemCategory}</td>
-                <td className="px-4 py-2">{deal.currentStock}</td>
                 <td className="px-4 py-2">{deal.unit}</td>
+                <td className="px-4 py-2">{deal.currentStock}</td>
+                <td className="px-4 py-2"></td>
+                <td className="px-4 py-2"></td>
                 <td className="px-4 py-2 flex space-x-4">
                   <i
                     className="fas fa-edit text-blue-500 cursor-pointer"
