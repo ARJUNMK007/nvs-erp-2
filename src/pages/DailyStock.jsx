@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import '@fortawesome/fontawesome-free/css/all.min.css'; // FontAwesome for icons
+import { dataRef } from '../utils/Firebabse';
 
-const DailyStock= () => {
+const DailyStock = () => {
   const [deals, setDeals] = useState([]); // Stock data
   const [newDeal, setNewDeal] = useState({
     itemName: '',
@@ -14,25 +15,54 @@ const DailyStock= () => {
     employee: ''
   });
   const [editId, setEditId] = useState(null);
+  const DailyStkRef = dataRef.child('Daily Stock');
+  const DailyCatRef = dataRef.child('Daily Stock-Cat'); // New reference for categories
+  const [categoryOptions, setCategoryOptions] = useState([]); 
+  const [newCategory, setNewCategory] = useState('');
+  const [openCategory, setOpenCategory] = useState(false);
+
+  // Fetching all data from Firebase on load
+  useEffect(() => {
+    // Fetch stock data
+    DailyStkRef.on('value', (snapshot) => {
+      const stockData = [];
+      snapshot.forEach((childSnapshot) => {
+        stockData.push({ id: childSnapshot.key, ...childSnapshot.val() });
+      });
+      setDeals(stockData);
+    });
+
+    // Fetch category data
+    DailyCatRef.on('value', (snapshot) => {
+      const categories = [];
+      snapshot.forEach((childSnapshot) => {
+        categories.push(childSnapshot.val());
+      });
+      setCategoryOptions(categories);
+    });
+
+    // Cleanup subscription on unmount
+    return () => {
+      DailyStkRef.off();
+      DailyCatRef.off();
+    };
+  }, []);
 
   // Handling input changes for the form
   const handleChange = (e) => {
     setNewDeal({ ...newDeal, [e.target.name]: e.target.value });
   };
 
-  // Adding or editing deal (stock)
+  // Adding or editing deal (stock) in Firebase
   const handleAddOrEditDeal = () => {
     if (newDeal.itemName && newDeal.supplier) {
       if (editId !== null) {
         // Editing an existing stock entry
-        const updatedDeals = deals.map((deal) =>
-          deal.id === editId ? { ...deal, ...newDeal } : deal
-        );
-        setDeals(updatedDeals);
+        DailyStkRef.child(editId).update(newDeal);
         setEditId(null); // Reset edit mode
       } else {
         // Adding a new stock entry
-        setDeals([...deals, { ...newDeal, id: Date.now() }]);
+        DailyStkRef.push(newDeal);
       }
 
       // Reset form
@@ -51,9 +81,9 @@ const DailyStock= () => {
     }
   };
 
-  // Deleting a stock entry
+  // Deleting a stock entry from Firebase
   const handleDelete = (id) => {
-    setDeals(deals.filter((deal) => deal.id !== id));
+    DailyStkRef.child(id).remove();
   };
 
   // Edit an existing deal
@@ -61,13 +91,6 @@ const DailyStock= () => {
     setEditId(deal.id);
     setNewDeal(deal);
   };
-  const [categoryOptions, setCategoryOptions] = useState([
-    { value: 'electronics', label: 'Electronics' },
-    { value: 'books', label: 'Books' },
-    { value: 'clothing', label: 'Clothing' },
-  ]);
-  const [newCategory, setNewCategory] = useState('');
-  const [openCategory, setOpenCategory] = useState(false);
 
   // Handle category selection changes
   const handleSelectChanges = (e) => {
@@ -78,11 +101,6 @@ const DailyStock= () => {
     }));
   };
 
-  // Handle toggle of category list
-  const handleOpenCategory = (value) => {
-    setOpenCategory(value);
-  };
-
   // Handle adding a new category
   const handleAddCategory = () => {
     if (newCategory.trim()) {
@@ -90,15 +108,10 @@ const DailyStock= () => {
       setCategoryOptions((prevOptions) => [...prevOptions, newCategoryObj]);
       setNewCategory(''); // Clear the input field
       setNewDeal((prevDeal) => ({ ...prevDeal, itemCategory: newCategoryObj.value })); // Set the selected category to the new one
+      
+      // Save the new category to Firebase
+      DailyCatRef.push(newCategoryObj);
     }
-  };
-
-  // Handle deleting a category
-  const handleDeleteCategory = (categoryValue) => {
-    const filteredCategories = categoryOptions.filter(
-      (category) => category.value !== categoryValue
-    );
-    setCategoryOptions(filteredCategories);
   };
 
   return (
@@ -115,71 +128,42 @@ const DailyStock= () => {
           onChange={handleChange}
           className="border px-2 py-1 mr-2"
         />
-       <div className="relative">
-      {/* Category Select Dropdown */}
-      <select
-        name="itemCategory"
-        value={newDeal.itemCategory}
-        onChange={handleSelectChanges}
-        className="border px-2 py-1 mr-2 mt-[4px]"
-      >
-        <option value="">Sub Category</option>
-        {categoryOptions.map((category) => (
-          <option key={category.value} value={category.value}>
-            {category.label}
-          </option>
-        ))}
-        <option value="add-new">Add New Category</option> {/* Option to add new category */}
-      </select>
-
-      {/* Edit Icon to Toggle Category List */}
-      <i
-        className="fas fa-edit text-blue-500 cursor-pointer"
-        onClick={() => handleOpenCategory(!openCategory)}
-      ></i>
-
-      {/* Category List with Delete Option */}
-      {openCategory && (
-        <div className="w-[255px] h-[100px] overflow-auto bg-white m-[5px]">
-          <ul>
-            {categoryOptions.map((category) => (
-              <li key={category.value} className="flex items-center">
-                <span>{category.label}</span>
-                <button
-                  onClick={() => {
-                    const confirmDelete = window.confirm(`Delete ${category.label}?`);
-                    if (confirmDelete) handleDeleteCategory(category.value);
-                  }}
-                  className="ml-2 text-red-500"
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Input to Add a New Category */}
-      {newDeal.itemCategory === 'add-new' && (
-        <div>
-          <input
-            type="text"
-            value={newCategory}
-            onChange={(e) => setNewCategory(e.target.value)}
-            placeholder="Enter new category"
-            className="border px-2 py-1 mr-2 mt-2"
-          />
-          <button
-            onClick={handleAddCategory}
-            className="px-2 py-1 bg-blue-500 text-white"
-            disabled={!newCategory.trim()} // Disable button if input is empty
+        {/* Category select dropdown with adding new category functionality */}
+        <div className="relative">
+          <select
+            name="subCategory"
+            value={newDeal.subCategory}
+            onChange={handleSelectChanges}
+            className="border px-2 py-1 mr-2 mt-[4px]"
           >
-            Add
-          </button>
+            <option value="">Sub Category</option>
+            {categoryOptions.map((category) => (
+              <option key={category.value} value={category.value}>
+                {category.label}
+              </option>
+            ))}
+            <option value="add-new">Add New Category</option>
+          </select>
+
+          {newDeal.subCategory === 'add-new' && (
+            <div>
+              <input
+                type="text"
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                placeholder="Enter new category"
+                className="border px-2 py-1 mr-2 mt-2"
+              />
+              <button
+                onClick={handleAddCategory}
+                className="px-2 py-1 bg-blue-500 text-white"
+                disabled={!newCategory.trim()}
+              >
+                Add
+              </button>
+            </div>
+          )}
         </div>
-      )}
-    </div>
         <input
           type="text"
           name="supplier"
@@ -253,7 +237,7 @@ const DailyStock= () => {
           </thead>
           <tbody>
             {deals.map((deal, index) => (
-              <tr key={deal.id} className="border-b">
+              <tr key={deal.id} className="border-b hover:bg-gray-100">
                 <td className="px-4 py-2">{index + 1}</td>
                 <td className="px-4 py-2">{deal.itemName}</td>
                 <td className="px-4 py-2">{deal.subCategory}</td>
@@ -264,14 +248,18 @@ const DailyStock= () => {
                 <td className="px-4 py-2">{deal.moveOutDate}</td>
                 <td className="px-4 py-2">{deal.employee}</td>
                 <td className="px-4 py-2">
-                <i
-                    className="fas fa-edit text-blue-500 cursor-pointer"
+                  <button
                     onClick={() => handleEdit(deal)}
-                  ></i>
-                  <i
-                    className="fas fa-trash-alt text-red-500 cursor-pointer ml-[4px]"
+                    className="text-blue-500 mr-2"
+                  >
+                    <i className="fas fa-edit"></i>
+                  </button>
+                  <button
                     onClick={() => handleDelete(deal.id)}
-                  ></i>
+                    className="text-red-500"
+                  >
+                    <i className="fas fa-trash"></i>
+                  </button>
                 </td>
               </tr>
             ))}
