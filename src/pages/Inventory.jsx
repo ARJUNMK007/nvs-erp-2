@@ -337,7 +337,15 @@ const [dailyStockData, setDailyStockData] = useState({});
     const balanceQty = dailyStockData[itemName] || 0; // Get balanceQty
     return Number(currentStock) + Number(balanceQty); // Calculate total stock
   };
-  const [searchTerm, setSearchTerm] = useState(null)
+  const [searchTerm, setSearchTerm] = useState("")
+   // Filter deals by search term (item name or category)
+   const filteredDeals = deals.filter((deal) => {
+    return (
+      deal.itemName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      deal.itemCategory.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
 
   return (
     <div className="w-[100%] h-[80vh] overflow-x-scroll scrollbar-hide p-1">
@@ -596,11 +604,7 @@ const [dailyStockData, setDailyStockData] = useState({});
             </tr>
           </thead>
           <tbody>
-          {deals
-            .filter((deal) => {
-              if (!searchTerm) return true;
-              return deal.itemName.toLowerCase().includes(searchTerm.toLowerCase());
-            }).map((deal, index) => (
+          {filteredDeals.map((deal, index) => (
               <tr key={deal.id} className="border-b cursor-pointer" >
                 {/* <td  className="px-4 py-2">{index + 1}</td> */}
                 <td onClick={() => handleRowClick(deal)} className="px-4 py-2">{index + 1}</td>

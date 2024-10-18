@@ -26,6 +26,7 @@ const DailyStock = () => {
   // State for items from SalesRef and search functionality
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  
 
   // Fetching all data from Firebase on load
   useEffect(() => {
@@ -135,6 +136,12 @@ const DailyStock = () => {
       DailyCatRef.push(newCategoryObj);
     }
   };
+    // Filtered items based on search term (itemName or subCategory)
+    const filteredDeals = deals.filter((deal) =>
+      deal.itemName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      deal.subCategory.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  
 
   return (
     <div className="w-full h-[80vh] overflow-x-auto p-4">
@@ -276,11 +283,7 @@ const DailyStock = () => {
             </tr>
           </thead>
           <tbody>
-          {deals
-            .filter((deal) => {
-              if (!searchTerm) return true;
-              return deal.itemName.toLowerCase().includes(searchTerm.toLowerCase());
-            }).map((deal, index) => {
+          {filteredDeals.map((deal, index) => {
               const moveInQty = parseInt(deal.moveInQty) || 0; // Ensure we have a number
               const moveOutQty = parseInt(deal.moveOutQty) || 0; // Ensure we have a number
               const balanceQty = moveInQty - moveOutQty; // Calculate Balance Qty

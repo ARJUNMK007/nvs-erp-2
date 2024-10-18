@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faBox, faIndustry, faShoppingBag, faChartLine, faLifeRing, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { signOut } from "firebase/auth"; // Import signOut from Firebase
 import { auth } from "../utils/Firebabse" // Import Firebase auth
+import logo from "../assets/logo.png"
 
 const LeftSidebar = () => {
   const navigate = useNavigate(); // Used for navigation after logout
@@ -34,7 +35,7 @@ const LeftSidebar = () => {
 
   return (
     <div className="left-sidebar bg-blue-800 w-full h-screen flex flex-col relative">
-      <h1 className="text-[19px] font-bold text-center my-6 mx-[100px] bg-green-300">L</h1>
+      <img className=" font-bold text-center my-6 mx-[100px] w-[60px]"src={logo}/>
       {tabs.map((tab) => (
         <div key={tab.route}>
           <NavLink
@@ -52,7 +53,7 @@ const LeftSidebar = () => {
       ))}
       {/* Logout Button */}
       <div className="absolute bottom-6 w-full">
-        <div className="flex justify-center">
+        <div className="flex justify-center items-center flex-col">
           <button
             onClick={handleLogout}
             className="text-[white] text-lg font-semibold flex items-center"
@@ -60,6 +61,7 @@ const LeftSidebar = () => {
             <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
             Log Out
           </button>
+          <p className="text-[12px] mt-[5px]">Powered by MetXR studios @2024</p>
         </div>
       </div>
     </div>
