@@ -8,10 +8,11 @@ import jsPDF from "jspdf";
 
 const Invoice = () => {
   const PoNoRef = dataRef.child('PO');
+
+
   
   const [selectedPo, setSelectedPo] = useState('');
   const [poNumbers, setPoNumbers] = useState([]);
-  const [costData, setCostData] = useState([]);
   const [billTo, setBillTo] = useState({
     name: "",
     address: "",
@@ -30,6 +31,7 @@ const Invoice = () => {
   });
 
   const [items, setItems] = useState([]);
+  const [costItems, setCostItems] = useState([]); // Add this line
 
   const taxPercentage = 9;
   const componentRef = useRef();
@@ -40,30 +42,46 @@ const Invoice = () => {
       const poData = snapshot.val();
       const poNumbers = Object.keys(poData);
       setPoNumbers(poNumbers);
+      console.log("PO Data:", poData);
     });
   }, []);
+ 
 
   const handlePoChange = (poNo) => {
     setSelectedPo(poNo);
-
+  
     // Fetch selected PO data
     PoNoRef.child(poNo).once('value', snapshot => {
       const poData = snapshot.val();
-      setBillTo({
-        name: poData.billedTo || "",
-        address: "Default address", // Add address from your PO data if available
-        gstin: "Default GSTIN", // Add gstin from your PO data if available
-      });
-      setShipTo({
-        name: poData.shipTo || "",
-        address: "Default address", // Add address from your PO data if available
-      });
-      setItems(poData.products || []);
+      
+      if (poData) {
+        setBillTo({
+          name: poData.billedTo || "",
+          address: "Default address",
+          gstin: "Default GSTIN",
+        });
+        setShipTo({
+          name: poData.shipTo || "",
+          address: "Default address",
+        });
+        setItems(poData.products || []);
   
-      setInvoiceInfo(prev => ({
-        ...prev,
-        invoiceNo: poNo, // Set selected PO number as invoice number
-      }));
+        // Update how costItems are set
+        const costs = poData.costs || [];
+        const formattedCosts = costs.map(costItem => ({
+          name: costItem.name || "",
+          quantity: costItem.quantity || 0,
+          price: costItem.cost || 0,
+        }));
+        setCostItems(formattedCosts); // Set formatted costs to state
+  
+        setInvoiceInfo(prev => ({
+          ...prev,
+          invoiceNo: poNo,
+        }));
+      } else {
+        console.error("No PO data found for:", poNo);
+      }
     });
   };
   
@@ -74,13 +92,20 @@ const Invoice = () => {
   };
 
   const calculateTotals = () => {
-    const totalAmount = items.reduce((sum, item) => sum + parseFloat(item.price || 0), 0);
-    const taxAmount = (totalAmount * taxPercentage) / 100;
-    const totalWithTax = totalAmount + taxAmount * 2;
-    return { totalAmount, taxAmount, totalWithTax };
+    const totalItemAmount = items.reduce((sum, item) => sum + parseFloat(item.price || 0), 0);
+    const totalLaborCost = costItems.reduce((sum, costItem) => {
+      const itemCost = parseFloat(costItem.price || 0);
+      const itemQuantity = parseFloat(costItem.quantity || 0);
+      return sum + (itemCost * itemQuantity); // Multiply cost by quantity
+    }, 0);
+    const taxAmount = (totalItemAmount * taxPercentage) / 100;
+    const totalWithTaxAndLabor = totalItemAmount + taxAmount + totalLaborCost;
+
+    return { totalItemAmount, taxAmount, totalWithTaxAndLabor };
   };
 
-  const { totalAmount, taxAmount, totalWithTax } = calculateTotals();
+  // Call calculateTotals() here and destructure its return value
+  const { totalItemAmount, taxAmount, totalWithTaxAndLabor } = calculateTotals();
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -118,7 +143,10 @@ const Invoice = () => {
   const handleShipToChange = (e) => {
     setShipTo({ ...shipTo, name: e.target.value });
   };
- 
+  useEffect(() => {
+    console.log("Cost Items:", costItems);
+  }, [costItems]);
+  
   return (
     <div className="w-full h-[80vh] overflow-x-scroll scrollbar-hide">
       <div className="flex justify-between mb-4">
@@ -257,6 +285,29 @@ const Invoice = () => {
                   ))}
                 </tbody>
               </table>
+            {/* Cost Table Section */}
+{/* {costItems.length > 0 && (
+  <table className="min-w-full bg-gray-100 rounded-lg mt-6">
+    <thead className="text-left">
+      <tr>
+        <th className="py-3 px-6">Cost Name</th>
+        <th className="py-3 px-6">Quantity</th>
+        <th className="py-3 px-6">Cost</th>
+      </tr>
+    </thead>
+    <tbody>
+      {costItems.map((costItem, costIndex) => (
+        <tr key={costIndex}>
+          <td className="py-3 px-6">{costItem.name}</td>
+          <td className="py-3 px-6">{costItem.quantity}</td>
+          <td className="py-3 px-6">{costItem.price}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+)} */}
+
+
               <hr className="border-t-2 border-black my-4" />
             </div>
 
@@ -281,19 +332,43 @@ const Invoice = () => {
                   <p>Account No: 51900901017285 | IFSC: KARB0000519</p>
                   <p>Karnataka Bank Ltd, Coimbatore, Tamil Nadu</p>
                 </div>
-           
+                {costItems.length > 0 && (
+  <div className="overflow-x-auto">
+    <table className="min-w-[300px] max-w-[500px] bg-gray-100 rounded-lg mt-6 mx-auto">
+      <thead className="text-left">
+        <tr>
+          <th className="py-1 border border-black px-2 text-sm">Cost Name</th>
+          <th className="py-1 border border-black px-2 text-sm">Quantity</th>
+          <th className="py-1 border border-black px-2 text-sm">Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        {costItems.map((costItem, costIndex) => (
+          <tr key={costIndex}>
+            <td className="py-1 border border-black px-2 text-sm">{costItem.name}</td>
+            <td className="py-1 border border-black px-2 text-sm">{costItem.quantity}</td>
+            <td className="py-1 border border-black px-2 text-sm">{costItem.price}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
+
               </div>
             )}
 
             {pageIndex < pages.length - 1 && <div className="page-break" />}
           </div>
         ))}
-            <div className="text-right">
-    <p className="mb-2"><strong>Taxable Amount: </strong>₹{totalAmount.toFixed(2)}</p>
-    <p className="mb-2"><strong>CGST {taxPercentage}%: </strong>₹{taxAmount.toFixed(2)}</p>
-    <p className="mb-2"><strong>SGST {taxPercentage}%: </strong>₹{taxAmount.toFixed(2)}</p>
-    <p className="mb-2"><strong>Total Amount: </strong>₹{totalWithTax.toFixed(2)}</p>
-  </div>
+         <div className="text-right">
+  <p className="mb-2"><strong>Taxable Amount: </strong>₹{(totalItemAmount || 0).toFixed(2)}</p>
+  <p className="mb-2"><strong>CGST {taxPercentage}%: </strong>₹{(taxAmount || 0).toFixed(2)}</p>
+  <p className="mb-2"><strong>SGST {taxPercentage}%: </strong>₹{(taxAmount || 0).toFixed(2)}</p>
+  <p className="mb-2"><strong>Total Amount: </strong>₹{(totalWithTaxAndLabor || 0).toFixed(2)}</p>
+  <p className="mb-2"><strong>Total Invoice Amount: </strong>₹{(totalWithTaxAndLabor || 0).toFixed(2)}</p>
+</div>
+
 
 
 
