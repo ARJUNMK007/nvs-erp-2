@@ -112,9 +112,11 @@ const SalesPage = () => {
     unit: '', // Unit (Dropdown selection)
     RackNo: '',
     movingStock: '',
+    moq:'',
     itemPrice: '',
     averagePrice: '',
     supplier: '',
+    itemImage:'',
   });
   const [editId, setEditId] = useState(null);
 
@@ -151,9 +153,11 @@ const SalesPage = () => {
               unit: '',
               RackNo: '',
               movingStock: '',
+              moq:'',
               itemPrice: '',
               averagePrice: '',
               supplier: '',
+              itemImage:'',
             });
           })
           .catch(error => {
@@ -170,9 +174,11 @@ const SalesPage = () => {
               unit: '',
               RackNo: '',
               movingStock: '',
+              moq:'',
               itemPrice: '',
               averagePrice: '',
               supplier: '',
+              itemImage:'',
             });
           })
           .catch(error => {
@@ -209,6 +215,7 @@ const SalesPage = () => {
       UNIT: deal.unit,
       RACK_NO: deal.RackNo,
       MOVING_STOCK: deal.movingStock,
+      MINIMUM_ORDER_QTY:deal.moq,
       ITEM_PRICE: deal.itemPrice,
       AVERAGE_PRICE: deal.averagePrice,
       SUPPLIER: deal.supplier
@@ -397,6 +404,14 @@ const [dailyStockData, setDailyStockData] = useState({});
           className="border px-2 py-1 mr-2"
           hidden
         />
+         <input
+          type="number"
+          name="moq"
+          placeholder="Minimum order qty"
+          value={newDeal.moq}
+          onChange={handleChange}
+          className="border px-2 py-1 mr-2"
+        />
         <input
           type="number"
           name="itemPrice"
@@ -410,6 +425,14 @@ const [dailyStockData, setDailyStockData] = useState({});
           name="supplier"
           placeholder="Supplier"
           value={newDeal.supplier}
+          onChange={handleChange}
+          className="border px-2 py-1 mr-2 mt-[4px]"
+        />
+          <input
+          type="file"
+          name="itemImage"
+          accept="image/*"
+          value={newDeal.itemImage}
           onChange={handleChange}
           className="border px-2 py-1 mr-2 mt-[4px]"
         />
@@ -637,6 +660,7 @@ const [dailyStockData, setDailyStockData] = useState({});
   <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
     <div className="bg-white p-6 rounded shadow-lg w-96">
       <h2 className="text-xl font-semibold mb-4">Deal Details</h2>
+      <img src={selectedDeal.itemImage} alt="itemimage" />
       <table className="min-w-full bg-white border">
         <tbody>
           <tr>
@@ -646,6 +670,10 @@ const [dailyStockData, setDailyStockData] = useState({});
           <tr>
             <td className="px-4 py-2 font-semibold border">Moving Stock:</td>
             <td className="px-4 py-2 border">{selectedDeal.movingStock}</td>
+          </tr>
+          <tr>
+            <td className="px-4 py-2 font-semibold border">MOQ:</td>
+            <td className="px-4 py-2 border">{selectedDeal.moq}</td>
           </tr>
           <tr>
             <td className="px-4 py-2 font-semibold border">Item Price:</td>

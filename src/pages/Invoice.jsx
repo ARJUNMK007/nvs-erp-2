@@ -5,11 +5,13 @@ import { dataRef } from '../utils/Firebabse';
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
+
 const Invoice = () => {
   const PoNoRef = dataRef.child('PO');
-
+  
   const [selectedPo, setSelectedPo] = useState('');
   const [poNumbers, setPoNumbers] = useState([]);
+  const [costData, setCostData] = useState([]);
   const [billTo, setBillTo] = useState({
     name: "",
     address: "",
@@ -57,13 +59,14 @@ const Invoice = () => {
         address: "Default address", // Add address from your PO data if available
       });
       setItems(poData.products || []);
+  
       setInvoiceInfo(prev => ({
         ...prev,
         invoiceNo: poNo, // Set selected PO number as invoice number
       }));
     });
   };
-
+  
   const handleHSNChange = (index, value) => {
     const updatedItems = [...items];
     updatedItems[index].hsn = value;
@@ -115,7 +118,7 @@ const Invoice = () => {
   const handleShipToChange = (e) => {
     setShipTo({ ...shipTo, name: e.target.value });
   };
-
+ 
   return (
     <div className="w-full h-[80vh] overflow-x-scroll scrollbar-hide">
       <div className="flex justify-between mb-4">
@@ -230,6 +233,7 @@ const Invoice = () => {
                     <th className="border border-black p-2 bg-gray-100">QTY</th>
                     <th className="border border-black p-2 bg-gray-100">HSN</th>
                     <th className="border border-black p-2 bg-gray-100">AMOUNT</th>
+                 
                   </tr>
                 </thead>
                 <tbody>
