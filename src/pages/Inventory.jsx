@@ -352,8 +352,10 @@ const [dailyStockData, setDailyStockData] = useState({});
       deal.itemCategory.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
-
-
+  const [showMinimumStock, setShowMinimumStock] = useState(false);
+  const filteredmoqDeals = showMinimumStock 
+  ? deals.filter(deal => Number(deal.currentStock) < Number(deal.moq)) 
+  : deals;
   return (
     <div className="w-[100%] h-[80vh] overflow-x-scroll scrollbar-hide p-1">
       
@@ -428,14 +430,14 @@ const [dailyStockData, setDailyStockData] = useState({});
           onChange={handleChange}
           className="border px-2 py-1 mr-2 mt-[4px]"
         />
-          <input
+          {/* <input
           type="file"
           name="itemImage"
           accept="image/*"
           value={newDeal.itemImage}
           onChange={handleChange}
           className="border px-2 py-1 mr-2 mt-[4px]"
-        />
+        /> */}
         <div className="flex flex-row">
            <div className="relative">
   <select
@@ -608,6 +610,12 @@ const [dailyStockData, setDailyStockData] = useState({});
         >
           {editId !== null ? 'Update Stock' : 'Add Stock'}
         </button>
+        <button 
+  onClick={() => setShowMinimumStock(prev => !prev)} 
+  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none flex items-center ml-2"
+>
+  Minimum Stock
+</button>
       </div>
       </div>
       {/* Table */}
@@ -651,8 +659,27 @@ const [dailyStockData, setDailyStockData] = useState({});
                 </td>
               </tr>
             ))}
+
+{filteredmoqDeals.map((deal) => (
+  <tr key={deal.id}>
+    <td>{deal.itemName}</td>
+    <td>{deal.itemCategory}</td>
+    <td>{getTotalStock(deal.currentStock, deal.itemName)}</td>
+    <td>{deal.unit}</td>
+    <td>{deal.RackNo}</td>
+    <td>{deal.movingStock}</td>
+    <td>{deal.moq}</td>
+ 
+    <td>{deal.supplier}</td>
+    <td>
+
+    </td>
+  </tr>
+))}
+            
           </tbody>
         </table>
+     
       </div>
 
       {/* Popup/Modal */}
