@@ -356,6 +356,12 @@ const [dailyStockData, setDailyStockData] = useState({});
   const filteredmoqDeals = showMinimumStock 
   ? deals.filter(deal => Number(deal.currentStock) < Number(deal.moq)) 
   : deals;
+
+  const [openMoq,setOpenMoq]=useState(false)
+
+  const handleOpenMoq =()=>{
+    setOpenMoq(!openMoq)
+  }
   return (
     <div className="w-[100%] h-[80vh] overflow-x-scroll scrollbar-hide p-1">
       
@@ -611,7 +617,10 @@ const [dailyStockData, setDailyStockData] = useState({});
           {editId !== null ? 'Update Stock' : 'Add Stock'}
         </button>
         <button 
-  onClick={() => setShowMinimumStock(prev => !prev)} 
+  onClick={() => {
+    setShowMinimumStock(prev => !prev);
+    handleOpenMoq(); // Call your second function here
+  }}
   className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none flex items-center ml-2"
 >
   Minimum Stock
@@ -659,9 +668,11 @@ const [dailyStockData, setDailyStockData] = useState({});
                 </td>
               </tr>
             ))}
-
-{filteredmoqDeals.map((deal) => (
+ {openMoq && <h1>Moq Details</h1>}
+{openMoq && filteredmoqDeals.map((deal) => (
+  <>
   <tr key={deal.id}>
+   
     <td>{deal.itemName}</td>
     <td>{deal.itemCategory}</td>
     <td>{getTotalStock(deal.currentStock, deal.itemName)}</td>
@@ -675,6 +686,7 @@ const [dailyStockData, setDailyStockData] = useState({});
 
     </td>
   </tr>
+  </>
 ))}
             
           </tbody>
