@@ -668,31 +668,51 @@ const [dailyStockData, setDailyStockData] = useState({});
                 </td>
               </tr>
             ))}
- {openMoq && <h1>Moq Details</h1>}
-{openMoq && filteredmoqDeals.map((deal) => (
-  <>
-  <tr key={deal.id}>
-   
-    <td>{deal.itemName}</td>
-    <td>{deal.itemCategory}</td>
-    <td>{getTotalStock(deal.currentStock, deal.itemName)}</td>
-    <td>{deal.unit}</td>
-    <td>{deal.RackNo}</td>
-    <td>{deal.movingStock}</td>
-    <td>{deal.moq}</td>
- 
-    <td>{deal.supplier}</td>
-    <td>
 
-    </td>
-  </tr>
-  </>
-))}
             
           </tbody>
         </table>
      
       </div>
+      <>
+     
+       {openMoq && (
+        <>
+          <h1 className="mt-2 "><strong>Moq Details</strong></h1>
+          <table border="1" className="table-auto w-full text-left">
+            <thead className="bg-gray-200">
+              <tr>
+                <th>Sl. No.</th>
+                <th>Item Name</th>
+                <th>Category</th>
+                <th>Total Stock</th>
+                <th>Unit</th>
+                <th>Rack No</th>
+                <th>Moving Stock</th>
+                <th>MOQ</th>
+                <th>Supplier</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredmoqDeals.map((deal, index) => (
+                <tr key={deal.id} className="border-b">
+                  <td>{index + 1}</td> {/* Serial Number starts from 1 */}
+                  <td>{deal.itemName}</td>
+                  <td>{deal.itemCategory}</td>
+                  <td>{getTotalStock(deal.currentStock, deal.itemName)}</td>
+                  <td>{deal.unit}</td>
+                  <td>{deal.RackNo}</td>
+                  <td>{deal.movingStock}</td>
+                  <td>{deal.moq}</td>
+                  <td>{deal.supplier}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+    
+    </>
 
       {/* Popup/Modal */}
       {selectedDeal && (
@@ -700,11 +720,11 @@ const [dailyStockData, setDailyStockData] = useState({});
     <div className="bg-white p-6 rounded shadow-lg w-96">
       <h2 className="text-xl font-semibold mb-4">Deal Details</h2>
       <img src={selectedDeal.itemImage} alt="itemimage" />
-      <table className="min-w-full bg-white border">
+      <table className="min-w-full bg-white border border-black">
         <tbody>
           <tr>
-            <td className="px-4 py-2 font-semibold border">Rack No:</td>
-            <td className="px-4 py-2 border">{selectedDeal.RackNo}</td>
+            <td className="px-4  py-2 font-semibold border  border-black">Rack No:</td>
+            <td className="px-4 py-2 border  border-black">{selectedDeal.RackNo}</td>
           </tr>
           <tr>
             <td className="px-4 py-2 font-semibold border">Moving Stock:</td>
