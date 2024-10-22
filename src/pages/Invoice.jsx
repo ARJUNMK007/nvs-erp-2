@@ -10,7 +10,8 @@ const Invoice = () => {
   const PoNoRef = dataRef.child('PO');
 
 
-  
+  const [searchTerm, setSearchTerm] = useState('')
+
   const [selectedPo, setSelectedPo] = useState('');
   const [poNumbers, setPoNumbers] = useState([]);
   const [billTo, setBillTo] = useState({
@@ -74,7 +75,7 @@ const Invoice = () => {
           price: costItem.cost || 0,
         }));
         setCostItems(formattedCosts); // Set formatted costs to state
-  
+   
         setInvoiceInfo(prev => ({
           ...prev,
           invoiceNo: poNo,
@@ -83,6 +84,7 @@ const Invoice = () => {
         console.error("No PO data found for:", poNo);
       }
     });
+    setSearchTerm('');
   };
   
   const handleHSNChange = (index, value) => {
@@ -92,20 +94,25 @@ const Invoice = () => {
   };
 
   const calculateTotals = () => {
-    const totalItemAmount = items.reduce((sum, item) => sum + parseFloat(item.price || 0), 0);
-    const totalLaborCost = costItems.reduce((sum, costItem) => {
+    const totalItemAmount = items.reduce((sum, item) => {
+      const price = parseFloat(item.price) || 0; // Get the item price, default to 0 if invalid
+      const quantity = item.quantity || 1; // Get the item quantity, default to 1 if not specified
+      return sum + price * quantity; // Add the total for this item (price * quantity) to the sum
+    }, 0);
+        const totalLaborCost = costItems.reduce((sum, costItem) => {
       const itemCost = parseFloat(costItem.price || 0);
       const itemQuantity = parseFloat(costItem.quantity || 0);
       return sum + (itemCost * itemQuantity); // Multiply cost by quantity
     }, 0);
-    const taxAmount = (totalItemAmount * taxPercentage) / 100;
-    const totalWithTaxAndLabor = totalItemAmount + taxAmount + totalLaborCost;
+    const CtaxAmount = (totalItemAmount * taxPercentage) / 100;
+    const StaxAmount = (totalItemAmount * taxPercentage) / 100;
+    const totalWithTaxAndLabor = totalItemAmount + CtaxAmount + StaxAmount +totalLaborCost;
 
-    return { totalItemAmount, taxAmount, totalWithTaxAndLabor };
+    return { totalItemAmount, CtaxAmount,StaxAmount, totalWithTaxAndLabor };
   };
 
   // Call calculateTotals() here and destructure its return value
-  const { totalItemAmount, taxAmount, totalWithTaxAndLabor } = calculateTotals();
+  const { totalItemAmount, CtaxAmount,StaxAmount, totalWithTaxAndLabor } = calculateTotals();
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -146,22 +153,28 @@ const Invoice = () => {
   useEffect(() => {
     console.log("Cost Items:", costItems);
   }, [costItems]);
+
+  const filteredPoNumbers = poNumbers.filter(poNo =>
+    poNo.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   
   return (
     <div className="w-full h-[80vh] overflow-x-scroll scrollbar-hide">
       <div className="flex justify-between mb-4">
-        <select
-          className="mr-4 w-[200px] bg-gray-100 rounded-lg"
-          value={selectedPo}
-          onChange={(e) => handlePoChange(e.target.value)}
-        >
-          <option value="">Select PO Number</option>
-          {poNumbers.map(poNo => (
-            <option key={poNo} value={poNo}>
-              {poNo}
-            </option>
-          ))}
-        </select>
+    
+      <select
+        className="mr-4 w-[200px] bg-gray-100 rounded-lg"
+        value={selectedPo}
+        onChange={(e) => handlePoChange(e.target.value)}
+      >
+        <option value="">Select PO Number</option>
+        {filteredPoNumbers.map(poNo => (
+          <option key={poNo} value={poNo}>
+            {poNo}
+          </option>
+        ))}
+      </select>
         <div>
         
          <button
@@ -172,7 +185,13 @@ const Invoice = () => {
         </button>
         </div>
       </div>
-
+      <input
+        type="text"
+        placeholder="Search PO Number"
+        className="mb-2 w-[200px] bg-gray-100 rounded-lg p-2"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
       <div ref={componentRef}>
         {pages.map((pageItems, pageIndex) => (
           <div key={pageIndex}>
@@ -363,8 +382,8 @@ const Invoice = () => {
         ))}
          <div className="text-right">
   <p className="mb-2"><strong>Taxable Amount: </strong>₹{(totalItemAmount || 0).toFixed(2)}</p>
-  <p className="mb-2"><strong>CGST {taxPercentage}%: </strong>₹{(taxAmount || 0).toFixed(2)}</p>
-  <p className="mb-2"><strong>SGST {taxPercentage}%: </strong>₹{(taxAmount || 0).toFixed(2)}</p>
+  <p className="mb-2"><strong>CGST {taxPercentage}%: </strong>₹{(CtaxAmount || 0).toFixed(2)}</p>
+  <p className="mb-2"><strong>SGST {taxPercentage}%: </strong>₹{(StaxAmount || 0).toFixed(2)}</p>
   <p className="mb-2"><strong>Total Amount: </strong>₹{(totalWithTaxAndLabor || 0).toFixed(2)}</p>
   <p className="mb-2"><strong>Total Invoice Amount: </strong>₹{(totalWithTaxAndLabor || 0).toFixed(2)}</p>
 </div>

@@ -363,9 +363,8 @@ const [dailyStockData, setDailyStockData] = useState({});
     setOpenMoq(!openMoq)
   }
   return (
-    <div className="w-[100%] h-[80vh] overflow-x-scroll scrollbar-hide p-1">
-      
-      <div className="flex justify-between items-center mb-4">
+<div className="w-full h-[80vh] overflow-y-scroll overflow-x-hidden">      
+      <div className="flex justify-between items-center mb-2">
        <h1 className="text-2xl font-bold mb-4">Stock Management</h1>
        <div className="flex flex-row">
        <input
@@ -375,8 +374,8 @@ const [dailyStockData, setDailyStockData] = useState({});
           onChange={(e) => setSearchTerm(e.target.value)}
           className="border px-2 py-1 mb-2"
         />
-        <button onClick={handleExportToExcel} className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none flex items-center ml-[4px]">
-          <i className="fas fa-download mr-2"></i>
+        <button onClick={handleExportToExcel} className="bg-green-500 w-[150px] h-[35px] text-[13px] text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none flex items-center ml-[4px]">
+          <i className="fas fa-download mr-1"></i>
           Export to Excel
         </button>
         </div>
@@ -612,7 +611,7 @@ const [dailyStockData, setDailyStockData] = useState({});
 
         <button
           onClick={handleAddOrEditDeal}
-          className= "bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none mt-[4px] ml-[4px] w-[150px] h-[35px]"
+          className= "bg-blue-500 text-[15px] text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none mt-[4px] ml-[4px] w-[150px] h-[35px]"
         >
           {editId !== null ? 'Update Stock' : 'Add Stock'}
         </button>
@@ -621,15 +620,15 @@ const [dailyStockData, setDailyStockData] = useState({});
     setShowMinimumStock(prev => !prev);
     handleOpenMoq(); // Call your second function here
   }}
-  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none flex items-center ml-2"
+  className="bg-blue-500 text-[15px] text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none flex items-center mt-[4px] ml-2 w-[150px] h-[35px]"
 >
   Minimum Stock
 </button>
       </div>
       </div>
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200">
+<div className="overflow-x-hidden">   
+     <table className="w-full bg-white border border-gray-200">
           <thead>
             <tr className="bg-gray-100 border-b">
           
