@@ -122,14 +122,14 @@ function MOCreator() {
         <div className="flex space-x-2">
           <button
             onClick={addProduct}
-            className="flex items-center px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 focus:outline-none"
+            className="flex items-center px-3 py-1 bg-blue-600 text-white text-[15px] font-medium rounded-md hover:bg-blue-700 focus:outline-none w-[150px] h-[35px] "
           >
             <span className="mr-2 text-lg">+</span>
             Add Product
           </button>
           <button
             onClick={saveMO}
-            className="flex items-center px-3 py-1 bg-green-600 text-white text-xs font-medium rounded-md hover:bg-green-700 focus:outline-none"
+            className="flex items-center px-3 py-1 bg-green-600 text-white text-[15px] font-medium rounded-md hover:bg-green-700 focus:outline-none w-[150px] h-[35px]"
           >
             Save MO
           </button>

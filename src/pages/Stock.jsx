@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import SalesPage from './Inventory';
 import DailyStock from './DailyStock';
 import InvenTools from './InvenTools';
+import MoqStock from './MoqStock';
 
 
 
@@ -44,6 +45,16 @@ function Stock() {
         >
           Tools
         </button>
+        <button
+          className={`text-xl font-medium ${
+            activeTab === "Stock Moq"
+              ? "border-b-4 border-black"
+              : "border-b-4 border-transparent"
+          } pb-2`}
+          onClick={() => setActiveTab("Stock Moq")}
+        >
+          Stock Moq
+        </button>
     
       </div>
 
@@ -51,6 +62,7 @@ function Stock() {
       {activeTab === "Inventory" && <SalesPage />}
       {activeTab === "Daily Stock" && <DailyStock />}
       {activeTab === "Tools" && < InvenTools/>}
+      {activeTab === "Stock Moq" && < MoqStock/>}
       
     </div>
   );

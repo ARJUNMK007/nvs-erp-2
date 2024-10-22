@@ -217,7 +217,6 @@ const SalesPage = () => {
       MOVING_STOCK: deal.movingStock,
       MINIMUM_ORDER_QTY:deal.moq,
       ITEM_PRICE: deal.itemPrice,
-      AVERAGE_PRICE: deal.averagePrice,
       SUPPLIER: deal.supplier
     }));
    
