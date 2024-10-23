@@ -614,15 +614,7 @@ const [dailyStockData, setDailyStockData] = useState({});
         >
           {editId !== null ? 'Update Stock' : 'Add Stock'}
         </button>
-        <button 
-  onClick={() => {
-    setShowMinimumStock(prev => !prev);
-    handleOpenMoq(); // Call your second function here
-  }}
-  className="bg-blue-500 text-[15px] text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none flex items-center mt-[4px] ml-2 w-[150px] h-[35px]"
->
-  Minimum Stock
-</button>
+       
       </div>
       </div>
       {/* Table */}
@@ -672,45 +664,7 @@ const [dailyStockData, setDailyStockData] = useState({});
         </table>
      
       </div>
-      <>
-     
-       {openMoq && (
-        <>
-          <h1 className="mt-2 "><strong>Moq Details</strong></h1>
-          <table border="1" className="table-auto w-full text-left">
-            <thead className="bg-gray-200">
-              <tr>
-                <th>Sl. No.</th>
-                <th>Item Name</th>
-                <th>Category</th>
-                <th>Total Stock</th>
-                <th>Unit</th>
-                <th>Rack No</th>
-                <th>Moving Stock</th>
-                <th>MOQ</th>
-                <th>Supplier</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredmoqDeals.map((deal, index) => (
-                <tr key={deal.id} className="border-b">
-                  <td>{index + 1}</td> {/* Serial Number starts from 1 */}
-                  <td>{deal.itemName}</td>
-                  <td>{deal.itemCategory}</td>
-                  <td>{getTotalStock(deal.currentStock, deal.itemName)}</td>
-                  <td>{deal.unit}</td>
-                  <td>{deal.RackNo}</td>
-                  <td>{deal.movingStock}</td>
-                  <td>{deal.moq}</td>
-                  <td>{deal.supplier}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      )}
-    
-    </>
+  
 
       {/* Popup/Modal */}
       {selectedDeal && (
