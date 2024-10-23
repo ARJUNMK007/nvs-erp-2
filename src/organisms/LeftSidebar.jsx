@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faBox, faIndustry, faShoppingBag, faChartLine, faLifeRing, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { signOut } from "firebase/auth"; // Import signOut from Firebase
 import { auth } from "../utils/Firebabse" // Import Firebase auth
-import logo from "../assets/logo.png"
+import logo from "../assets/logos.png"
 
 const LeftSidebar = () => {
   const navigate = useNavigate(); // Used for navigation after logout

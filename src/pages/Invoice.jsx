@@ -5,13 +5,18 @@ import { dataRef } from '../utils/Firebabse';
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
-
 const Invoice = () => {
+  const userUid = localStorage.getItem("user_id");
+  const allowedUid = "glpfuER2esUSAUNFp3GCIRA91CC3"; 
+
+  
+  if (userUid !== allowedUid) {
+    return <div>You do not have permission to view this content.</div>;
+  }
+
   const PoNoRef = dataRef.child('PO');
 
-
-  const [searchTerm, setSearchTerm] = useState('')
-
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedPo, setSelectedPo] = useState('');
   const [poNumbers, setPoNumbers] = useState([]);
   const [billTo, setBillTo] = useState({
@@ -32,8 +37,8 @@ const Invoice = () => {
   });
 
   const [items, setItems] = useState([]);
-  const [costItems, setCostItems] = useState([]); // Add this line
-
+  const [costItems, setCostItems] = useState([]);
+  
   const taxPercentage = 9;
   const componentRef = useRef();
 
@@ -46,15 +51,14 @@ const Invoice = () => {
       console.log("PO Data:", poData);
     });
   }, []);
- 
 
   const handlePoChange = (poNo) => {
     setSelectedPo(poNo);
-  
+
     // Fetch selected PO data
     PoNoRef.child(poNo).once('value', snapshot => {
       const poData = snapshot.val();
-      
+
       if (poData) {
         setBillTo({
           name: poData.billedTo || "",
@@ -66,16 +70,15 @@ const Invoice = () => {
           address: "Default address",
         });
         setItems(poData.products || []);
-  
-        // Update how costItems are set
+
         const costs = poData.costs || [];
         const formattedCosts = costs.map(costItem => ({
           name: costItem.name || "",
           quantity: costItem.quantity || 0,
           price: costItem.cost || 0,
         }));
-        setCostItems(formattedCosts); // Set formatted costs to state
-   
+        setCostItems(formattedCosts);
+
         setInvoiceInfo(prev => ({
           ...prev,
           invoiceNo: poNo,
@@ -86,7 +89,7 @@ const Invoice = () => {
     });
     setSearchTerm('');
   };
-  
+
   const handleHSNChange = (index, value) => {
     const updatedItems = [...items];
     updatedItems[index].hsn = value;
@@ -99,20 +102,20 @@ const Invoice = () => {
       const quantity = item.quantity || 1; // Get the item quantity, default to 1 if not specified
       return sum + price * quantity; // Add the total for this item (price * quantity) to the sum
     }, 0);
-        const totalLaborCost = costItems.reduce((sum, costItem) => {
+    const totalLaborCost = costItems.reduce((sum, costItem) => {
       const itemCost = parseFloat(costItem.price || 0);
       const itemQuantity = parseFloat(costItem.quantity || 0);
       return sum + (itemCost * itemQuantity); // Multiply cost by quantity
     }, 0);
     const CtaxAmount = (totalItemAmount * taxPercentage) / 100;
     const StaxAmount = (totalItemAmount * taxPercentage) / 100;
-    const totalWithTaxAndLabor = totalItemAmount + CtaxAmount + StaxAmount +totalLaborCost;
+    const totalWithTaxAndLabor = totalItemAmount + CtaxAmount + StaxAmount + totalLaborCost;
 
-    return { totalItemAmount, CtaxAmount,StaxAmount, totalWithTaxAndLabor };
+    return { totalItemAmount, CtaxAmount, StaxAmount, totalWithTaxAndLabor };
   };
 
   // Call calculateTotals() here and destructure its return value
-  const { totalItemAmount, CtaxAmount,StaxAmount, totalWithTaxAndLabor } = calculateTotals();
+  const { totalItemAmount, CtaxAmount, StaxAmount, totalWithTaxAndLabor } = calculateTotals();
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -140,9 +143,7 @@ const Invoice = () => {
   for (let i = 0; i < items.length; i += itemsPerPage) {
     pages.push(items.slice(i, i + itemsPerPage));
   }
-   const handleDownload = () => {
-   
-  };
+
   const handleBillToChange = (e) => {
     setBillTo({ ...billTo, name: e.target.value });
   };
@@ -150,39 +151,33 @@ const Invoice = () => {
   const handleShipToChange = (e) => {
     setShipTo({ ...shipTo, name: e.target.value });
   };
-  useEffect(() => {
-    console.log("Cost Items:", costItems);
-  }, [costItems]);
 
   const filteredPoNumbers = poNumbers.filter(poNo =>
     poNo.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  
   return (
     <div className="w-full h-[80vh] overflow-x-scroll scrollbar-hide">
       <div className="flex justify-between mb-4">
-    
-      <select
-        className="mr-4 w-[200px] bg-gray-100 rounded-lg"
-        value={selectedPo}
-        onChange={(e) => handlePoChange(e.target.value)}
-      >
-        <option value="">Select PO Number</option>
-        {filteredPoNumbers.map(poNo => (
-          <option key={poNo} value={poNo}>
-            {poNo}
-          </option>
-        ))}
-      </select>
-        <div>
-        
-         <button
-          onClick={handlePrint}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-1"
+        <select
+          className="mr-4 w-[200px] bg-gray-100 rounded-lg"
+          value={selectedPo}
+          onChange={(e) => handlePoChange(e.target.value)}
         >
-          Print Invoice
-        </button>
+          <option value="">Select PO Number</option>
+          {filteredPoNumbers.map(poNo => (
+            <option key={poNo} value={poNo}>
+              {poNo}
+            </option>
+          ))}
+        </select>
+        <div>
+          <button
+            onClick={handlePrint}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-1"
+          >
+            Print Invoice
+          </button>
         </div>
       </div>
       <input
@@ -192,7 +187,7 @@ const Invoice = () => {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
-      <div ref={componentRef}>
+ <div ref={componentRef}>
         {pages.map((pageItems, pageIndex) => (
           <div key={pageIndex}>
             <div>
