@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faBox, faIndustry, faShoppingBag, faChartLine, faLifeRing, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { signOut } from "firebase/auth"; // Import signOut from Firebase
 import { auth } from "../utils/Firebabse" // Import Firebase auth
-import logo from "../assets/logos.png"
+import logo from "../assets/logosz.png"
 
 const LeftSidebar = () => {
   const navigate = useNavigate(); // Used for navigation after logout
@@ -35,7 +35,7 @@ const LeftSidebar = () => {
 
   return (
     <div className="left-sidebar bg-blue-800 w-full h-screen flex flex-col relative">
-      <img className=" font-bold text-center my-6 mx-[100px] w-[60px]"src={logo}/>
+      <img className=" font-bold text-center my-6 mx-[50px] w-[220px]"src={logo}/>
       {tabs.map((tab) => (
         <div key={tab.route}>
           <NavLink

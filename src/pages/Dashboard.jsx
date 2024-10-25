@@ -22,7 +22,7 @@ const DashboardPage = () => {
         {/* Card 1 */}
         <div className="flex flex-col items-center p-4 bg-white shadow rounded-lg">
           <FontAwesomeIcon icon={faCalendar} className="text-purple-500 text-4xl mb-4" />
-          <div className="text-xl font-semibold">$ 250,423</div>
+          <div className="text-xl font-semibold">₹ 250,423</div>
           <div className="text-sm text-gray-500">Yearly Total Sales</div>
         </div>
         
@@ -36,7 +36,7 @@ const DashboardPage = () => {
         {/* Card 3 */}
         <div className="flex flex-col items-center p-4 bg-white shadow rounded-lg">
           <FontAwesomeIcon icon={faShoppingCart} className="text-orange-500 text-4xl mb-4" />
-          <div className="text-xl font-semibold">$ 150,423</div>
+          <div className="text-xl font-semibold">₹ 150,423</div>
           <div className="text-sm text-gray-500">Stock Purchase Cost</div>
         </div>
 

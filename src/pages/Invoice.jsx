@@ -7,7 +7,7 @@ import jsPDF from "jspdf";
 
 const Invoice = () => {
   const userUid = localStorage.getItem("user_id");
-  const allowedUid = "glpfuER2esUSAUNFp3GCIRA91CC3"; 
+  const allowedUid = "eaanyNjmlrh7FdSbBDrl207rD0A2"; 
 
   
   if (userUid !== allowedUid) {
