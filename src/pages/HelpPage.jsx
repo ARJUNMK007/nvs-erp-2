@@ -51,7 +51,7 @@ const CustomerPage = () => {
   };
 
   return (
-    <div className="p-6 bg-[#f0f4f8]">
+    <div className="p-6 bg-[#f0f4f8] w-full h-[95vh] overflow-y-scroll overflow-x-hidden">
       <h1 className="text-2xl font-bold mb-4">Customer Management</h1>
 
       {/* Customer Form */}

@@ -91,7 +91,7 @@ const SalesPage = () => {
   };
 
   return (
-    <div>
+    <div className="w-full h-[92vh] overflow-y-scroll overflow-x-hidden p-3">
       <div className="flex justify-between items-center mb-4">
         <button className="text-xl font-medium border-b-4 border-black pb-2">
           Enquiry Management
@@ -160,7 +160,7 @@ const SalesPage = () => {
         />
         <button
           onClick={handleAddOrEditDeal}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none"
+          className="bg-blue-500 text-white px-4 py-2 mt-1 rounded-md hover:bg-blue-600 focus:outline-none"
         >
           {editId !== null ? 'Update Deal' : 'Add Deal'}
         </button>

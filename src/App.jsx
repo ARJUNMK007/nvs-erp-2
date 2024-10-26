@@ -12,6 +12,7 @@ import SalesPage from "./pages/SalesPage";
 import ReportPage from "./pages/ReportPage"; // Import the new ReportPage component
 import HelpPage from "./pages/HelpPage";
 import Stock from "./pages/Stock";
+import Helpsup from "./pages/Helpsup";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -32,40 +33,54 @@ const App = () => {
 
         {/* Protected Routes */}
         <Route
-          path="/dashboard"
-          element={
-            isAuthenticated ? (
-              <div className="flex w-full">
-                <div className="w-1/6">
-                  <LeftSidebar />
-                </div>
-                <div className="flex w-5/6">
-                  <div className="w-3/4 p-6 bg-[#87cfeb1a]">
-                    <DashboardPage />
-                  </div>
-                  <div className="w-1/4">
-                    <RightSidebar />
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-       <Route
-  path="/inventory"
+  path="/dashboard"
   element={
     isAuthenticated ? (
-      <div className="flex w-full fixed ">
+      <div className="flex w-full">
         {/* Left Sidebar */}
-        <div className="w-1/6 ">
+        <div className="w-20"> {/* Adjust width as needed for your LeftSidebar */}
           <LeftSidebar />
         </div>
-
-        {/* Inventory Section */}
-        <div className="flex-1 p-6 bg-[#87cfeb1a]">
-          <Stock/>
+        
+        {/* Main Content */}
+        <div className="flex flex-grow">
+          {/* Dashboard Page (Main Content Area) */}
+          <div className="flex-grow p-6 bg-[#87cfeb1a]">
+            <DashboardPage />
+          </div>
+          
+          {/* Right Sidebar */}
+          <div className="w-[20.5%]">
+            <RightSidebar />
+          </div>
+        </div>
+      </div>
+    ) : (
+      <Navigate to="/login" />
+    )
+  }
+/>
+<Route
+  path="/sales"
+  element={
+    isAuthenticated ? (
+      <div className="flex w-screen">
+        {/* Left Sidebar */}
+        <div className="w-20"> {/* Adjust width as needed for your LeftSidebar */}
+          <LeftSidebar />
+        </div>
+        
+        {/* Main Content */}
+        <div className="flex flex-grow">
+          {/* Dashboard Page (Main Content Area) */}
+          <div className="flex-grow p-6 bg-[#87cfeb1a]">
+            <SalesPage />
+          </div>
+          
+          {/* Right Sidebar */}
+          {/* <div className="w-[20.5%]">
+            <RightSidebar />
+          </div> */}
         </div>
       </div>
     ) : (
@@ -74,19 +89,41 @@ const App = () => {
   }
 />
 
-        <Route
+<Route
+  path="/inventory"
+  element={
+    isAuthenticated ? (
+      <div className="flex w-full fixed">
+        {/* Left Sidebar */}
+        <div className="w-20"> {/* Matches the sidebar width from the /dashboard route */}
+          <LeftSidebar />
+        </div>
+
+        {/* Inventory Section */}
+        <div className="flex-grow p-6 bg-[#87cfeb1a]">
+          <Stock />
+        </div>
+      </div>
+    ) : (
+      <Navigate to="/login" />
+    )
+  }
+/>
+
+
+        {/* <Route
           path="/sales"
           element={
             isAuthenticated ? (
               <div className="flex w-full fixed">
-                <div className="w-1/6">
+                <div className="w-20">
                   <LeftSidebar />
                 </div>
-                <div className="flex w-5/6">
+                <div className="flex flex-grow">
                   <div className="w-3/4 p-6 bg-[#87cfeb1a]">
                     <SalesPage />
                   </div>
-                  <div className="w-1/4 sm:">
+                  <div className="w-[20%] sm:">
                     <RightSidebar />
                   </div>
                 </div>
@@ -95,19 +132,19 @@ const App = () => {
               <Navigate to="/login" />
             )
           }
-        />
-       <Route
+        /> */}
+<Route
   path="/production"
   element={
     isAuthenticated ? (
       <div className="flex w-full fixed">
         {/* Left Sidebar */}
-        <div className="w-1/6">
+        <div className="w-20"> {/* Matches the sidebar width used in other routes */}
           <LeftSidebar />
         </div>
 
         {/* Production Section */}
-        <div className="flex-1 p-6 bg-[#87cfeb1a]">
+        <div className="flex-grow p-6 bg-[#87cfeb1a]">
           <ProductionPage />
         </div>
       </div>
@@ -118,45 +155,29 @@ const App = () => {
 />
 
 
+
         {/* Route for the Report Page */}
         <Route
-          path="/reports"
-          element={
-            isAuthenticated ? (
-              <div className="flex w-full fixed">
-                <div className="w-1/6">
-                  <LeftSidebar />
-                </div>
-                <div className="flex w-5/6">
-                  <div className="w-3/4 p-6 bg-[#87cfeb1a]">
-                    <ReportPage />
-                  </div>
-                  <div className="w-1/4">
-                    <RightSidebar />
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        {/* {Route for Report & help} */}
-        <Route
-  path="/customers"
+  path="/reports"
   element={
     isAuthenticated ? (
       <div className="flex w-full fixed">
-        <div className="w-1/6">
+        {/* Left Sidebar */}
+        <div className="w-20"> {/* Consistent sidebar width */}
           <LeftSidebar />
         </div>
-        <div className="flex w-5/6">
+
+        {/* Main Content with Right Sidebar */}
+        <div className="flex flex-grow">
+          {/* Report Page */}
           <div className="flex-1 p-6 bg-[#87cfeb1a]">
-            <HelpPage />
+            <ReportPage />
           </div>
-          {/* <div className="w-1/4">
+          
+          {/* Right Sidebar */}
+          <div className="w-1/4 bg-white"> {/* Added bg-white to ensure visibility */}
             <RightSidebar />
-          </div> */}
+          </div>
         </div>
       </div>
     ) : (
@@ -164,6 +185,51 @@ const App = () => {
     )
   }
 />
+
+
+
+        {/* {Route for Report & help} */}
+        <Route
+  path="/customers"
+  element={
+    isAuthenticated ? (
+      <div className="flex w-full fixed">
+        {/* Left Sidebar */}
+        <div className="w-20"> {/* Matches the sidebar width from other routes */}
+          <LeftSidebar />
+        </div>
+
+        {/* Main Content (Help Page) */}
+        <div className="flex-grow p-6 bg-[#87cfeb1a]">
+          <HelpPage />
+        </div>
+      </div>
+    ) : (
+      <Navigate to="/login" />
+    )
+  }
+/>
+<Route
+  path="/help"
+  element={
+    isAuthenticated ? (
+      <div className="flex w-full fixed">
+        {/* Left Sidebar */}
+        <div className="w-20"> {/* Matches the sidebar width from other routes */}
+          <LeftSidebar />
+        </div>
+
+        {/* Main Content (Help Page) */}
+        <div className="flex-grow p-6 bg-[#87cfeb1a]">
+          <Helpsup />
+        </div>
+      </div>
+    ) : (
+      <Navigate to="/login" />
+    )
+  }
+/>
+
 
         {/* Redirect the root path to the login page if not authenticated */}
         <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
