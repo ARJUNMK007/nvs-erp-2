@@ -40,10 +40,25 @@ const Sidebar = () => {
       <div className="mb-8 ">
         <h3 className="text-md font-semibold mb-2">Calendar</h3>
         <Calendar
-          className="rounded-md border border-gray-300"
-          onChange={setDate}
-          value={date}
-        />
+        className="rounded-lg border border-gray-300 shadow-md"
+        onChange={setDate}
+        value={date}
+        // Styling for individual tiles
+        tileClassName={({ date }) => {
+          const isWeekend = date.getDay() === 0 || date.getDay() === 6; // Highlight weekends
+          return isWeekend ? 'bg-blue-100 text-blue-600 font-semibold' : '';
+        }}
+        // Header customization
+        renderHeader={({ date }) => {
+          const month = date.toLocaleString('default', { month: 'long' });
+          const year = date.getFullYear();
+          return (
+            <div className="flex justify-between items-center p-2 bg-gray-200 rounded-t-lg">
+              <span className="font-semibold text-lg text-gray-800">{month} {year}</span>
+            </div>
+          );
+        }}
+      />
       </div>
     </div>
   );

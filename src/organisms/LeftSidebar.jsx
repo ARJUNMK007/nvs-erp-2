@@ -13,10 +13,10 @@ const LeftSidebar = () => {
   const tabs = [
     { label: "Dashboard", route: "/dashboard", icon: faHome },
     { label: "Inventory", route: "/inventory", icon: faBox },
+    { label: "Customers", route: "/customers", icon: faLifeRing },
     { label: "Production", route: "/production", icon: faIndustry },
     { label: "Sales and Production", route: "/sales", icon: faShoppingBag },
     { label: "Reports", route: "/reports", icon: faChartLine },
-    { label: "Help & Support", route: "/help", icon: faLifeRing },
   ];
 
   // Handle logout
@@ -35,7 +35,7 @@ const LeftSidebar = () => {
 
   return (
     <div className="left-sidebar bg-blue-800 w-full h-screen flex flex-col relative">
-      <img className=" font-bold text-center my-6 mx-[50px] w-[220px]"src={logo}/>
+      <img className=" font-bold text-center my-6 mx-[25px]  w-[150px]"src={logo}/>
       {tabs.map((tab) => (
         <div key={tab.route}>
           <NavLink

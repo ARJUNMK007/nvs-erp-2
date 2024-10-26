@@ -143,7 +143,7 @@ const App = () => {
         />
         {/* {Route for Report & help} */}
         <Route
-  path="/help"
+  path="/customers"
   element={
     isAuthenticated ? (
       <div className="flex w-full fixed">
@@ -151,12 +151,12 @@ const App = () => {
           <LeftSidebar />
         </div>
         <div className="flex w-5/6">
-          <div className="w-3/4 p-6 bg-[#87cfeb1a]">
+          <div className="flex-1 p-6 bg-[#87cfeb1a]">
             <HelpPage />
           </div>
-          <div className="w-1/4">
+          {/* <div className="w-1/4">
             <RightSidebar />
-          </div>
+          </div> */}
         </div>
       </div>
     ) : (
