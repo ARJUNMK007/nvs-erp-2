@@ -128,7 +128,7 @@ const CustomerPage = () => {
             <th className="py-2 px-4 border-b">Address</th>
             <th className="py-2 px-4 border-b">GST Number</th>
             <th className="py-2 px-4 border-b">Contact Number</th>
-            <th className="py-2 px-4 border-b">Actions</th>
+            <th className="py-2 px-4 border-b"></th>
           </tr>
         </thead>
         <tbody>

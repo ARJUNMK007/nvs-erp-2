@@ -362,7 +362,7 @@ const [dailyStockData, setDailyStockData] = useState({});
     setOpenMoq(!openMoq)
   }
   return (
-<div className="w-full h-[80vh] overflow-y-scroll overflow-x-hidden">      
+<div className="w-full h-[80vh] overflow-y-scroll overflow-x-hidden ">      
       <div className="flex justify-between items-center mb-2">
        <h1 className="text-2xl font-bold mb-4">Stock Management</h1>
        <div className="flex flex-row">

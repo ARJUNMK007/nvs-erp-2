@@ -1,22 +1,24 @@
 import { useState } from "react";
 import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
+import { useNavigate } from "react-router-dom";
 
 const RightDash = () => {
   const [open, setOpen] = useState(true);
   const [date, setDate] = useState(new Date());
+  const navigate=useNavigate()
 
   return (
-    <div className="relative bg-white h-[100vh] overflow-y-auto pb-4 shadow-md">
+    <div className="relative bg-white h-[100%] overflow-y-auto pb-4 shadow-md">
       {/* Sidebar Toggle */}
-      <div title="sidebar">
+      {/* <div title="sidebar">
         <button
           onClick={() => setOpen(!open)}
           className="fixed top-0 right-[10px] transform rotate-90 border-[#421562] border-2 rounded-full p-1 bg-white z-10"
         >
           &lt;
         </button>
-      </div>
+      </div> */}
       <div className={`${open ? "w-[260px]" : "hidden"}`}>
         {/* Profile Section */}
         <div className="flex items-center space-x-3 p-4 bg-transparent rounded-xl ">
@@ -24,10 +26,10 @@ const RightDash = () => {
       <div className="w-12 h-12 rounded-full bg-gray-400"></div>
       
       {/* User Info */}
-      {/* <div>
+      <div>
         <h3 className="text-lg font-bold text-blue-700">Nabila A.</h3>
         <p className="text-gray-500">Admin</p>
-      </div> */}
+      </div>
     </div>
 
         {/* Recent Orders Section */}
@@ -71,12 +73,12 @@ const RightDash = () => {
           <Calendar/>
           </div>
       </div>
-      <div id="alert-border-2" class="flex items-center p-4 mb-4 text-red-800 border-t-4 border-red-300 bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800" role="alert">
+      <div id="alert-border-2" class="flex items-center p-4 mb-4 text-red-800 border-t-4 border-red-300 bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800 m-2"  role="alert">
     <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
       <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
     </svg>
     <div class="ms-3 text-sm font-medium">
-      Low Stock alert <a href="#" class="font-semibold underline hover:no-underline">Check MOQ status</a>. Try to maintain Minimum Stock.
+      Low Stock alert <a href="#" class="font-semibold underline hover:no-underline" onClick={()=>{navigate("/moq")}}>Check MOQ status</a>. Try to maintain Minimum Stock.
     </div>
     <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700"  data-dismiss-target="#alert-border-2" aria-label="Close">
       <span class="sr-only">Dismiss</span>

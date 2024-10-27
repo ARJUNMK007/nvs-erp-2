@@ -13,6 +13,7 @@ import ReportPage from "./pages/ReportPage"; // Import the new ReportPage compon
 import HelpPage from "./pages/HelpPage";
 import Stock from "./pages/Stock";
 import Helpsup from "./pages/Helpsup";
+import MoqStock from "./pages/MoqStock";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -38,19 +39,19 @@ const App = () => {
     isAuthenticated ? (
       <div className="flex w-full">
         {/* Left Sidebar */}
-        <div className="w-20"> {/* Adjust width as needed for your LeftSidebar */}
+        <div className="w-20   fixed"> {/* Adjust width as needed for your LeftSidebar */}
           <LeftSidebar />
         </div>
         
         {/* Main Content */}
-        <div className="flex flex-grow">
+        <div className="flex flex-grow ">
           {/* Dashboard Page (Main Content Area) */}
-          <div className="flex-grow p-6 bg-[#87cfeb1a]">
+          <div className="flex-grow p-6 bg-[#87cfeb1a] ml-20">
             <DashboardPage />
           </div>
           
           {/* Right Sidebar */}
-          <div className="w-[20.5%]">
+          <div className="w-[19.5%] ">
             <RightSidebar />
           </div>
         </div>
@@ -109,6 +110,27 @@ const App = () => {
     )
   }
 />
+<Route
+  path="/moq"
+  element={
+    isAuthenticated ? (
+      <div className="flex w-full fixed">
+        {/* Left Sidebar */}
+        <div className="w-20">
+          <LeftSidebar />
+        </div>
+
+        {/* Inventory Section with defaultTab="Stock Moq" */}
+        <div className="flex-grow p-6 bg-[#87cfeb1a]">
+          <Stock defaultTab="Stock Moq" />
+        </div>
+      </div>
+    ) : (
+      <Navigate to="/login" />
+    )
+  }
+/>
+
 
 
         {/* <Route
@@ -233,6 +255,7 @@ const App = () => {
 
         {/* Redirect the root path to the login page if not authenticated */}
         <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
+        {/* <Route path="/moq" element={<MoqStock/>}/> */}
       </Routes>
     </Router>
   );

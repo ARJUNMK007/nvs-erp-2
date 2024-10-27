@@ -98,7 +98,7 @@ const DashboardPage = () => {
       {/* Polar Area Chart */}
      {/* Polar Area Chart */}
 <div className="mt-6 flex justify-center">
-  <div className="w-1/2 h-64"> {/* Adjust width and height as needed */}
+  <div className="w-1/2 h-[100%]"> {/* Adjust width and height as needed */}
     <h2 className="text-lg font-semibold mb-2">Order Status Distribution</h2>
     <PolarArea data={polarData} options={{ responsive: true }} />
   </div>

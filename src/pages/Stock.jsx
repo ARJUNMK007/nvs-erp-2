@@ -4,8 +4,8 @@ import DailyStock from './DailyStock';
 import InvenTools from './InvenTools';
 import MoqStock from './MoqStock';
 
-function Stock() {
-  const [activeTab, setActiveTab] = useState("Inventory");
+function Stock({ defaultTab = "Inventory" }) { // Add defaultTab prop
+  const [activeTab, setActiveTab] = useState(defaultTab); // Use defaultTab for initial state
 
   return (
     <div className="relative max-w-full h-[100%] overflow-x-scroll scrollbar-hide p-1">
@@ -19,7 +19,7 @@ function Stock() {
           } pb-2`}
           onClick={() => setActiveTab("Inventory")}
         >
-         Inventory
+          Inventory
         </button>
         <button
           className={`text-xl font-medium ${
@@ -29,7 +29,7 @@ function Stock() {
           } pb-2`}
           onClick={() => setActiveTab("Daily Stock")}
         >
-         Daily Stock
+          Daily Stock
         </button>
         <button
           className={`text-xl font-medium ${
@@ -51,15 +51,13 @@ function Stock() {
         >
           Stock Moq
         </button>
-    
       </div>
 
       {/* Render the selected component */}
       {activeTab === "Inventory" && <SalesPage />}
       {activeTab === "Daily Stock" && <DailyStock />}
-      {activeTab === "Tools" && < InvenTools/>}
-      {activeTab === "Stock Moq" && < MoqStock/>}
-      
+      {activeTab === "Tools" && <InvenTools />}
+      {activeTab === "Stock Moq" && <MoqStock />}
     </div>
   );
 }
