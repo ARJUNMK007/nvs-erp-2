@@ -4,10 +4,6 @@ import DailyStock from './DailyStock';
 import InvenTools from './InvenTools';
 import MoqStock from './MoqStock';
 
-
-
-
-
 function Stock() {
   const [activeTab, setActiveTab] = useState("Inventory");
 

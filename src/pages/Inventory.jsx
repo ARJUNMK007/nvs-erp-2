@@ -606,14 +606,21 @@ const [dailyStockData, setDailyStockData] = useState({});
     </div>
   )}
    
-       
 
-        <button
-          onClick={handleAddOrEditDeal}
-          className= "bg-blue-500 text-[15px] text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none mt-[4px] ml-[4px] w-[150px] h-[35px]"
-        >
-          {editId !== null ? 'Update Stock' : 'Add Stock'}
-        </button>
+
+   <button
+  onClick={handleAddOrEditDeal}
+  className="relative inline-flex items-center justify-start inline-block px-5 py-3 overflow-hidden font-bold rounded-full group bg-green-500 text-white"
+>
+  <span className="w-29 h-29 rotate-45 translate-x-12 -translate-y-2 absolute left-10 top-0 bg-white opacity-[3%]"></span>
+  <span className="absolute top-0 left-0 w-48 h-48 -mt-1 transition-all duration-500 ease-in-out rotate-45 -translate-x-56 -translate-y-24 bg-white opacity-100 group-hover:-translate-x-8"></span>
+  <span className="relative w-full text-left text-white transition-colors duration-200 ease-in-out group-hover:text-gray-900">
+    {editId !== null ? 'Update Stock' : 'Add Stock'}
+  </span>
+  <span className="absolute inset-0 border-2 border-white rounded-full"></span>
+</button>
+
+
        
       </div>
       </div>
