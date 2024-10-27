@@ -54,23 +54,26 @@ const Invoice = () => {
 
   const handlePoChange = (poNo) => {
     setSelectedPo(poNo);
-
+  
     // Fetch selected PO data
     PoNoRef.child(poNo).once('value', snapshot => {
       const poData = snapshot.val();
-
+  
       if (poData) {
         setBillTo({
-          name: poData.billedTo || "",
-          address: "Default address",
-          gstin: "Default GSTIN",
+          name: poData.billedTo?.name || "",
+          address: poData.billedTo?.address || "",
+          contactNumber: poData.billedTo?.contactNumber || "",
+          gstNumber: poData.billedTo?.gstNumber || "",
         });
         setShipTo({
-          name: poData.shipTo || "",
-          address: "Default address",
+          name: poData.shipTo?.name || "",
+          address: poData.shipTo?.address || "",
+          contactNumber: poData.shipTo?.contactNumber || "",
+          gstNumber: poData.shipTo?.gstNumber || "",
         });
         setItems(poData.products || []);
-
+  
         const costs = poData.costs || [];
         const formattedCosts = costs.map(costItem => ({
           name: costItem.name || "",
@@ -78,7 +81,7 @@ const Invoice = () => {
           price: costItem.cost || 0,
         }));
         setCostItems(formattedCosts);
-
+  
         setInvoiceInfo(prev => ({
           ...prev,
           invoiceNo: poNo,
@@ -89,6 +92,7 @@ const Invoice = () => {
     });
     setSearchTerm('');
   };
+  
 
   const handleHSNChange = (index, value) => {
     const updatedItems = [...items];
@@ -237,32 +241,30 @@ const Invoice = () => {
 
               <hr className="border-t-2 border-black mb-4" />
 
-              {/* Bill To and Ship To */}
-              <div className="flex justify-between mb-4">
-                <div className="w-1/2 bill-to">
-                  <h3 className="font-bold mb-2">Bill To</h3>
-                  <div className="p-2 ">
-                  <input
-            type="text"
-            value={billTo.name}
-            onChange={handleBillToChange}
-            className="w-full border p-2"
-          />
-                  </div>
-                </div>
 
-                <div className="w-1/2 ship-to">
-                  <h3 className="font-bold mb-2">Ship To</h3>
-                  <div className="p-2 ">
-                  <input
-            type="text"
-            value={shipTo.name}
-            onChange={handleShipToChange}
-            className="w-full border p-2"
-          />
-                  </div>
-                </div>
-              </div>
+      {/* Bill To and Ship To */}
+<div className="flex justify-between mb-4">
+  <div className="w-1/2 bill-to">
+    <h3 className="font-bold mb-2">Bill To</h3>
+    <div className="p-2 border rounded">
+      <p> {billTo.name}</p>
+      <p>{billTo.address}</p>
+      <p> {billTo.contactNumber}</p>
+      <p> {billTo.gstNumber}</p>
+    </div>
+  </div>
+
+  <div className="w-1/2 ship-to">
+    <h3 className="font-bold mb-2">Ship To</h3>
+    <div className="p-2 border rounded">
+      <p> {shipTo.name}</p>
+      <p> {shipTo.address}</p>
+      <p>{shipTo.contactNumber}</p>
+      <p> {shipTo.gstNumber}</p>
+    </div>
+  </div>
+</div>
+
 
               <hr className="border-t-2 border-black mb-4" />
 

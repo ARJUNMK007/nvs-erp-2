@@ -272,11 +272,11 @@ const POTracker = () => {
             </tr>
           </thead>
           <tbody className="text-gray-700 text-sm">
-            {poData.map(({ poNumber, selectedMachine, createdAt, products = [], costs = [] }) => (
+            {poData.map(({ poNumber,billedTo,selectedMachine, createdAt, products = [], costs = [] }) => (
               <React.Fragment key={poNumber}>
                 <tr className="border-b border-gray-200 hover:bg-gray-100">
                   <td className="py-3 px-6">{poNumber}</td>
-                  <td className="py-3 px-6">Bill To</td>
+                  <td className="py-3 px-6">{billedTo.name}</td>
                   <td className="py-3 px-6">{selectedMachine?.name || 'N/A'}</td>
                   <td className="py-3 px-6">{new Date(createdAt).toLocaleDateString()}</td>
                   <td className="py-3 px-6">

@@ -1,6 +1,6 @@
-// src/components/pages/CustomerPage.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import { dataRef } from '../utils/Firebabse';
 
 const CustomerPage = () => {
   const [customers, setCustomers] = useState([]);
@@ -11,7 +11,22 @@ const CustomerPage = () => {
     contactNumber: ""
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [editIndex, setEditIndex] = useState(null);
+  const [editKey, setEditKey] = useState(null);
+  const CustomerRef = dataRef.child('Customers');
+
+  // Load customers from Firebase on component mount
+  useEffect(() => {
+    CustomerRef.on("value", (snapshot) => {
+      const customerData = snapshot.val();
+      const customerList = customerData
+        ? Object.keys(customerData).map((key) => ({
+            ...customerData[key],
+            key
+          }))
+        : [];
+      setCustomers(customerList);
+    });
+  }, []);
 
   // Handle form input changes
   const handleInputChange = (e) => {
@@ -22,32 +37,32 @@ const CustomerPage = () => {
     });
   };
 
-  // Handle adding a new customer
+  // Handle adding or updating a customer
   const handleAddCustomer = (e) => {
     e.preventDefault();
     if (isEditing) {
-      const updatedCustomers = [...customers];
-      updatedCustomers[editIndex] = formData;
-      setCustomers(updatedCustomers);
+      // Update existing customer in Firebase
+      CustomerRef.child(editKey).set(formData);
       setIsEditing(false);
-      setEditIndex(null);
+      setEditKey(null);
     } else {
-      setCustomers([...customers, formData]);
+      // Add new customer to Firebase
+      CustomerRef.push(formData);
     }
     setFormData({ name: "", address: "", gstNumber: "", contactNumber: "" });
   };
 
   // Handle editing a customer
-  const handleEditCustomer = (index) => {
-    setFormData(customers[index]);
+  const handleEditCustomer = (key) => {
+    const customerToEdit = customers.find((customer) => customer.key === key);
+    setFormData(customerToEdit);
     setIsEditing(true);
-    setEditIndex(index);
+    setEditKey(key);
   };
 
   // Handle deleting a customer
-  const handleDeleteCustomer = (index) => {
-    const updatedCustomers = customers.filter((_, i) => i !== index);
-    setCustomers(updatedCustomers);
+  const handleDeleteCustomer = (key) => {
+    CustomerRef.child(key).remove();
   };
 
   return (
@@ -118,21 +133,21 @@ const CustomerPage = () => {
         </thead>
         <tbody>
           {customers.length > 0 ? (
-            customers.map((customer, index) => (
-              <tr key={index} className="border-b">
-                <td className=" text-center py-2 px-4">{customer.name}</td>
-                <td className=" text-center py-2 px-4">{customer.address}</td>
-                <td className=" text-center py-2 px-4">{customer.gstNumber}</td>
-                <td className=" text-center py-2 px-4">{customer.contactNumber}</td>
-                <td className=" text-center py-2 px-4 flex space-x-2">
+            customers.map((customer) => (
+              <tr key={customer.key} className="border-b">
+                <td className="text-center py-2 px-4">{customer.name}</td>
+                <td className="text-center py-2 px-4">{customer.address}</td>
+                <td className="text-center py-2 px-4">{customer.gstNumber}</td>
+                <td className="text-center py-2 px-4">{customer.contactNumber}</td>
+                <td className="text-center py-2 px-4 flex space-x-2">
                   <button
-                    onClick={() => handleEditCustomer(index)}
+                    onClick={() => handleEditCustomer(customer.key)}
                     className="p-1 text-blue-500"
                   >
                     <FaEdit />
                   </button>
                   <button
-                    onClick={() => handleDeleteCustomer(index)}
+                    onClick={() => handleDeleteCustomer(customer.key)}
                     className="p-1 text-red-500"
                   >
                     <FaTrash />
