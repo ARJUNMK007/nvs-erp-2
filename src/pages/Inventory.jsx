@@ -144,59 +144,24 @@ const SalesPage = () => {
 
   // Add or Edit deal
   const handleAddOrEditDeal = () => {
-    // Check for missing fields
-    if (!newDeal.itemName) {
-      alert('Item Name is required.');
+    if (!newDeal.itemName || !newDeal.itemSize || !newDeal.itemDesc || !newDeal.itemCategory || !newDeal.currentStock || !newDeal.unit || !newDeal.RackNo || !newDeal.moq) {
+      alert('Please fill in all required fields.');
       return;
     }
-    // if (!newDeal.supplier) {
-    //   alert('Supplier is required.');
-    //   return;
-    // }
-    if (!newDeal.itemSize) {
-      alert('Item Size is required.');
-      return;
-    }
-    if (!newDeal.itemDesc) {
-      alert('Item Description is required.');
-      return;
-    }
-    if (!newDeal.itemCategory) {
-      alert('Item Category is required.');
-      return;
-    }
-    if (!newDeal.currentStock) {
-      alert('Current Stock is required.');
-      return;
-    }
-    if (!newDeal.unit) {
-      alert('Unit is required.');
-      return;
-    }
-    if (!newDeal.RackNo) {
-      alert('Rack Number is required.');
-      return;
-    }
-    // if (!newDeal.movingStock) {
-    //   alert('Moving Stock is required.');
-    //   return;
-    // }
-    if (!newDeal.moq) {
-      alert('MOQ is required.');
-      return;
-    }
-    // if (!newDeal.itemPrice) {
-    //   alert('Item Price is required.');
-    //   return;
-    // }
-    // if (!newDeal.itemImage) {
-    //   alert('Item Image is required.');
-    //   return;
-    // }
   
-    // Proceed with add or update operation
+    // Update the item category based on the itemCategory value in the form
+    const selectedCategory = categoryOptions.find(option => option.value === newDeal.itemCategory);
+    
+    if (!selectedCategory) {
+      alert('Invalid item category.');
+      return;
+    }
+
     if (editId !== null) {
-      SalesRef.child(editId).update(newDeal)
+      SalesRef.child(editId).update({
+        ...newDeal,
+        itemCategory: selectedCategory.label // Ensure itemCategory is updated with category label
+      })
         .then(() => {
           setEditId(null); // Reset edit ID after updating
           setNewDeal({
@@ -220,7 +185,10 @@ const SalesPage = () => {
         });
     } else {
       const newDealRef = SalesRef.push();
-      newDealRef.set(newDeal)
+      newDealRef.set({
+        ...newDeal,
+        itemCategory: selectedCategory.label // Add category label in the new deal
+      })
         .then(() => {
           setNewDeal({
             itemName: '',

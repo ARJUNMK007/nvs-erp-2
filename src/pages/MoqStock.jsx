@@ -4,11 +4,28 @@ import * as XLSX from "xlsx";
 
 const MoqStock = () => {
   const SalesRef = dataRef.child('Stock'); // Reference to Sales in Firebase
+  const StkCategoryRef = dataRef.child('StkCategory'); // Reference to StkCategory in Firebase
 
   const [deals, setDeals] = useState([]);
   const [categoryFilter, setCategoryFilter] = useState(''); // State for category filter
   const [uniqueCategories, setUniqueCategories] = useState([]); // List of unique categories
+  const [categoryMapping, setCategoryMapping] = useState({}); // Mapping for category IDs to names
   
+  // Fetch StkCategory data
+  useEffect(() => {
+    StkCategoryRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const categoryMap = Object.keys(data).reduce((acc, key) => {
+          acc[key] = data[key]; // Map category ID to category name
+          return acc;
+        }, {});
+        setCategoryMapping(categoryMap);
+      }
+    });
+  }, []);
+
+  // Fetch stock data
   useEffect(() => {
     SalesRef.on('value', (snapshot) => {
       const data = snapshot.val();
@@ -22,7 +39,7 @@ const MoqStock = () => {
         setUniqueCategories(categories);
       }
     });
-  }, [])
+  }, []);
 
   const lowStockItems = deals.filter(
     (item) => parseInt(item.currentStock, 10) < parseInt(item.moq, 10)
@@ -39,7 +56,7 @@ const MoqStock = () => {
     const orderedDeals = lowStockItems.map((deal, index) => ({
       SL_NO: index + 1,
       ITEM_NAME: deal.itemName,
-      ITEM_CATEGORY: deal.itemCategory,
+      ITEM_CATEGORY: categoryMapping[deal.itemCategory] || "Unknown", // Use category name instead of ID
       CURRENT_STOCK: deal.currentStock,
       UNIT: deal.unit,
       RACK_NO: deal.RackNo,
@@ -96,7 +113,7 @@ const MoqStock = () => {
                 <tr key={item.id} className="border-b">
                   <td className="py-3 px-4">{index + 1}</td> {/* Serial number */}
                   <td className="py-3 px-4">{item.itemName || "N/A"}</td>
-                  <td className="py-3 px-4">{item.itemCategory || "N/A"}</td>
+                  <td className="py-3 px-4">{categoryMapping[item.itemCategory] || "Unknown"}</td> {/* Category name */}
                   <td className="py-3 px-4">{item.currentStock || "N/A"}</td>
                   <td className="py-3 px-4">{item.moq || "N/A"}</td>
                   <td className="py-3 px-4">{item.RackNo || "N/A"}</td>

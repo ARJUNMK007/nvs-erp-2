@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import { dataRef } from '../utils/Firebabse';
 
 const Inventools = () => {
   const toolsRef = dataRef.child('Tools');
+  const salesRef = dataRef.child('Stock');
   const [toolData, setToolData] = useState([]);
+  const [toolOptions, setToolOptions] = useState([]);
   const [newTool, setNewTool] = useState({
     toolName: '',
     toolQty: '',
@@ -13,14 +15,13 @@ const Inventools = () => {
     inDate: '',
     inQty: '',
   });
-
   const [isEditing, setIsEditing] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Fetch tools from Firebase when the component loads
+  // Fetch tools from Firebase (ToolsRef) when the component loads
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchTools = async () => {
       const snapshot = await toolsRef.get();
       if (snapshot.exists()) {
         const data = snapshot.val();
@@ -32,7 +33,24 @@ const Inventools = () => {
       }
     };
 
-    fetchData();
+    fetchTools();
+  }, []);
+
+  // Fetch tool options from SalesRef where itemCategory is "Tools"
+  useEffect(() => {
+    const fetchToolOptions = async () => {
+      const snapshot = await salesRef.get();
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const optionsArray = Object.keys(data)
+          .map((key) => data[key])
+          .filter((item) => item.itemCategory === "Tools")
+          .map((item) => item.itemName);
+        setToolOptions(optionsArray);
+      }
+    };
+
+    fetchToolOptions();
   }, []);
 
   const handleInputChange = (e) => {
@@ -43,7 +61,7 @@ const Inventools = () => {
     }));
   };
 
-  const handleAddTool = () => {
+  const handleAddTool = async () => {
     if (
       newTool.toolName &&
       newTool.toolQty &&
@@ -55,12 +73,26 @@ const Inventools = () => {
     ) {
       if (isEditing) {
         const updatedToolRef = toolsRef.child(toolData[editIndex].id);
-        updatedToolRef.set(newTool);
+        await updatedToolRef.set(newTool);
         setIsEditing(false);
         setEditIndex(null);
       } else {
-        toolsRef.push(newTool);
+        const newToolRef = toolsRef.push();
+        await newToolRef.set(newTool);
       }
+
+      // After saving the tool, update the toolData array
+      const snapshot = await toolsRef.get();
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const toolsArray = Object.keys(data).map((key) => ({
+          id: key,
+          ...data[key],
+        }));
+        setToolData(toolsArray);
+      }
+
+      // Reset form
       setNewTool({
         toolName: '',
         toolQty: '',
@@ -79,9 +111,10 @@ const Inventools = () => {
     setEditIndex(index);
   };
 
-  const handleDeleteTool = (index) => {
+  const handleDeleteTool = async (index) => {
     const toolId = toolData[index].id;
-    toolsRef.child(toolId).remove();
+    await toolsRef.child(toolId).remove();
+    // Update the table data after deletion
     setToolData(toolData.filter((_, i) => i !== index));
   };
 
@@ -111,14 +144,19 @@ const Inventools = () => {
         <h2 className="text-xl font-semibold mb-2">
           {isEditing ? 'Edit Tool' : 'Add New Tool'}
         </h2>
-        <input
-          type="text"
+        <select
           name="toolName"
           value={newTool.toolName}
           onChange={handleInputChange}
-          placeholder="Tool Name"
           className="border px-2 py-1 mr-2"
-        />
+        >
+          <option value="">Select Tool Name</option>
+          {toolOptions.map((toolName, index) => (
+            <option key={index} value={toolName}>
+              {toolName}
+            </option>
+          ))}
+        </select>
         <input
           type="number"
           name="toolQty"
