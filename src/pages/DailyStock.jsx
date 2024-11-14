@@ -144,7 +144,7 @@ const DailyStock = () => {
   
 
   return (
-    <div className="w-full h-[80vh] overflow-x-auto p-4">
+    <div className="h-[80vh] overflow-x-auto invent-parents p-4">
       <h1 className="text-2xl font-bold mb-4">Daily Stock Management</h1>
 
       {/* Input Form */}
@@ -210,14 +210,14 @@ const DailyStock = () => {
         </div>
 
         {/* Other form fields */}
-        <input
+        {/* <input
           type="text"
           name="supplier"
           placeholder="Supplier"
           value={newDeal.supplier}
           onChange={handleChange}
           className="border px-2 py-1 mr-2"
-        />
+        /> */}
         <input
           type="number"
           name="moveInQty"
@@ -272,7 +272,7 @@ const DailyStock = () => {
               <th className="px-4 py-2">SL NO</th>
               <th className="px-4 py-2">Item Name</th>
               <th className="px-4 py-2">Sub Category</th>
-              <th className="px-4 py-2">Supplier</th>
+              {/* <th className="px-4 py-2">Supplier</th> */}
               <th className="px-4 py-2">Move In Qty</th>
               <th className="px-4 py-2">Move In Date</th>
               <th className="px-4 py-2">Move Out Qty</th>
@@ -293,7 +293,7 @@ const DailyStock = () => {
                   <td className="px-4 py-2">{index + 1}</td>
                   <td className="px-4 py-2">{deal.itemName}</td>
                   <td className="px-4 py-2">{deal.subCategory}</td>
-                  <td className="px-4 py-2">{deal.supplier}</td>
+                  {/* <td className="px-4 py-2">{deal.supplier}</td> */}
                   <td className="px-4 py-2">{moveInQty}</td>
                   <td className="px-4 py-2">{deal.moveInDate}</td>
                   <td className="px-4 py-2">{moveOutQty}</td>

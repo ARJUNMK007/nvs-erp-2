@@ -14,9 +14,12 @@ import HelpPage from "./pages/HelpPage";
 import Stock from "./pages/Stock";
 import Helpsup from "./pages/Helpsup";
 import MoqStock from "./pages/MoqStock";
+import RotatePage from "./pages/RotatePage";
+
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isPortraitMode, setIsPortraitMode] = useState(false);
   const auth = getAuth();
 
   useEffect(() => {
@@ -26,42 +29,49 @@ const App = () => {
     return unsubscribe;
   }, [auth]);
 
+  useEffect(() => {
+    const handleOrientationChange = () => {
+      setIsPortraitMode(window.innerWidth < window.innerHeight); // Portrait mode when height > width
+    };
+
+    handleOrientationChange(); // Check initial orientation
+    window.addEventListener("resize", handleOrientationChange);
+
+    return () => {
+      window.removeEventListener("resize", handleOrientationChange);
+    };
+  }, []);
+
   return (
     <Router>
       <Routes>
         {/* Route for the login page */}
-        <Route path="/login" element={<Homes />} />
+        <Route path="/login" element={isPortraitMode ? <RotatePage /> : <Homes />} />
 
         {/* Protected Routes */}
         <Route
-  path="/dashboard"
-  element={
-    isAuthenticated ? (
-      <div className="flex w-full">
-        {/* Left Sidebar */}
-        <div className="w-20   fixed"> {/* Adjust width as needed for your LeftSidebar */}
-          <LeftSidebar />
-        </div>
-        
-        {/* Main Content */}
-        <div className="flex flex-grow ">
-          {/* Dashboard Page (Main Content Area) */}
-          <div className="flex-grow p-6 bg-[#87cfeb1a] ml-20">
-            <DashboardPage />
-          </div>
-          
-          {/* Right Sidebar */}
-          <div className="w-[19.5%] ">
-            <RightSidebar />
-          </div>
-        </div>
-      </div>
-    ) : (
-      <Navigate to="/login" />
-    )
-  }
-/>
-<Route
+          path="/dashboard"
+          element={
+            isAuthenticated ? (
+              <div className="flex w-full">
+                <div className="w-20 fixed">
+                  <LeftSidebar />
+                </div>
+                <div className="flex flex-grow">
+                  <div className="flex-grow p-6 bg-[#87cfeb1a] ml-20">
+                    <DashboardPage />
+                  </div>
+                  <div className="w-[19.5%] lg:block">
+                    <RightSidebar />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+      <Route
   path="/sales"
   element={
     isAuthenticated ? (
@@ -251,11 +261,7 @@ const App = () => {
     )
   }
 />
-
-
-        {/* Redirect the root path to the login page if not authenticated */}
-        <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
-        {/* <Route path="/moq" element={<MoqStock/>}/> */}
+<Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
       </Routes>
     </Router>
   );

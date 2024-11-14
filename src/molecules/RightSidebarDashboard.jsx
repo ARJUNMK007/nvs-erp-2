@@ -8,8 +8,11 @@ const RightDash = () => {
   const [open, setOpen] = useState(true);
   const [date, setDate] = useState(new Date());
   const [showAlert, setShowAlert] = useState(false);
+  const [poData, setPoData] = useState([]); // State for storing PO data
   const navigate = useNavigate();
   const SalesRef = dataRef.child('Stock');
+  const PoNoRef = dataRef.child('PO');
+  
 
   // Check stock levels on component mount
   useEffect(() => {
@@ -29,6 +32,18 @@ const RightDash = () => {
       setShowAlert(lowStockExists);
     });
   }, [SalesRef]);
+  useEffect(() => {
+    PoNoRef.once('value', (snapshot) => {
+      const poDataArray = [];
+      snapshot.forEach((childSnapshot) => {
+        poDataArray.push({
+          id: childSnapshot.key,
+          ...childSnapshot.val(),
+        });
+      });
+      setPoData(poDataArray); // Store PO data in state
+    });
+  }, [PoNoRef]);
 
   return (
     <div className="relative bg-white h-[100vh] overflow-y-auto pb-4 shadow-md">
@@ -43,37 +58,38 @@ const RightDash = () => {
         </div>
 
         {/* Recent Orders Section */}
-        <div className="pt-3 px-4">
+        <div className="pt-3 px-4 h-[200px] overflow-y-auto">
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
               <h1 className="text-[19px] font-bold text-[#421562]">Recent Orders</h1>
               <span className="text-gray-500 font-medium text-[13px]">You have 16 orders</span>
             </div>
           </div>
+           <div>
+           <ul className="pt-3">
+  {poData.map((po) => ( // Display all orders
+    <li key={po.id} className="flex items-center gap-4 p-2">
+      <div className="h-[34px] w-[34px] bg-[#add9ea] rounded-full"></div>
+      <div>
+        {/* Check if billedTo is an object and access its name field */}
+        <span className="font-semibold text-[#12125e] text-[16px]">
+          {po.billedTo?.name || 'No Name'}
+        </span> <br />
+        {/* <span className="font-semibold text-gray-500 text-[11px] flex items-center gap-2">
+          Deal Status:
+          <span className={po.orderStatus === 'Pending' ? 'text-red-500' : 'text-green-500'}>
+            {po.orderStatus}
+          </span>
+        </span> */}
+      </div>
+    </li>
+  ))}
+</ul>
 
-          <ul className="pt-3">
-            {[...Array(2)].map((_, index) => (
-              <li key={index} className="flex items-center gap-4 p-2">
-                <div className="h-[34px] w-[34px] bg-[#add9ea] rounded-full"></div>
-                <div>
-                  <span className="font-semibold text-[#12125e] text-[16px]">Company Name</span> <br />
-                  <span className="font-semibold text-gray-500 text-[11px] flex items-center gap-2">
-                    ORDER STATUS
-                    <span className={`text-${index % 2 === 0 ? 'red' : 'green'}-500`}>
-                      {index % 2 === 0 ? 'Pending' : 'Completed'}
-                    </span>
-                  </span>
-                </div>
-              </li>
-            ))}
-            <div className="w-full flex justify-center pt-2">
-              <button className="w-full h-[40px] text-center rounded-[28px] text-[#241154] text-[15px] font-semibold bg-[#add9ea]">
-                View More
-              </button>
-            </div>
-          </ul>
+
+
         </div>
-
+</div>
         {/* Calendar Section */}
         <div className="pt-4 px-4">
           <Calendar />
@@ -82,7 +98,7 @@ const RightDash = () => {
 
       {/* Conditionally render alert if low stock exists */}
       {showAlert && (
-        <div id="alert-border-2" className="fixed bottom-0 right-0 w-full max-w-sm p-4 m-4 text-red-800 border-t-4 border-red-300 bg-red-50 shadow-lg rounded-lg flex items-center" role="alert">
+        <div id="alert-border-2" className="fixed  bottom-0 right-0 w-[150px] h-[200px] p-4 m-4 text-red-800 border-t-4 border-red-300 bg-red-50 shadow-lg rounded-lg flex items-center" role="alert">
           <svg className="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
             <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
           </svg>

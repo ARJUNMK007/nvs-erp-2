@@ -18,7 +18,6 @@ const MoqStock = () => {
           ...data[key],
         }));
         setDeals(dealsArray);
-        // console.log(deals)
         const categories = [...new Set(dealsArray.map(item => item.itemCategory))];
         setUniqueCategories(categories);
       }
@@ -28,24 +27,24 @@ const MoqStock = () => {
   const lowStockItems = deals.filter(
     (item) => parseInt(item.currentStock, 10) < parseInt(item.moq, 10)
   );
-//   console.log(lowStockItems)
-const [searchTerm, setSearchTerm] = useState(''); // State for search input
-  // Filter items based on search term
+
+  const [searchTerm, setSearchTerm] = useState(''); // State for search input
   const filteredItems = lowStockItems.filter(item => {
     const matchesSearch = item.itemName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = categoryFilter ? item.itemCategory === categoryFilter : true;
     return matchesSearch && matchesCategory;
   });
+
   const handleExportToExcel = () => {
     const orderedDeals = lowStockItems.map((deal, index) => ({
-      SL_NO:index+1,
+      SL_NO: index + 1,
       ITEM_NAME: deal.itemName,
       ITEM_CATEGORY: deal.itemCategory,
       CURRENT_STOCK: deal.currentStock,
       UNIT: deal.unit,
       RACK_NO: deal.RackNo,
       MOVING_STOCK: deal.movingStock,
-      MINIMUM_ORDER_QTY:deal.moq,
+      MINIMUM_ORDER_QTY: deal.moq,
       ITEM_PRICE: deal.itemPrice,
       SUPPLIER: deal.supplier
     }));
@@ -55,10 +54,11 @@ const [searchTerm, setSearchTerm] = useState(''); // State for search input
     XLSX.utils.book_append_sheet(wb, ws, "Stock Data");
     XLSX.writeFile(wb, "StockData.xlsx");
   };
+
   return (
-    <div className="container mx-auto my-8">
-    <h1 className="text-2xl font-bold text-left mb-6">Low Stock Items</h1>
-    <div className="mb-4  flex justify-between ">
+    <div className=" h-[80vh] overflow-y-scroll invent-parent">  
+      <h1 className="text-2xl font-bold text-left mb-6">Low Stock Items</h1>
+      <div className="mb-4 flex justify-between">
         <input
           type="text"
           placeholder="Search Moq Stock"
@@ -66,18 +66,18 @@ const [searchTerm, setSearchTerm] = useState(''); // State for search input
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)} // Update search term state
         />
-           <button
+        <button
           className="bg-blue-500 text-white px-4 py-2 rounded-lg"
           onClick={handleExportToExcel} // Export to Excel on click
         >
-            <i className="fas fa-download mr-1"></i>
+          <i className="fas fa-download mr-1"></i>
           Export to Excel
         </button>
       </div>
-    <div className="overflow-x-auto">
-      <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-      <thead>
-      <tr className="bg-gray-100 border-b">
+      <div className="overflow-x-auto landscape:sm:overflow-x-auto"> {/* Ensures horizontal scroll on landscape */}
+        <table className="min-w-full bg-white shadow-md rounded-lg overflow-x-auto">
+          <thead>
+            <tr className="bg-gray-100 border-b">
               <th className="py-3 px-4 text-left">Sl. No.</th>
               <th className="py-3 px-4 text-left">Item Name</th>
               <th className="py-3 px-4 text-left">Category</th>
@@ -88,11 +88,10 @@ const [searchTerm, setSearchTerm] = useState(''); // State for search input
               <th className="py-3 px-4 text-left">Supplier</th>
               <th className="py-3 px-4 text-left">Unit</th>
               <th className="py-3 px-4 text-left">Moving Stock</th>
-             
             </tr>
           </thead>
           <tbody>
-          {filteredItems.length > 0 ? (
+            {filteredItems.length > 0 ? (
               filteredItems.map((item, index) => (
                 <tr key={item.id} className="border-b">
                   <td className="py-3 px-4">{index + 1}</td> {/* Serial number */}
@@ -116,8 +115,8 @@ const [searchTerm, setSearchTerm] = useState(''); // State for search input
             )}
           </tbody>
         </table>
+      </div>
     </div>
-  </div>
   );
 };
 

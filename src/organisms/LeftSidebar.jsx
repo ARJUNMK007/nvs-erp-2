@@ -6,6 +6,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "../utils/Firebabse";
 import logo from "../assets/tci.png";
 
+
 const LeftSidebar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [hoveredTab, setHoveredTab] = useState(null);
@@ -33,7 +34,7 @@ const LeftSidebar = () => {
 
   return (
     <div
-      className={`left-sidebar bg-blue-800 h-screen flex flex-col relative transition-all duration-300 ${
+      className={`left-sidebar bg-blue-800 invent-left h-screen flex flex-col relative transition-all duration-300 ${
         isExpanded ? "w-64" : "w-20"
       }`}
     >

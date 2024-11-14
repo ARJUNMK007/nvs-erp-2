@@ -10,7 +10,6 @@ function Helpsup() {
   });
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -19,15 +18,12 @@ function Helpsup() {
     });
   };
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Form Submitted:", formData);
 
-    // Display success message
     setSuccessMessage('Submitted Successfully');
     
-    // Clear form fields
     setFormData({
       name: '',
       email: '',
@@ -35,14 +31,12 @@ function Helpsup() {
       message: '',
     });
 
-    // Hide the message after a few seconds (optional)
     setTimeout(() => setSuccessMessage(''), 3000);
   };
 
-  // Toggle popup
   const togglePopup = () => {
     setIsOpen(!isOpen);
-    setSuccessMessage(''); // Reset success message when popup is reopened
+    setSuccessMessage('');
   };
 
   return (
@@ -63,57 +57,57 @@ function Helpsup() {
           ></div>
 
           {/* Popup Modal */}
-          <div className="bg-white p-6 rounded shadow-lg z-10 w-full max-w-md">
-            <h2 className="text-2xl font-bold mb-4">Help & Support Form</h2>
+          <div className="bg-white p-4 sm:p-6 rounded shadow-lg z-10 w-full max-w-md sm:max-w-[80%] landscape:w-[70vw] landscape:max-w-[400px]">
+            <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4">Help & Support Form</h2>
             
             {successMessage && (
-              <p className="text-green-600 font-semibold mb-4">{successMessage}</p>
+              <p className="text-green-600 font-semibold mb-2 sm:mb-4">{successMessage}</p>
             )}
             
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
               <div>
-                <label className="block text-lg font-semibold">Name</label>
+                <label className="block text-base sm:text-lg font-semibold">Name</label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
+                  className="w-full p-2 border border-gray-300 rounded text-sm sm:text-base"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-lg font-semibold">Email</label>
+                <label className="block text-base sm:text-lg font-semibold">Email</label>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
+                  className="w-full p-2 border border-gray-300 rounded text-sm sm:text-base"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-lg font-semibold">Subject</label>
+                <label className="block text-base sm:text-lg font-semibold">Subject</label>
                 <input
                   type="text"
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
+                  className="w-full p-2 border border-gray-300 rounded text-sm sm:text-base"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-lg font-semibold">Message</label>
+                <label className="block text-base sm:text-lg font-semibold">Message</label>
                 <textarea
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
+                  className="w-full p-2 border border-gray-300 rounded text-sm sm:text-base"
                   rows="4"
                   required
                 ></textarea>
@@ -123,13 +117,13 @@ function Helpsup() {
                 <button
                   type="button"
                   onClick={togglePopup}
-                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                  className="bg-gray-500 text-white px-3 py-1 sm:px-4 sm:py-2 rounded hover:bg-gray-600 text-sm sm:text-base"
                 >
                   Close
                 </button>
                 <button
                   type="submit"
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-600 text-white px-3 py-1 sm:px-4 sm:py-2 rounded hover:bg-blue-700 text-sm sm:text-base"
                 >
                   Submit
                 </button>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'; 
 import { dataRef } from '../utils/Firebabse'; // Ensure this import is correct
+import EditableRow from './EditableRow';
 
 function PoCreator() {
   const [moList, setMoList] = useState([]);
@@ -133,7 +134,7 @@ function PoCreator() {
   };
   
   return (
-    <div className="flex flex-col space-y-4 h-[60vh]">
+    <div className="flex flex-col space-y-4 h-[60vh] invent-parent">
       <div className="flex justify-between items-center py-2">
         <h1 className="text-xl font-semibold">Purchase Order</h1>
         <div className="flex space-x-4">
@@ -202,7 +203,66 @@ function PoCreator() {
 
       {selectedMachine && (
         <div className="space-y-6">
-          {/* Product and Cost tables remain unchanged */}
+             <div className="w-full">
+            <h2 className="text-lg font-semibold">Product Details</h2>
+            <button
+              onClick={addProductRow}
+              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-300 mb-2"
+            >
+              Add Product
+            </button>
+            <table className="min-w-full bg-white border rounded-lg">
+              <thead>
+                <tr className="bg-gray-100 text-left text-gray-600 uppercase text-sm">
+                  <th className="py-3 px-6">Item Name</th>
+                  <th className="py-3 px-6">Price</th>
+                  <th className="py-3 px-6">Quantity</th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.map((product, index) => (
+                  <EditableRow
+                    key={index}
+                    data={product}
+                    index={index}
+                    type="product"
+                    handleInputChange={handleInputChange}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Cost Details */}
+          <div className="w-full">
+            <h2 className="text-lg font-semibold">Cost Details</h2>
+            <button
+              onClick={addCostRow}
+              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-300 mb-2"
+            >
+              Add Cost
+            </button>
+            <table className="min-w-full bg-white border rounded-lg">
+              <thead>
+                <tr className="bg-gray-100 text-left text-gray-600 uppercase text-sm">
+                  <th className="py-3 px-6">Cost Type</th>
+                  <th className="py-3 px-6">Cost</th>
+                  <th className="py-3 px-6">Quantity</th>
+                </tr>
+              </thead>
+              <tbody>
+                {costs.map((cost, index) => (
+                  <EditableRow
+                    key={index}
+                    data={cost}
+                    index={index}
+                    type="cost"
+                    handleInputChange={handleInputChange}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

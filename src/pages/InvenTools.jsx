@@ -1,27 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { dataRef } from '../utils/Firebabse';
 
 const Inventools = () => {
-  const [toolData, setToolData] = useState([
-    {
-      toolName: 'Hammer',
-      toolQty: 50,
-      employeeName: 'John Doe',
-      outDate: '2023-10-01',
-      outQty: 10,
-      inDate: '2023-10-05',
-      inQty: 5,
-    },
-    {
-      toolName: 'Screwdriver',
-      toolQty: 30,
-      employeeName: 'Jane Smith',
-      outDate: '2023-09-30',
-      outQty: 5,
-      inDate: '2023-10-04',
-      inQty: 3,
-    },
-  ]);
-
+  const toolsRef = dataRef.child('Tools');
+  const [toolData, setToolData] = useState([]);
   const [newTool, setNewTool] = useState({
     toolName: '',
     toolQty: '',
@@ -34,6 +16,24 @@ const Inventools = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Fetch tools from Firebase when the component loads
+  useEffect(() => {
+    const fetchData = async () => {
+      const snapshot = await toolsRef.get();
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const toolsArray = Object.keys(data).map((key) => ({
+          id: key,
+          ...data[key],
+        }));
+        setToolData(toolsArray);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -54,14 +54,12 @@ const Inventools = () => {
       newTool.inQty
     ) {
       if (isEditing) {
-        const updatedTools = toolData.map((tool, index) =>
-          index === editIndex ? newTool : tool
-        );
-        setToolData(updatedTools);
+        const updatedToolRef = toolsRef.child(toolData[editIndex].id);
+        updatedToolRef.set(newTool);
         setIsEditing(false);
         setEditIndex(null);
       } else {
-        setToolData([...toolData, newTool]);
+        toolsRef.push(newTool);
       }
       setNewTool({
         toolName: '',
@@ -82,37 +80,37 @@ const Inventools = () => {
   };
 
   const handleDeleteTool = (index) => {
-    const updatedTools = toolData.filter((_, i) => i !== index);
-    setToolData(updatedTools);
+    const toolId = toolData[index].id;
+    toolsRef.child(toolId).remove();
+    setToolData(toolData.filter((_, i) => i !== index));
   };
-  const [searchTerm, setSearchTerm] = useState('');
-    // Filtering tools based on the search term
-    const filteredTools = toolData.filter((tool) => {
-      const searchLower = searchTerm.toLowerCase();
-      return (
-        tool.toolName.toLowerCase().includes(searchLower) ||
-        tool.employeeName.toLowerCase().includes(searchLower)
-      );
-    });
+
+  const filteredTools = toolData.filter((tool) => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      tool.toolName.toLowerCase().includes(searchLower) ||
+      tool.employeeName.toLowerCase().includes(searchLower)
+    );
+  });
 
   return (
-    <div className="p-4">
-      <div className='flex justify-between'>
-      <h1 className="text-2xl font-bold mb-4">Tools Management</h1>
-      <input
+    <div className="p-4 invent-parents overflow-scroll h-[85vh]">
+      <div className="flex justify-between">
+        <h1 className="text-2xl font-bold mb-4">Tools Management</h1>
+        <input
           type="text"
           placeholder="Search Tools"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="border px-2 py-1 mb-2"
         />
-
       </div>
-      
 
       {/* Add New Tool or Edit Tool */}
       <div className="mb-4">
-        <h2 className="text-xl font-semibold mb-2">{isEditing ? 'Edit Tool' : 'Add New Tool'}</h2>
+        <h2 className="text-xl font-semibold mb-2">
+          {isEditing ? 'Edit Tool' : 'Add New Tool'}
+        </h2>
         <input
           type="text"
           name="toolName"
@@ -192,7 +190,7 @@ const Inventools = () => {
           </tr>
         </thead>
         <tbody>
-        {filteredTools.map((tool, index) => (
+          {filteredTools.map((tool, index) => (
             <tr key={index}>
               <td className="border px-4 py-2">{tool.toolName}</td>
               <td className="border px-4 py-2">{tool.toolQty}</td>
@@ -202,14 +200,14 @@ const Inventools = () => {
               <td className="border px-4 py-2">{tool.inDate}</td>
               <td className="border px-4 py-2">{tool.inQty}</td>
               <td className="border px-4 py-2">
-              <i
-                    className="fas fa-edit text-blue-500 cursor-pointer"
-                    onClick={() => handleEditTool(index)}
-                  ></i>
-                  <i
-                    className="fas fa-trash-alt text-red-500 cursor-pointer ml-[4px]"
-                    onClick={() => handleDeleteTool(index)}
-                  ></i>
+                <i
+                  className="fas fa-edit text-blue-500 cursor-pointer"
+                  onClick={() => handleEditTool(index)}
+                ></i>
+                <i
+                  className="fas fa-trash-alt text-red-500 cursor-pointer ml-[4px]"
+                  onClick={() => handleDeleteTool(index)}
+                ></i>
               </td>
             </tr>
           ))}

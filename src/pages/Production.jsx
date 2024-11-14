@@ -11,7 +11,7 @@ function Production() {
   const [activeTab, setActiveTab] = useState("MO Creator");
 
   return (
-    <div className="relative max-w-full h-[100%] overflow-x-scroll scrollbar-hide p-4">
+    <div className="relative w-full h-[100%] overflow-x-scroll  p-4">
       {/* Tabs */}
       <div className="flex space-x-8 mb-8">
         <button

@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../utils/Firebabse";
-import land from "../assets/land.jpg"
-import home from "../assets/home.jpg"
+import land from "../assets/land.jpg";
+import home from "../assets/home.jpg";
 
 function Homes() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); // State for error message
   const navigate = useNavigate();
 
   const handleEmailChange = (event) => {
@@ -20,16 +21,18 @@ function Homes() {
 
   const handleSignIn = (event) => {
     event.preventDefault();
+    setError(""); // Clear error message on new attempt
 
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        console.log("Login successful:", userCredential); // Debug log
+        console.log("Login successful:", userCredential);
         const user = userCredential.user;
         localStorage.setItem("user_id", user.uid);
         navigate("/dashboard");
       })
       .catch((error) => {
-        console.error("Error signing in:", error.message); // Error log
+        console.error("Error signing in:", error.message);
+        setError("Incorrect email or password."); // Set error message
       });
   };
 
@@ -69,6 +72,12 @@ function Homes() {
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
+            {/* Error Message */}
+            {error && (
+              <p className="text-red-500 text-sm mb-4">
+                {error}
+              </p>
+            )}
             <button
               type="submit"
               className="w-full p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"

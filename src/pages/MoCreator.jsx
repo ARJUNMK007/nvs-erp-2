@@ -5,7 +5,7 @@ function MOCreator() {
   // State for MO Name
   const [moName, setMoName] = useState('');
   const [products, setProducts] = useState([]);
-  const [newProduct, setNewProduct] = useState({ itemName: '', quantity: '', price: '' });
+  const [newProduct, setNewProduct] = useState({ itemName: '', quantity: '', itemPrice: '' });
   const [stocks, setStocks] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isEditing, setIsEditing] = useState(null);
@@ -45,12 +45,12 @@ function MOCreator() {
 
   // Add product
   const addProduct = () => {
-    if (!newProduct.itemName || !newProduct.quantity || !newProduct.price) {
+    if (!newProduct.itemName || !newProduct.quantity || !newProduct.itemPrice) {
       alert('Please fill in all product fields.');
       return;
     }
     setProducts([...products, newProduct]);
-    setNewProduct({ itemName: '', quantity: '', price: '' });
+    setNewProduct({ itemName: '', quantity: '', itemPrice: '' });
   };
 
   // Update product
@@ -59,7 +59,7 @@ function MOCreator() {
       index === isEditing ? newProduct : product
     );
     setProducts(updatedProducts);
-    setNewProduct({ itemName: '', quantity: '', price: '' });
+    setNewProduct({ itemName: '', quantity: '', itemPrice: '' });
     setIsEditing(null);
   };
 
@@ -113,10 +113,23 @@ function MOCreator() {
   const filteredStocks = stocks.filter((stock) =>
     stock.itemName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
+
+  // Set price automatically when item is selected
+  const handleItemSelect = (selectedItem) => {
+    setNewProduct((prevState) => ({
+      ...prevState,
+      itemName: selectedItem.itemName,
+      itemPrice: selectedItem.itemPrice, // Automatically set the item price
+    }));
+  };
+  const calculateTotalPrice = (product) => {
+    const quantity = parseFloat(product.quantity) || 0;
+    const itemPrice = parseFloat(product.itemPrice) || 0;
+    return (quantity * itemPrice).toFixed(2);
+  };
 
   return (
-    <div className="relative max-w-full h-[90vh] overflow-x-scroll scrollbar-hide p-4">
+    <div className="relative max-w-full h-[90vh] overflow-x-scroll invent-parent scrollbar-hide p-4">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-lg font-semibold">Create Machine Order</h1>
         <div className="flex space-x-2">
@@ -165,7 +178,8 @@ function MOCreator() {
               <tr className="bg-gray-100 text-left text-gray-600 uppercase text-sm leading-normal">
                 <th className="py-3 px-6">Item Name</th>
                 <th className="py-3 px-6">Quantity</th>
-                <th className="py-3 px-6">Price</th>
+                <th className="py-3 px-6">Item Price</th>
+                <th className="py-3 px-6">Total Price</th>
                 <th className="py-3 px-6"></th>
               </tr>
             </thead>
@@ -174,7 +188,8 @@ function MOCreator() {
                 <tr key={index} className="border-b border-gray-200 hover:bg-gray-100">
                   <td className="py-3 px-6">{product.itemName}</td>
                   <td className="py-3 px-6">{product.quantity}</td>
-                  <td className="py-3 px-6">{product.price}</td>
+                  <td className="py-3 px-6">{product.itemPrice}</td>
+                  <td className="py-3 px-6">{calculateTotalPrice(product)}</td>
                   <td className="py-3 px-6 flex space-x-4">
                     <button
                       onClick={() => editProduct(index)}
@@ -206,18 +221,18 @@ function MOCreator() {
                 placeholder="Search products"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="border border-blue-200 rounded px-4 py-2 mb-2"
+                className="border border-blue-200 rounded px-4 py-2"
               />
               <select
                 name="itemName"
                 value={newProduct.itemName}
-                onChange={handleProductInputChange}
-                className="border border-blue-200 rounded px-4 py-2"
+                onChange={(e) => handleItemSelect(filteredStocks.find(stock => stock.itemName === e.target.value))}
+                className="border border-blue-200 rounded px-4 py-2 mt-2"
               >
                 <option value="">Select Item</option>
                 {filteredStocks.map((stock, index) => (
                   <option key={index} value={stock.itemName}>
-                    {stock.itemName} (Qty: {stock.currentStock})
+                    {stock.itemName}
                   </option>
                 ))}
               </select>
@@ -236,14 +251,15 @@ function MOCreator() {
             </div>
 
             <div className="flex flex-col w-1/3">
-              <label className="text-blue-600 font-medium mb-2">Price *</label>
+              <label className="text-blue-600 font-medium mb-2">Item Price *</label>
               <input
                 type="number"
-                name="price"
-                value={newProduct.price}
+                name="itemPrice"
+                value={newProduct.itemPrice}
                 onChange={handleProductInputChange}
-                placeholder="Enter Price"
+                placeholder="Enter Item Price"
                 className="border border-blue-200 rounded px-4 py-2"
+                readOnly
               />
             </div>
           </div>
@@ -259,7 +275,7 @@ function MOCreator() {
         </div>
       </div>
 
-      {/* Cost Form */}
+      {/* Cost Form remains unchanged */}
       <div className="w-full max-w-5xl mx-auto p-6 rounded-lg shadow-md mb-8">
         <h2 className="text-xl font-semibold mb-4">Cost Details</h2>
 

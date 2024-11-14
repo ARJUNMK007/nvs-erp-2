@@ -8,7 +8,7 @@ function Stock({ defaultTab = "Inventory" }) { // Add defaultTab prop
   const [activeTab, setActiveTab] = useState(defaultTab); // Use defaultTab for initial state
 
   return (
-    <div className="relative max-w-full h-[100%] overflow-x-scroll scrollbar-hide p-1">
+    <div className="relative  h-[100%] overflow-x-scroll  p-1">
       {/* Tabs */}
       <div className="flex space-x-8 mb-8">
         <button

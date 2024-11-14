@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { dataRef } from '../utils/Firebabse';
 import * as XLSX from "xlsx"; // Import XLSX library
+import "./General.css"
 
 const SalesPage = () => {
   const [options, setOptions] = useState([]);
@@ -107,6 +108,8 @@ const SalesPage = () => {
 
   const [newDeal, setNewDeal] = useState({
     itemName: '',
+    itemSize:'',
+    itemDesc:'',
     itemCategory: '',
     currentStock: '',
     unit: '', // Unit (Dropdown selection)
@@ -141,54 +144,106 @@ const SalesPage = () => {
 
   // Add or Edit deal
   const handleAddOrEditDeal = () => {
-    if (newDeal.itemName && newDeal.supplier) {
-      if (editId !== null) {
-        SalesRef.child(editId).update(newDeal)
-          .then(() => {
-            setEditId(null); // Reset edit ID after updating
-            setNewDeal({
-              itemName: '',
-              itemCategory: '',
-              currentStock: '',
-              unit: '',
-              RackNo: '',
-              movingStock: '',
-              moq:'',
-              itemPrice: '',
-              averagePrice: '',
-              supplier: '',
-              itemImage:'',
-            });
-          })
-          .catch(error => {
-            console.error("Error updating deal:", error);
+    // Check for missing fields
+    if (!newDeal.itemName) {
+      alert('Item Name is required.');
+      return;
+    }
+    // if (!newDeal.supplier) {
+    //   alert('Supplier is required.');
+    //   return;
+    // }
+    if (!newDeal.itemSize) {
+      alert('Item Size is required.');
+      return;
+    }
+    if (!newDeal.itemDesc) {
+      alert('Item Description is required.');
+      return;
+    }
+    if (!newDeal.itemCategory) {
+      alert('Item Category is required.');
+      return;
+    }
+    if (!newDeal.currentStock) {
+      alert('Current Stock is required.');
+      return;
+    }
+    if (!newDeal.unit) {
+      alert('Unit is required.');
+      return;
+    }
+    if (!newDeal.RackNo) {
+      alert('Rack Number is required.');
+      return;
+    }
+    // if (!newDeal.movingStock) {
+    //   alert('Moving Stock is required.');
+    //   return;
+    // }
+    if (!newDeal.moq) {
+      alert('MOQ is required.');
+      return;
+    }
+    // if (!newDeal.itemPrice) {
+    //   alert('Item Price is required.');
+    //   return;
+    // }
+    // if (!newDeal.itemImage) {
+    //   alert('Item Image is required.');
+    //   return;
+    // }
+  
+    // Proceed with add or update operation
+    if (editId !== null) {
+      SalesRef.child(editId).update(newDeal)
+        .then(() => {
+          setEditId(null); // Reset edit ID after updating
+          setNewDeal({
+            itemName: '',
+            itemSize: '',
+            itemDesc: '',
+            itemCategory: '',
+            currentStock: '',
+            unit: '',
+            RackNo: '',
+            movingStock: '',
+            moq: '',
+            itemPrice: '',
+            averagePrice: '',
+            supplier: '',
+            itemImage: '',
           });
-      } else {
-        const newDealRef = SalesRef.push();
-        newDealRef.set(newDeal)
-          .then(() => {
-            setNewDeal({
-              itemName: '',
-              itemCategory: '',
-              currentStock: '',
-              unit: '',
-              RackNo: '',
-              movingStock: '',
-              moq:'',
-              itemPrice: '',
-              averagePrice: '',
-              supplier: '',
-              itemImage:'',
-            });
-          })
-          .catch(error => {
-            console.error("Error adding deal:", error);
-          });
-      }
+        })
+        .catch(error => {
+          console.error("Error updating deal:", error);
+        });
     } else {
-      alert('Please complete the form before submitting.');
+      const newDealRef = SalesRef.push();
+      newDealRef.set(newDeal)
+        .then(() => {
+          setNewDeal({
+            itemName: '',
+            itemSize: '',
+            itemDesc: '',
+            itemCategory: '',
+            currentStock: '',
+            unit: '',
+            RackNo: '',
+            movingStock: '',
+            moq: '',
+            itemPrice: '',
+            averagePrice: '',
+            supplier: '',
+            itemImage: '',
+          });
+        })
+        .catch(error => {
+          console.error("Error adding deal:", error);
+        });
     }
   };
+  
 
   // Delete deal from Firebase
   const handleDelete = (id) => {
@@ -210,6 +265,8 @@ const SalesPage = () => {
     const orderedDeals = deals.map(deal => ({
       SL_NO: deals.indexOf(deal) + 1,
       ITEM_NAME: deal.itemName,
+      ITEM_SIZE: deal.itemSize,
+      ITEM_DESC: deal.itemDesc,
       ITEM_CATEGORY: deal.itemCategory,
       CURRENT_STOCK: deal.currentStock,
       UNIT: deal.unit,
@@ -362,7 +419,7 @@ const [dailyStockData, setDailyStockData] = useState({});
     setOpenMoq(!openMoq)
   }
   return (
-<div className="w-full h-[80vh] overflow-y-scroll overflow-x-hidden ">      
+    <div className="p-6 bg-[#f0f4f8]  h-[80vh] overflow-y-scroll overflow-x-scroll invent-parents"> 
       <div className="flex justify-between items-center mb-2">
        <h1 className="text-2xl font-bold mb-4">Stock Management</h1>
        <div className="flex flex-row">
@@ -388,6 +445,22 @@ const [dailyStockData, setDailyStockData] = useState({});
           name="itemName"
           placeholder="Item Name"
           value={newDeal.itemName}
+          onChange={handleChange}
+          className="border px-2 py-1 mr-2"
+        />
+         <input
+          type="number"
+          name="itemSize"
+          placeholder="Item Size"
+          value={newDeal.itemSize}
+          onChange={handleChange}
+          className="border px-2 py-1 mr-2"
+        />
+         <input
+          type="text"
+          name="itemDesc"
+          placeholder="Item Description"
+          value={newDeal.itemDesc}
           onChange={handleChange}
           className="border px-2 py-1 mr-2"
         />
@@ -625,17 +698,19 @@ const [dailyStockData, setDailyStockData] = useState({});
       </div>
       </div>
       {/* Table */}
-<div className="overflow-x-hidden">   
+<div className="overflow-x-scroll">   
      <table className="w-full bg-white border border-gray-200">
           <thead>
             <tr className="bg-gray-100 border-b">
           
               <th className="px-4 py-2 text-left">SL NO</th>
               <th className="px-4 py-2 text-left">ITEM NAME</th>
+              <th className="px-4 py-2 text-left">ITEM SIZE</th>
+              <th className="px-4 py-2 text-left">ITEM DESCRIPTION</th>
               <th className="px-4 py-2 text-left">ITEM CATEGORY</th>
               <th className="px-4 py-2 text-left">UNIT</th>
               <th className="px-4 py-2 text-left">CURRENT STOCK</th>
-              <th className="px-4 py-2 text-left">DAILY STOCK</th>
+              {/* <th className="px-4 py-2 text-left">DAILY STOCK</th> */}
               <th className="px-4 py-2 text-left">TOTAL STOCK</th>
               <th className="px-4 py-2 text-left"></th>
             </tr>
@@ -646,12 +721,14 @@ const [dailyStockData, setDailyStockData] = useState({});
                 {/* <td  className="px-4 py-2">{index + 1}</td> */}
                 <td onClick={() => handleRowClick(deal)} className="px-4 py-2">{index + 1}</td>
                 <td className="px-4 py-2">{deal.itemName}</td>
+                <td className="px-4 py-2">{deal.itemSize}</td>
+                <td className="px-4 py-2">{deal.itemDesc}</td>
                 <td className="px-4 py-2">
           {categoryOptions.find(cat => cat.value === deal.itemCategory)?.label || deal.itemCategory}
         </td>
                 <td className="px-4 py-2">{deal.unit}</td>
                 <td className="px-4 py-2">{deal.currentStock}</td>
-                <td className="px-4 py-2">{dailyStockData[deal.itemName] || 0}</td>
+                {/* <td className="px-4 py-2">{dailyStockData[deal.itemName] || 0}</td> */}
                 <td className="px-4 py-2">{getTotalStock(deal.currentStock, deal.itemName)}</td>
                 <td className="px-4 py-2 flex space-x-4">
                   <i
@@ -684,6 +761,12 @@ const [dailyStockData, setDailyStockData] = useState({});
           <tr>
             <td className="px-4  py-2 font-semibold border  border-black">Rack No:</td>
             <td className="px-4 py-2 border  border-black">{selectedDeal.RackNo}</td>
+          </tr>
+          <tr>
+            <td className="px-4 py-2 font-semibold border">Daily Stock:</td>
+            <td className="px-4 py-2 border">
+              {dailyStockData[selectedDeal.itemName] || 0}
+            </td>
           </tr>
           <tr>
             <td className="px-4 py-2 font-semibold border">Moving Stock:</td>

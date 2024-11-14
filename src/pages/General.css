@@ -1,0 +1,14 @@
+@media only screen and (max-width: 1024px) and (orientation: landscape) {
+    .invent-parent {
+        width: 80vw;
+        height: 50vh;
+     
+        
+    }
+    .invent-parents {
+        width: 80vw;
+        height: 90vh;
+        overflow-x: auto;
+    }
+   
+}

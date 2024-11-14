@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { dataRef } from '../utils/Firebabse'; 
 import * as XLSX from "xlsx";  // Import XLSX library
+import "./General.css"
 
 const SalesPage = () => {
   const [deals, setDeals] = useState([]); // Initialize deals array
@@ -91,7 +92,7 @@ const SalesPage = () => {
   };
 
   return (
-    <div className="w-full h-[92vh] overflow-y-scroll overflow-x-hidden p-3">
+    <div className="p-6 bg-[#f0f4f8] w-full h-[92vh] overflow-y-scroll overflow-x-auto invent-parent">
       <div className="flex justify-between items-center mb-4">
         <button className="text-xl font-medium border-b-4 border-black pb-2">
           Enquiry Management
