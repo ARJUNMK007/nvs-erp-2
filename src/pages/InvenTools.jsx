@@ -44,14 +44,16 @@ const Inventools = () => {
         const data = snapshot.val();
         const optionsArray = Object.keys(data)
           .map((key) => data[key])
-          .filter((item) => item.itemCategory === "Tools")
+          .filter((item) => item.itemCategory === "Tools" || item.itemCategory  === "-OBeEphj1GTR3_e7OcLe") // Check both itemCategory and the specific ID
           .map((item) => item.itemName);
+  
         setToolOptions(optionsArray);
       }
     };
-
+  
     fetchToolOptions();
   }, []);
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
