@@ -40,7 +40,7 @@ const LeftSidebar = () => {
     >
       <div
         className="logo-container cursor-pointer flex items-center justify-center my-6 mx-4"
-        onClick={() => setIsExpanded(!isExpanded)}
+        // onClick={() => setIsExpanded(!isExpanded)}
       >
         <img src={logo} className="w-12 h-12" alt="Logo" />
       </div>

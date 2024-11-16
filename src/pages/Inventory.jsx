@@ -413,28 +413,18 @@ const [dailyStockData, setDailyStockData] = useState({});
     setOpenMoq(!openMoq)
   }
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [filteredDeals, setFilteredDeals] = useState([]);
-  const filterDeals = () => {
-    let filtered = deals;
 
-    if (searchTerm) {
-      filtered = filtered.filter((deal) =>
-        deal.itemName.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (selectedCategory) {
-      filtered = filtered.filter(
-        (deal) => deal.itemCategory === selectedCategory
-      );
-    }
-
-    setFilteredDeals(filtered);
-  };
-
-  React.useEffect(() => {
-    filterDeals();
-  }, [searchTerm, selectedCategory]);
+  const filteredDeals = deals.filter((deal) => {
+    const itemName = deal.itemName || ""; // Default to an empty string if undefined
+    const itemDesc = deal.itemDesc || ""; // Default to an empty string if undefined
+  
+    return (
+      (itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        itemDesc.toLowerCase().includes(searchTerm.toLowerCase())) &&
+      (selectedCategory === "" || deal.itemCategory === selectedCategory)
+    );
+  });
+  
 
   return (
     <div className="p-6 bg-[#f0f4f8]  h-[80vh] overflow-y-scroll overflow-x-scroll invent-parents"> 
