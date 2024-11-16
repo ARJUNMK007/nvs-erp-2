@@ -78,7 +78,7 @@ const Invoice = () => {
         const formattedCosts = costs.map(costItem => ({
           name: costItem.name || "",
           quantity: costItem.quantity || 0,
-          price: costItem.cost || 0,
+          itemPrice: costItem.cost || 0,
         }));
         setCostItems(formattedCosts);
   
@@ -102,12 +102,12 @@ const Invoice = () => {
 
   const calculateTotals = () => {
     const totalItemAmount = items.reduce((sum, item) => {
-      const price = parseFloat(item.price) || 0; // Get the item price, default to 0 if invalid
+      const itemPrice = parseFloat(item.itemPrice) || 0; // Get the item itemPrice, default to 0 if invalid
       const quantity = item.quantity || 1; // Get the item quantity, default to 1 if not specified
-      return sum + price * quantity; // Add the total for this item (price * quantity) to the sum
+      return sum + itemPrice * quantity; // Add the total for this item (itemPrice * quantity) to the sum
     }, 0);
     const totalLaborCost = costItems.reduce((sum, costItem) => {
-      const itemCost = parseFloat(costItem.price || 0);
+      const itemCost = parseFloat(costItem.itemPrice || 0);
       const itemQuantity = parseFloat(costItem.quantity || 0);
       return sum + (itemCost * itemQuantity); // Multiply cost by quantity
     }, 0);
@@ -296,7 +296,7 @@ const Invoice = () => {
                           onChange={(e) => handleHSNChange(index, e.target.value)}
                         />
                       </td>
-                      <td className="border border-black p-2 text-right">{item.price}</td>
+                      <td className="border border-black p-2 text-right">{item.itemPrice}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -316,7 +316,7 @@ const Invoice = () => {
         <tr key={costIndex}>
           <td className="py-3 px-6">{costItem.name}</td>
           <td className="py-3 px-6">{costItem.quantity}</td>
-          <td className="py-3 px-6">{costItem.price}</td>
+          <td className="py-3 px-6">{costItem.itemPrice}</td>
         </tr>
       ))}
     </tbody>
@@ -363,7 +363,7 @@ const Invoice = () => {
           <tr key={costIndex}>
             <td className="py-1 border border-black px-2 text-sm">{costItem.name}</td>
             <td className="py-1 border border-black px-2 text-sm">{costItem.quantity}</td>
-            <td className="py-1 border border-black px-2 text-sm">{costItem.price}</td>
+            <td className="py-1 border border-black px-2 text-sm">{costItem.itemPrice}</td>
           </tr>
         ))}
       </tbody>

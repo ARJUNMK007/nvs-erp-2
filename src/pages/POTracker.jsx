@@ -7,7 +7,7 @@ const POTracker = () => {
   const [poData, setPoData] = useState([]);
   const [status, setStatus] = useState({});
   const [expandedRows, setExpandedRows] = useState({});
-  const [newProduct, setNewProduct] = useState({ itemName: '', quantity: '', price: '' });
+  const [newProduct, setNewProduct] = useState({ itemName: '', quantity: '', itemPrice: '' });
   const [newCost, setNewCost] = useState({ name: '', quantity: '', cost: '' });
   const [editingProduct, setEditingProduct] = useState({});
   const [editingCost, setEditingCost] = useState({});
@@ -177,7 +177,7 @@ const POTracker = () => {
     PoNoRef.child(poNumber).update({ products: updatedProducts })
       .then(() => {
         console.log('Product added');
-        setNewProduct({ itemName: '', quantity: '', price: '' });
+        setNewProduct({ itemName: '', quantity: '', itemPrice: '' });
       })
       .catch((error) => {
         console.error("Error adding product:", error);
@@ -200,7 +200,7 @@ const POTracker = () => {
   const handleEditProduct = (poNumber, productIndex) => {
     const po = poData.find(po => po.poNumber === poNumber);
     const productToEdit = po.products[productIndex];
-    setProductEditValues({ itemName: productToEdit.itemName, quantity: productToEdit.quantity, price: productToEdit.price });
+    setProductEditValues({ itemName: productToEdit.itemName, quantity: productToEdit.quantity, itemPrice: productToEdit.itemPrice });
     setEditingProduct((prev) => ({
       ...prev,
       [poNumber]: productIndex
@@ -310,7 +310,7 @@ const POTracker = () => {
                             <tr>
                               <th className="py-3 px-6">Product Name</th>
                               <th className="py-3 px-6">Quantity</th>
-                              <th className="py-3 px-6">Price</th>
+                              <th className="py-3 px-6">itemPrice</th>
                               <th className="py-3 px-6"></th>
                             </tr>
                           </thead>
@@ -345,12 +345,12 @@ const POTracker = () => {
                                   {editingProduct[poNumber] === index ? (
                                     <input
                                       type="number"
-                                      value={productEditValues.price || product.price} // retain original value if editing
-                                      onChange={(e) => setProductEditValues({ ...productEditValues, price: e.target.value })}
+                                      value={productEditValues.itemPrice || product.itemPrice} // retain original value if editing
+                                      onChange={(e) => setProductEditValues({ ...productEditValues, itemPrice: e.target.value })}
                                       className="border rounded px-2 py-1"
                                     />
                                   ) : (
-                                    product.price
+                                    product.itemPrice
                                   )}
                                 </td>
                                 <td className="py-3 px-6">
@@ -387,9 +387,9 @@ const POTracker = () => {
                           />
                           <input
                             type="number"
-                            placeholder="Price"
-                            value={newProduct.price}
-                            onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                            placeholder="itemPrice"
+                            value={newProduct.itemPrice}
+                            onChange={(e) => setNewProduct({ ...newProduct, itemPrice: e.target.value })}
                             className="border rounded px-2 py-1 mr-2"
                           />
                           <button onClick={() => handleAddProduct(poNumber)} className="bg-blue-500 text-white rounded px-4 py-1">Add Product</button>

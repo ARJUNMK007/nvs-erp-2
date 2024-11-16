@@ -27,6 +27,28 @@ function MOCreator() {
     });
   }, []);
 
+
+  const [moList, setMoList] = useState([]);
+
+
+
+  // Fetch MO names from Firebase
+  useEffect(() => {
+    MoRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const moEntries = Object.keys(data).map((key) => ({
+          name: key,
+          data: data[key],
+        }));
+        setMoList(moEntries);
+      } else {
+        setMoList([]);
+      }
+    });
+  }, []);
+
+  // Handle MO name input
   const handleMoNameChange = (e) => {
     setMoName(e.target.value);
   };
@@ -84,30 +106,43 @@ function MOCreator() {
     setNewCost({ name: '', quantity: '', cost: '' });
   };
 
-  // Save MO
-  const saveMO = () => {
-    if (!moName) {
-      alert('Please enter a Machine Order name.');
-      return;
-    }
+// Save MO with itemTotalPrice saved as itemPrice
+const saveMO = () => {
+  if (!moName) {
+    alert('Please enter a Machine Order name.');
+    return;
+  }
 
-    const moData = {
-      products,
-      costs,
-      createdAt: new Date().toISOString(),
+  // Overwrite itemPrice with itemTotalPrice for each product
+  const updatedProducts = products.map((product) => {
+    const quantity = parseFloat(product.quantity) || 0;
+    const itemPrice = parseFloat(product.itemPrice) || 0;
+    const itemTotalPrice = quantity * itemPrice;
+
+    return {
+      ...product,
+      itemPrice: itemTotalPrice, // Save the total price into itemPrice
     };
+  });
 
-    MoRef.child(moName).set(moData, (error) => {
-      if (error) {
-        alert('Failed to save Machine Order. Please try again.');
-      } else {
-        alert('Machine Order saved successfully!');
-        setMoName('');
-        setProducts([]);
-        setCosts([]);
-      }
-    });
+  const moData = {
+    products: updatedProducts,
+    costs,
+    createdAt: new Date().toISOString(),
   };
+
+  // Save data to Firebase
+  MoRef.child(moName).set(moData, (error) => {
+    if (error) {
+      alert('Failed to save Machine Order. Please try again.');
+    } else {
+      alert('Machine Order saved successfully!');
+      setMoName('');
+      setProducts([]);
+      setCosts([]);
+    }
+  });
+};
 
   // Filter stocks based on search term
   const filteredStocks = stocks.filter((stock) =>
@@ -127,7 +162,18 @@ function MOCreator() {
     const itemPrice = parseFloat(product.itemPrice) || 0;
     return (quantity * itemPrice).toFixed(2);
   };
-
+  // Delete MO from Firebase
+  const deleteMO = (moKey) => {
+    if (window.confirm('Are you sure you want to delete this Machine Order?')) {
+      MoRef.child(moKey).remove((error) => {
+        if (error) {
+          alert('Failed to delete Machine Order. Please try again.');
+        } else {
+          alert('Machine Order deleted successfully!');
+        }
+      });
+    }
+  };
   return (
     <div className="relative max-w-full h-[90vh] overflow-x-scroll invent-parent scrollbar-hide p-4">
       <div className="flex items-center justify-between mb-6">
@@ -166,7 +212,27 @@ function MOCreator() {
           </div>
         </form>
       </div>
-
+      {/* MO List with Delete Buttons */}
+      <div className="w-full max-w-5xl mx-auto p-6 rounded-lg shadow-md mb-8">
+        <h2 className="text-xl font-semibold mb-4">Existing Machine Orders</h2>
+        {moList.length > 0 ? (
+          <ul className="space-y-4">
+            {moList.map((mo) => (
+              <li key={mo.name} className="flex items-center justify-between border-b pb-2">
+                <span className="text-lg font-medium text-gray-700">{mo.name}</span>
+                <button
+                  onClick={() => deleteMO(mo.name)}
+                  className="px-3 py-1 bg-red-500 text-white font-medium rounded-md hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-500">No Machine Orders available.</p>
+        )}
+      </div>
       {/* Product Details Section */}
       <div className="w-full max-w-5xl mx-auto p-6 rounded-lg shadow-md mb-8">
         <h2 className="text-xl font-semibold mb-4">Product Details</h2>
