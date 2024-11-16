@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { dataRef } from '../utils/Firebabse';
 
 function MOCreator() {
+  const [isOpen, setIsOpen] = useState(false);
   // State for MO Name
   const [moName, setMoName] = useState('');
   const [products, setProducts] = useState([]);
@@ -214,25 +215,55 @@ const saveMO = () => {
       </div>
       {/* MO List with Delete Buttons */}
       <div className="w-full max-w-5xl mx-auto p-6 rounded-lg shadow-md mb-8">
-        <h2 className="text-xl font-semibold mb-4">Existing Machine Orders</h2>
-        {moList.length > 0 ? (
-          <ul className="space-y-4">
-            {moList.map((mo) => (
-              <li key={mo.name} className="flex items-center justify-between border-b pb-2">
-                <span className="text-lg font-medium text-gray-700">{mo.name}</span>
-                <button
-                  onClick={() => deleteMO(mo.name)}
-                  className="px-3 py-1 bg-red-500 text-white font-medium rounded-md hover:bg-red-600"
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-500">No Machine Orders available.</p>
-        )}
+      {/* Dropdown Header */}
+      <div
+        className="flex items-center justify-between cursor-pointer bg-gray-100 px-4 py-2 rounded-md"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <h2 className="text-xl font-semibold">
+          Existing Machine Orders
+        </h2>
+        <span
+          className={`transition-transform transform ${
+            isOpen ? "rotate-180" : "rotate-0"
+          }`}
+        >
+          ▼
+        </span>
       </div>
+
+      {/* Dropdown Content */}
+      {isOpen && (
+        <div className="mt-4">
+          {moList.length > 0 ? (
+            <ul className="space-y-4">
+              {moList.map((mo) => (
+                <li
+                  key={mo.name}
+                  className="flex items-center justify-between border-b pb-2"
+                >
+                  <span className="text-lg font-medium text-gray-700">
+                    {mo.name}
+                  </span>
+                  <i
+                    className="fas fa-trash-alt text-red-500 cursor-pointer"
+                    onClick={() => deleteMO(mo.name)}
+                  ></i>
+                  {/* <button
+                    onClick={() => deleteMO(mo.name)}
+                    className="px-3 py-1 bg-red-500 text-white font-medium rounded-md hover:bg-red-600"
+                  >
+                    Delete
+                  </button> */}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500">No Machine Orders available.</p>
+          )}
+        </div>
+      )}
+    </div>
       {/* Product Details Section */}
       <div className="w-full max-w-5xl mx-auto p-6 rounded-lg shadow-md mb-8">
         <h2 className="text-xl font-semibold mb-4">Product Details</h2>

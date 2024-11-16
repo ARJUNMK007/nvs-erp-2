@@ -142,76 +142,107 @@ const SalesPage = () => {
     setNewDeal({ ...newDeal, [e.target.name]: e.target.value });
   };
 
-  // Add or Edit deal
   const handleAddOrEditDeal = () => {
-    if (!newDeal.itemName || !newDeal.itemSize || !newDeal.itemDesc || !newDeal.itemCategory || !newDeal.currentStock || !newDeal.unit || !newDeal.RackNo || !newDeal.moq) {
-      alert('Please fill in all required fields.');
-      return;
+    if (!newDeal.itemName) {
+        alert('Item Name is required.');
+        return;
     }
-  
-    // Update the item category based on the itemCategory value in the form
-    const selectedCategory = categoryOptions.find(option => option.value === newDeal.itemCategory);
-    
-    if (!selectedCategory) {
-      alert('Invalid item category.');
-      return;
-    }
+    // if (!newDeal.supplier) {
+    //   alert('Supplier is required.');
+    //   return;
+    // }
+    // if (!newDeal.itemSize) {
+    //     alert('Item Size is required.');
+    //     return;
+    // }
+    // if (!newDeal.itemDesc) {
+    //     alert('Item Description is required.');
+    //     return;
+    // }
+    // if (!newDeal.itemCategory) {
+    //     alert('Item Category is required.');
+    //     return;
+    // }
+    // if (!newDeal.currentStock) {
+    //     alert('Current Stock is required.');
+    //     return;
+    // }
+    // if (!newDeal.unit) {
+    //     alert('Unit is required.');
+    //     return;
+    // }
+    // if (!newDeal.RackNo) {
+    //     alert('Rack Number is required.');
+    //     return;
+    // }
+    // if (!newDeal.movingStock) {
+    //   alert('Moving Stock is required.');
+    //   return;
+    // }
+    // if (!newDeal.moq) {
+    //     alert('MOQ is required.');
+    //     return;
+    // }
+    // if (!newDeal.itemPrice) {
+    //   alert('Item Price is required.');
+    //   return;
+    // }
+    // if (!newDeal.itemImage) {
+    //   alert('Item Image is required.');
+    //   return;
+    // }
 
+    // Proceed with add or update operation
     if (editId !== null) {
-      SalesRef.child(editId).update({
-        ...newDeal,
-        itemCategory: selectedCategory.label // Ensure itemCategory is updated with category label
-      })
-        .then(() => {
-          setEditId(null); // Reset edit ID after updating
-          setNewDeal({
-            itemName: '',
-            itemSize: '',
-            itemDesc: '',
-            itemCategory: '',
-            currentStock: '',
-            unit: '',
-            RackNo: '',
-            movingStock: '',
-            moq: '',
-            itemPrice: '',
-            averagePrice: '',
-            supplier: '',
-            itemImage: '',
-          });
-        })
-        .catch(error => {
-          console.error("Error updating deal:", error);
-        });
+        SalesRef.child(editId)
+            .update(newDeal)
+            .then(() => {
+                setEditId(null); // Reset edit ID after updating
+                setNewDeal({
+                    itemName: '',
+                    itemSize: '',
+                    itemDesc: '',
+                    itemCategory: '',
+                    currentStock: '',
+                    unit: '',
+                    RackNo: '',
+                    movingStock: '',
+                    moq: '',
+                    itemPrice: '',
+                    averagePrice: '',
+                    supplier: '',
+                    itemImage: '',
+                });
+            })
+            .catch(error => {
+                console.error('Error updating deal:', error);
+            });
     } else {
-      const newDealRef = SalesRef.push();
-      newDealRef.set({
-        ...newDeal,
-        itemCategory: selectedCategory.label // Add category label in the new deal
-      })
-        .then(() => {
-          setNewDeal({
-            itemName: '',
-            itemSize: '',
-            itemDesc: '',
-            itemCategory: '',
-            currentStock: '',
-            unit: '',
-            RackNo: '',
-            movingStock: '',
-            moq: '',
-            itemPrice: '',
-            averagePrice: '',
-            supplier: '',
-            itemImage: '',
-          });
-        })
-        .catch(error => {
-          console.error("Error adding deal:", error);
-        });
+        const newDealRef = SalesRef.push();
+        newDealRef
+            .set(newDeal)
+            .then(() => {
+                setNewDeal({
+                    itemName: '',
+                    itemSize: '',
+                    itemDesc: '',
+                    itemCategory: '',
+                    currentStock: '',
+                    unit: '',
+                    RackNo: '',
+                    movingStock: '',
+                    moq: '',
+                    itemPrice: '',
+                    averagePrice: '',
+                    supplier: '',
+                    itemImage: '',
+                });
+            })
+            .catch(error => {
+                console.error('Error adding deal:', error);
+            });
     }
-  };
-  
+};
 
   // Delete deal from Firebase
   const handleDelete = (id) => {
@@ -370,12 +401,7 @@ const [dailyStockData, setDailyStockData] = useState({});
   };
   const [searchTerm, setSearchTerm] = useState("")
    // Filter deals by search term (item name or category)
-   const filteredDeals = deals.filter((deal) => {
-    return (
-      deal.itemName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      deal.itemCategory.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+
   const [showMinimumStock, setShowMinimumStock] = useState(false);
   const filteredmoqDeals = showMinimumStock 
   ? deals.filter(deal => Number(deal.currentStock) < Number(deal.moq)) 
@@ -386,18 +412,54 @@ const [dailyStockData, setDailyStockData] = useState({});
   const handleOpenMoq =()=>{
     setOpenMoq(!openMoq)
   }
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [filteredDeals, setFilteredDeals] = useState([]);
+  const filterDeals = () => {
+    let filtered = deals;
+
+    if (searchTerm) {
+      filtered = filtered.filter((deal) =>
+        deal.itemName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (selectedCategory) {
+      filtered = filtered.filter(
+        (deal) => deal.itemCategory === selectedCategory
+      );
+    }
+
+    setFilteredDeals(filtered);
+  };
+
+  React.useEffect(() => {
+    filterDeals();
+  }, [searchTerm, selectedCategory]);
+
   return (
     <div className="p-6 bg-[#f0f4f8]  h-[80vh] overflow-y-scroll overflow-x-scroll invent-parents"> 
       <div className="flex justify-between items-center mb-2">
        <h1 className="text-2xl font-bold mb-4">Stock Management</h1>
        <div className="flex flex-row">
        <input
-          type="text"
-          placeholder="Search Item"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="border px-2 py-1 mb-2"
-        />
+            type="text"
+            placeholder="Search Item"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="border px-2 py-1 mb-2"
+          />
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="border px-2 py-1 mb-2 ml-2"
+          >
+            <option value="">All Categories</option>
+            {categoryOptions.map((category) => (
+              <option key={category.value} value={category.value}>
+                {category.label}
+              </option>
+            ))}
+          </select>
         <button onClick={handleExportToExcel} className="bg-green-500 w-[150px] h-[35px] text-[13px] text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none flex items-center ml-[4px]">
           <i className="fas fa-download mr-1"></i>
           Export to Excel
