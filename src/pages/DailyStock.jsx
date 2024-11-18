@@ -7,7 +7,6 @@ const DailyStock = () => {
   const [newDeal, setNewDeal] = useState({
     itemName: '',
     subCategory: '',
-    supplier: '',
     moveInQty: '',
     moveInDate: '',
     moveOutQty: '',
@@ -72,7 +71,7 @@ const DailyStock = () => {
 
   // Adding or editing deal (stock) in Firebase
   const handleAddOrEditDeal = () => {
-    if (newDeal.itemName && newDeal.supplier) {
+    if (newDeal.itemName) {
       const moveInQty = parseInt(newDeal.moveInQty) || 0;
       const moveOutQty = parseInt(newDeal.moveOutQty) || 0;
       const balanceQty = moveInQty - moveOutQty; // Calculate Balance Qty
@@ -95,7 +94,6 @@ const DailyStock = () => {
       setNewDeal({
         itemName: '',
         subCategory: '',
-        supplier: '',
         moveInQty: '',
         moveInDate: '',
         moveOutQty: '',
@@ -103,7 +101,7 @@ const DailyStock = () => {
         employee: ''
       });
     } else {
-      alert('Please fill in all required fields.');
+      // alert('Please fill in all required fields.');
     }
   };
   

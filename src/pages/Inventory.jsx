@@ -469,7 +469,7 @@ const [dailyStockData, setDailyStockData] = useState({});
           className="border px-2 py-1 mr-2"
         />
          <input
-          type="number"
+          type="text"
           name="itemSize"
           placeholder="Item Size"
           value={newDeal.itemSize}
