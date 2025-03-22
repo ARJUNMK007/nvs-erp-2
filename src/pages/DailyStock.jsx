@@ -117,10 +117,9 @@ const DailyStock = () => {
     setNewDeal(deal);
   };
 
-  // Filtered items based on search term
-  const filteredItems = items.filter(item =>
-    item.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+const filteredItems = items.filter(item => 
+  item.toString().toLowerCase().includes(searchTerm.toLowerCase())
+);
 
   // Handle adding a new category
   const handleAddCategory = () => {

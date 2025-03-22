@@ -71,6 +71,11 @@ const MoqStock = () => {
     XLSX.utils.book_append_sheet(wb, ws, "Stock Data");
     XLSX.writeFile(wb, "StockData.xlsx");
   };
+  const handleDelete = (id) => {
+    SalesRef.child(id).remove()
+      .then(() => setDeals((prevDeals) => prevDeals.filter((item) => item.id !== id)))
+      .catch((error) => console.error("Error deleting item:", error));
+  };
 
   return (
     <div className=" h-[80vh] overflow-y-scroll invent-parent">  
@@ -105,6 +110,7 @@ const MoqStock = () => {
               <th className="py-3 px-4 text-left">Supplier</th>
               <th className="py-3 px-4 text-left">Unit</th>
               <th className="py-3 px-4 text-left">Moving Stock</th>
+              <th className="py-3 px-4 text-left"></th>
             </tr>
           </thead>
           <tbody>
@@ -121,6 +127,10 @@ const MoqStock = () => {
                   <td className="py-3 px-4">{item.supplier || "N/A"}</td>
                   <td className="py-3 px-4">{item.unit || "N/A"}</td>
                   <td className="py-3 px-4">{item.movingStock || "N/A"}</td>
+                  <td className="py-3 px-4">  <i
+                    className="fas fa-trash-alt text-red-500 cursor-pointer"
+                    onClick={() => handleDelete(item.id)}
+                  ></i></td>
                 </tr>
               ))
             ) : (

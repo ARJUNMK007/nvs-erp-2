@@ -110,6 +110,7 @@ const SalesPage = () => {
     itemName: '',
     itemSize:'',
     itemDesc:'',
+    moveInDate: '',
     itemCategory: '',
     currentStock: '',
     unit: '', // Unit (Dropdown selection)
@@ -202,6 +203,7 @@ const SalesPage = () => {
                     itemName: '',
                     itemSize: '',
                     itemDesc: '',
+                    moveInQty: '',
                     itemCategory: '',
                     currentStock: '',
                     unit: '',
@@ -226,6 +228,7 @@ const SalesPage = () => {
                     itemName: '',
                     itemSize: '',
                     itemDesc: '',
+                    moveInQty: '',
                     itemCategory: '',
                     currentStock: '',
                     unit: '',
@@ -266,6 +269,7 @@ const SalesPage = () => {
       ITEM_NAME: deal.itemName,
       ITEM_SIZE: deal.itemSize,
       ITEM_DESC: deal.itemDesc,
+      MOVE_IN_QTY: deal.moveInQty,
       ITEM_CATEGORY: deal.itemCategory,
       CURRENT_STOCK: deal.currentStock,
       UNIT: deal.unit,
@@ -484,7 +488,13 @@ const [dailyStockData, setDailyStockData] = useState({});
           onChange={handleChange}
           className="border px-2 py-1 mr-2"
         />
-    
+ <input
+          type="date"
+          name="moveInDate"
+          value={newDeal.moveInDate}
+          onChange={handleChange}
+          className="border px-2 py-1 mr-2"
+        />
 
         <input
           type="number"
@@ -727,6 +737,7 @@ const [dailyStockData, setDailyStockData] = useState({});
               <th className="px-4 py-2 text-left">ITEM NAME</th>
               <th className="px-4 py-2 text-left">ITEM SIZE</th>
               <th className="px-4 py-2 text-left">ITEM DESCRIPTION</th>
+               <th className="px-4 py-2 text-left">MOVE-IN DATE</th>
               <th className="px-4 py-2 text-left">ITEM CATEGORY</th>
               <th className="px-4 py-2 text-left">UNIT</th>
               <th className="px-4 py-2 text-left">CURRENT STOCK</th>
@@ -743,6 +754,7 @@ const [dailyStockData, setDailyStockData] = useState({});
                 <td className="px-4 py-2">{deal.itemName}</td>
                 <td className="px-4 py-2">{deal.itemSize}</td>
                 <td className="px-4 py-2">{deal.itemDesc}</td>
+                <td className="px-4 py-2">{deal.moveInDate}</td>
                 <td className="px-4 py-2">
           {categoryOptions.find(cat => cat.value === deal.itemCategory)?.label || deal.itemCategory}
         </td>
@@ -799,6 +811,10 @@ const [dailyStockData, setDailyStockData] = useState({});
           <tr>
             <td className="px-4 py-2 font-semibold border">Item Price:</td>
             <td className="px-4 py-2 border">{selectedDeal.itemPrice}</td>
+          </tr>
+          <tr>
+            <td className="px-4 py-2 font-semibold border">Item Description</td>
+            <td className="px-4 py-2 border">{selectedDeal.itemDesc}</td>
           </tr>
           {/* <tr>
             <td className="px-4 py-2 font-semibold border">Average Price:</td>
