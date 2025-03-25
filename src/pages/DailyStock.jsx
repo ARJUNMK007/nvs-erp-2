@@ -133,12 +133,30 @@ const filteredItems = items.filter(item =>
       DailyCatRef.push(newCategoryObj);
     }
   };
-    // Filtered items based on search term (itemName or subCategory)
-    const filteredDeals = deals.filter((deal) =>
-      deal.itemName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      deal.subCategory.toLowerCase().includes(searchTerm.toLowerCase())
-    );
   
+  // Filtered deals based on search term (itemName, subCategory, or quantity)
+  const filteredDeals = deals.filter((deal) => {
+    // Convert all searchable fields to strings for comparison
+    const itemNameMatch = deal.itemName?.toString().toLowerCase().includes(searchTerm.toLowerCase());
+    const subCategoryMatch = deal.subCategory?.toString().toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Check for quantity matches (moveInQty, moveOutQty, or balance)
+    const moveInQty = parseInt(deal.moveInQty) || 0;
+    const moveOutQty = parseInt(deal.moveOutQty) || 0;
+    const balanceQty = moveInQty - moveOutQty;
+    
+    // Check if search term is a number and matches any quantity
+    const searchTermAsNumber = parseInt(searchTerm);
+    const isNumberSearch = !isNaN(searchTermAsNumber);
+    
+    const quantityMatch = isNumberSearch && (
+      moveInQty === searchTermAsNumber ||
+      moveOutQty === searchTermAsNumber ||
+      balanceQty === searchTermAsNumber
+    );
+    
+    return itemNameMatch || subCategoryMatch || quantityMatch;
+  });
 
   return (
     <div className="h-[80vh] overflow-x-auto invent-parents p-4">
@@ -146,13 +164,13 @@ const filteredItems = items.filter(item =>
 
       {/* Input Form */}
       <div className="mb-4">
-        {/* Searchable Item Dropdown */}
+        {/* Search input for items, categories, or quantities */}
         <input
           type="text"
-          placeholder="Search Item"
+          placeholder="Search by Item, Category, or Quantity"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="border px-2 py-1 mb-2"
+          className="border px-2 py-1 mb-2 w-full max-w-md"
         />
 
         <select
@@ -207,14 +225,6 @@ const filteredItems = items.filter(item =>
         </div>
 
         {/* Other form fields */}
-        {/* <input
-          type="text"
-          name="supplier"
-          placeholder="Supplier"
-          value={newDeal.supplier}
-          onChange={handleChange}
-          className="border px-2 py-1 mr-2"
-        /> */}
         <input
           type="number"
           name="moveInQty"
@@ -261,42 +271,40 @@ const filteredItems = items.filter(item =>
         </button>
       </div>
 
-          {/* Table Display */}
-          <div className="overflow-x-auto">
+      {/* Table Display */}
+      <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
             <tr className="bg-gray-100 border-b">
               <th className="px-4 py-2">SL NO</th>
               <th className="px-4 py-2">Item Name</th>
               <th className="px-4 py-2">Sub Category</th>
-              {/* <th className="px-4 py-2">Supplier</th> */}
               <th className="px-4 py-2">Move In Qty</th>
               <th className="px-4 py-2">Move In Date</th>
               <th className="px-4 py-2">Move Out Qty</th>
               <th className="px-4 py-2">Move Out Date</th>
               <th className="px-4 py-2">Employee</th>
-              <th className="px-4 py-2">Balance Qty</th> {/* New column for Balance Qty */}
+              <th className="px-4 py-2">Balance Qty</th>
               <th className="px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
           {filteredDeals.map((deal, index) => {
-              const moveInQty = parseInt(deal.moveInQty) || 0; // Ensure we have a number
-              const moveOutQty = parseInt(deal.moveOutQty) || 0; // Ensure we have a number
-              const balanceQty = moveInQty - moveOutQty; // Calculate Balance Qty
+              const moveInQty = parseInt(deal.moveInQty) || 0;
+              const moveOutQty = parseInt(deal.moveOutQty) || 0;
+              const balanceQty = moveInQty - moveOutQty;
 
               return (
                 <tr key={deal.id} className="border-b">
                   <td className="px-4 py-2">{index + 1}</td>
                   <td className="px-4 py-2">{deal.itemName}</td>
                   <td className="px-4 py-2">{deal.subCategory}</td>
-                  {/* <td className="px-4 py-2">{deal.supplier}</td> */}
                   <td className="px-4 py-2">{moveInQty}</td>
                   <td className="px-4 py-2">{deal.moveInDate}</td>
                   <td className="px-4 py-2">{moveOutQty}</td>
                   <td className="px-4 py-2">{deal.moveOutDate}</td>
                   <td className="px-4 py-2">{deal.employee}</td>
-                  <td className="px-4 py-2">{balanceQty}</td> {/* Displaying Balance Qty */}
+                  <td className="px-4 py-2">{balanceQty}</td>
                   <td className="px-4 py-2">
                     <button
                       onClick={() => handleEdit(deal)}
@@ -322,5 +330,3 @@ const filteredItems = items.filter(item =>
 };
 
 export default DailyStock;
-
- 
